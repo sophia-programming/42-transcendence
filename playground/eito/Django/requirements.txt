@@ -1,0 +1,7 @@
+django
+# 以下なくても良い
+qrcode
+onetimepass
+Pillow
+black
+isort
