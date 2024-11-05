@@ -10,3 +10,5 @@
 !*.py
 !*.txt
 !*.html
+
+!.vscode/*
