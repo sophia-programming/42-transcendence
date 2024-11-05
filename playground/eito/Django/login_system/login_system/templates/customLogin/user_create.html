@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load i18n static %}
+{% block bodyclass %}{{ block.super }} login{% endblock bodyclass %}
+{% block usertools %}{% endblock usertools %}
+{% block nav-global %}{% endblock nav-global %}
+{% block content_title %}{% endblock content_title %}
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+{% block extrastyle %}
+    {{ block.super }}
+{% endblock extrastyle %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="form-row">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+    </div>
+    {% endfor %}
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" value="{% trans 'Sign up' %}" />
+    </div>
+</form>
+{% endblock content %}
