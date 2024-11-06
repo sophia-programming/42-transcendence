@@ -1,0 +1,12 @@
+# .gitignore
+# Ignore All
+*
+!*/
+
+# Allowlist
+!.git/*
+!.gitignore
+!.gitattributes
+!*.py
+!*.txt
+!*.html
