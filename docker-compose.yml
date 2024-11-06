@@ -1,0 +1,19 @@
+services:
+  web:
+    build: ./web
+    container_name: web
+    command: python3 web/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file: .env

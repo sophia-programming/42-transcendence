@@ -11,3 +11,6 @@
 !*.txt
 !*.html
 !*.css
+
+!docker-compose.yml
+!Dockerfile
