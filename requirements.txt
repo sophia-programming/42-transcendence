@@ -1,6 +1,0 @@
-django
-qrcode
-onetimepass
-Pillow
-black
-isort
