@@ -2,10 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <title>member</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>トーナメント</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             background-image: url('images/game.webp'); /* 背景画像の指定 */
@@ -22,22 +21,6 @@
             align-items: center;
             margin: 30px 0;
         }
-        .match {
-            border: 2px solid black;
-            border-radius: 10px;
-            padding: 15px;
-            width: 150px;
-            text-align: center;
-        }
-        .match:hover {
-            background-color: #1b1b1b;
-            color: white;
-        }
-        .line {
-            width: 50px;
-            height: 2px;
-            background-color: yellow;
-        }
     </style>
 </head>
 <body>
@@ -45,24 +28,36 @@
     <h1 class="text-center">トーナメント</h1>
     <div id="round1" class="round">
         <div class="bracket">
-            <div class="match">プレイヤー1 </div>
-            <div class="line"></div>
-            <div class="match">プレイヤー2 </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー1" >
+            </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー2">
+            </div>
         </div>
         <div class="bracket">
-            <div class="match">プレイヤー3 </div>
-            <div class="line"></div>
-            <div class="match">プレイヤー4 </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー3">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー4">
+            </div>
         </div>
         <div class="bracket">
-            <div class="match">プレイヤー5 </div>
-            <div class="line"></div>
-            <div class="match">プレイヤー6 </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー5">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー6">
+            </div>
         </div>
         <div class="bracket">
-            <div class="match">プレイヤー7 </div>
-            <div class="line"></div>
-            <div class="match">プレイヤー8 </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー7">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control" placeholder="プレイヤー8">
+            </div>
         </div>
     </div>
 </div>

@@ -21,4 +21,4 @@ from tournament_system import views  # views.py をインポート
 urlpatterns = [
     path('admin/', admin.site.urls),  # 管理ページ
     path('tournament/', views.tournament, name='tournament'),  # /tournament/ に対応するビューを指定
-]
+] 
