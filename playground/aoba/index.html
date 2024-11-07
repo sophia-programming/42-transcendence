@@ -13,53 +13,70 @@
             color: white;
             min-height: 100vh; /* ビューポートの高さをカバー */
             display: flex;
-            align-items: center; /* 縦方向に中央寄せ */
+            flex-direction: column;
+            justify-content: center; /* 縦方向の中央寄せ */
+            align-items: center;
         }
         .bracket {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 30px 0;
+            margin: 30px 0; /* 上下に余白を追加 */
+        }
+        .match {
+            margin: 0 30px; /* 各match要素の左右に余白を追加 */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 500px; /* 中央寄せする幅を制限 */
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="text-center">トーナメント</h1>
+    <h1 class="text-center">メンバー</h1>
     <div id="round1" class="round">
-        <div class="bracket">
+        <div class="bracket mb-4">
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー1" >
+                <input type="text" class="form-control text-center" placeholder="プレイヤー1">
             </div>
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー2">
-            </div>
-        </div>
-        <div class="bracket">
-            <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー3">
-            </div>
-            <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー4">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー2">
             </div>
         </div>
-        <div class="bracket">
+        <div class="bracket mb-4">
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー5">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー3">
             </div>
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー6">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー4">
             </div>
         </div>
-        <div class="bracket">
+        <div class="bracket mb-4">
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー7">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー5">
             </div>
             <div class="match">
-                <input type="text" class="form-control" placeholder="プレイヤー8">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー6">
+            </div>
+        </div>
+        <div class="bracket mb-4">
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー7">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー8">
             </div>
         </div>
     </div>
+</div>
+
+<!-- 決定ボタンをページ下部中央に追加 -->
+<div class="text-center mt-3 mb-4">
+    <button type="button" class="btn btn-outline-secondary"> 決定 </button>
 </div>
 
 <script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
