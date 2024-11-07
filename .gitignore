@@ -11,7 +11,7 @@
 !*.txt
 !*.html
 !*.css
-
 !docker-compose.yml
 !Dockerfile
 !.env_template
+!.pre-commit-config.yaml
