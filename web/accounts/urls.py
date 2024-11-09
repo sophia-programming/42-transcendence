@@ -4,8 +4,8 @@ from . import views
 
 app_name = "accounts"
 urlpatterns = [
-    path("login/", views.TwoFactorLoginView.as_view(), name="login"),
-    path("otp/", views.OTPView.as_view(), name="otp"),
-    path("setup/", views.SetupView.as_view(), name="setup"),
-    # path("signup/", views.SignUp.as_view(), name="signup"),
+    path("login/", views.CustomLoginView.as_view(), name="login"),
+    path("setup-otp/", views.SetupOTPView.as_view(), name="setup_otp"),
+    path("verify-otp/", views.VerifyOTPView.as_view(), name="verify_otp"),
+    path("", views.HomeView.as_view(), name="home"),
 ]
