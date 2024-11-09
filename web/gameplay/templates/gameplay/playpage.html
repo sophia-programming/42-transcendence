@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Game Play Page{% endblock %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/playscreen.css' %}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<body class="bg-dark text-light">
+  <!-- 中央の点線とスコア表（背面） -->
+  <div class="position-relative" style="height: 100vh; width: 100vw;">
+    <div class="z-0 position-absolute w-100 h-100">
+      <div class="d-flex justify-content-center position-relative">
+        <div class="h1 p-5 score">0</div>
+        <div class="dashed-line"></div>
+        <div class="h1 p-5 score">0</div>
+      </div>
+    </div>
+
+    <div class="z-1 position-absolute w-100 h-100">
+      <div class="d-flex justify-content-between align-items-center h-100"> 
+        <!-- 左ラケット -->
+        <div class="m-5 racket bg-light"></div>
+        <!-- 右ラケット -->
+        <div class="m-5 racket bg-light"></div>
+        <!-- ボール -->
+        <div class="position-absolute rounded-circle bg-warning"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+{% endblock %}

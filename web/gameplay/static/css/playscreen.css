@@ -1,0 +1,28 @@
+/* 中央の点線 */
+.dashed-line {
+    border-left: 8px dashed;
+    height: 100vh;
+  }
+  
+  /* スコア表 */
+  .score {
+    font-size: 5rem;
+    font-family: 'Press Start 2P', cursive;
+  }
+  
+  /* ラケットのスタイル */
+  .racket {
+    width: 1vw; 
+    height: 10vh;
+  }
+  
+  /* ボールのスタイル */
+  .bg-warning {
+    width: 2vw;
+    height: 2vw;
+    border-radius: 50%;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%)
+  }
+  
