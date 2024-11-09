@@ -2,6 +2,9 @@
 {% block title %}Game Play Page{% endblock %}
 
 {% block content %}
+{% load static %}
+<link href="{% static 'css/playscreen.css' %}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <body class="bg-dark text-light">
   <!-- 中央の点線とスコア表（背面） -->
   <div class="position-relative" style="height: 100vh; width: 100vw;">
