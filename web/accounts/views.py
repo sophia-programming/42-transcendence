@@ -23,7 +23,7 @@ class CustomLoginView(LoginView):
         login(self.request, user)
         if user.otp_enabled:
             return redirect("accounts:verify_otp")
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect("accounts:home")
 
 
 @method_decorator([never_cache, login_required], name="dispatch")
