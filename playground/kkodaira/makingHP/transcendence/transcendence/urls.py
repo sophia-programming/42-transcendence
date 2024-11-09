@@ -5,6 +5,6 @@ from play1vs1.views import play1vs1
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-	path("homepage/", homepage),
+	path("homepage/", homepage, name='homepage'),
 	path("play1vs1/", play1vs1),
 ]
