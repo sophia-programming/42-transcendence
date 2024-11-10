@@ -137,14 +137,14 @@ class SignUpViewTests(TestCase):
         self.assertIsInstance(response.context["form"], SignUpForm)
 
     def test_signup_view_post_valid(self):
-        """有効なデータでPOSTリクエストを送信した場合、ユーザーが作成され、OTPセットアップページにリダイレクトされることを確認する"""
+        """有効なデータでPOSTリクエストを送信した場合、ユーザーが作成され、ログインページにリダイレクトされることを確認する"""
         data = {
             "username": "newuser",
             "password": "password123",
             "email": "newuser@example.com",
         }
         response = self.client.post(self.url, data)
-        self.assertRedirects(response, reverse("accounts:setup_otp"))
+        self.assertRedirects(response, reverse("accounts:login"))
         user = CustomUser.objects.get(username="newuser")
         self.assertIsNotNone(user)
         self.assertTrue(user.check_password("password123"))
@@ -157,7 +157,7 @@ class SignUpViewTests(TestCase):
             "email": "",
         }
         response = self.client.post(self.url, data)
-        self.assertRedirects(response, reverse("accounts:setup_otp"))
+        self.assertRedirects(response, reverse("accounts:login"))
         user = CustomUser.objects.get(username="newuser")
         self.assertIsNotNone(user)
         self.assertTrue(user.check_password("password123"))

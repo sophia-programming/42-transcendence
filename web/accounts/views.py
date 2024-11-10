@@ -43,8 +43,7 @@ class SignUpView(View):
             user = CustomUser.objects.create_user(
                 username=username, password=password, email=email
             )
-            login(request, user)
-            return redirect("accounts:setup_otp")
+            return redirect("accounts:login")
         return render(
             request,
             "accounts/signup.html",
