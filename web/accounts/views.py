@@ -50,11 +50,12 @@ class SignUpForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.required = True
-            if self.errors.get(field_name):
-                field.widget.attrs.update(
-                    {"class": field.widget.attrs.get("class", "") + " is-invalid"}
-                )
+            field.widget.attrs.update(
+                {
+                    "class": field.widget.attrs.get("class", "")
+                    + (" is-invalid" if self.errors.get(field_name) else "")
+                }
+            )
 
 
 @method_decorator([never_cache], name="dispatch")
