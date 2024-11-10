@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
+from .models import CustomUser
+
 
 @method_decorator(
     [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
@@ -23,6 +25,62 @@ class CustomLoginView(LoginView):
         if user.otp_enabled:
             return redirect("accounts:verify_otp")
         return redirect("accounts:home")
+
+
+class SignUpForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ["username", "password", "email"]
+        widgets = {
+            "username": forms.TextInput(
+                attrs={"class": "form-control", "id": "exampleInputUsername"}
+            ),
+            "password": forms.PasswordInput(
+                attrs={"class": "form-control", "id": "exampleInputPassword"}
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control",
+                    "id": "exampleInputEmail1",
+                    "aria-describedby": "emailHelp",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = True
+            if self.errors.get(field_name):
+                field.widget.attrs.update(
+                    {"class": field.widget.attrs.get("class", "") + " is-invalid"}
+                )
+
+
+@method_decorator([never_cache], name="dispatch")
+class SignUpView(View):
+    def get(self, request):
+        form = SignUpForm()
+        return render(request, "accounts/signup.html", {"form": form})
+
+    def post(self, request):
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            email = form.cleaned_data["email"]
+            user = CustomUser.objects.create_user(
+                username=username, password=password, email=email
+            )
+            login(request, user)
+            return redirect("accounts:setup_otp")
+        return render(
+            request,
+            "accounts/signup.html",
+            {
+                "form": form,
+            },
+        )
 
 
 @method_decorator([never_cache, login_required], name="dispatch")
