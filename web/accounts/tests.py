@@ -149,6 +149,19 @@ class SignUpViewTests(TestCase):
         self.assertIsNotNone(user)
         self.assertTrue(user.check_password("password123"))
 
+    def test_signup_view_post_valid_without_email(self):
+        """メールが入力されていない場合でもユーザーが作成されることを確認する"""
+        data = {
+            "username": "newuser",
+            "password": "password123",
+            "email": "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertRedirects(response, reverse("accounts:setup_otp"))
+        user = CustomUser.objects.get(username="newuser")
+        self.assertIsNotNone(user)
+        self.assertTrue(user.check_password("password123"))
+
     def test_signup_view_post_invalid_username(self):
         """ユーザーネームが入力されていない場合、サインアップページが再表示され、エラーメッセージが表示されることを確認する"""
         data = {
