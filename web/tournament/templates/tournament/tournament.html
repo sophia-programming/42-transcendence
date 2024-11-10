@@ -34,52 +34,59 @@
             justify-content: center;
             max-width: 500px; /* 中央寄せする幅を制限 */
         }
+        .submit-button {
+            position: absolute;
+            bottom: 160px; /* 下部に配置 */
+            left: 50%;
+            transform: translateX(-50%)
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1 class="text-center">メンバー</h1>
-    <div id="round1" class="round">
-        <div class="bracket mb-4">
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー1">
+    <form method="post" action="{% url 'tournament:matches' %}">
+        {% csrf_token %}
+        <div id="round1" class="round">
+            <div class="bracket mb-4">
+                <div class="match">
+                    <input type="text" name="player1" placeholder="プレイヤー1">
+                </div>
+                <div class="match">
+                    <input type="text" name="player2" placeholder="プレイヤー2">
+                </div>
             </div>
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー2">
+            <div class="bracket mb-4">
+                <div class="match">
+                    <input type="text" name="player3" placeholder="プレイヤー3">
+                </div>
+                <div class="match">
+                    <input type="text" name="player4" placeholder="プレイヤー4">
+                </div>
+            </div>
+            <div class="bracket mb-4">
+                <div class="match">
+                    <input type="text" name="player5" placeholder="プレイヤー5">
+                </div>
+                <div class="match">
+                    <input type="text" name="player6" placeholder="プレイヤー6">
+                </div>
+            </div>
+            <div class="bracket mb-4">
+                <div class="match">
+                    <input type="text" name="player7" placeholder="プレイヤー7">
+                </div>
+                <div class="match">
+                    <input type="text" name="player8" placeholder="プレイヤー8">
+                </div>
             </div>
         </div>
-        <div class="bracket mb-4">
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー3">
-            </div>
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー4">
-            </div>
+        <!-- 決定ボタンをページ下部中央に追加 -->
+        <div class="submit-button">
+            <button type="submit" class="btn btn-outline-secondary">決定</button>
         </div>
-        <div class="bracket mb-4">
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー5">
-            </div>
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー6">
-            </div>
-        </div>
-        <div class="bracket mb-4">
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー7">
-            </div>
-            <div class="match">
-                <input type="text" class="form-control text-center" placeholder="プレイヤー8">
-            </div>
-        </div>
-    </div>
+    </form>
 </div>
-
-<!-- 決定ボタンをページ下部中央に追加 -->
-<div class="text-center mt-3 mb-4">
-    <a href="{% url 'tournament:matches' %}" class="btn btn-outline-secondary">決定</a>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 </html>
