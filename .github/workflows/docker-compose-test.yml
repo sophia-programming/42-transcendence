@@ -1,0 +1,32 @@
+name: docker-compose-test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose up -d --build
+
+      - name: Wait for services to be healthy
+        run: |
+          while ! curl -sSf http://localhost:8000 > /dev/null; do sleep 1; done
+
+      - name: Tear down Docker Compose
+        run: |
+          docker-compose down
