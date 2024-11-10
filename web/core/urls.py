@@ -20,7 +20,6 @@ from django.urls import include, path
 from homepage.views import homepage
 
 urlpatterns = [
-    path("tournament/matches/", include("tournament.urls")),
     path("tournament/", include("tournament.urls")),
     path("accounts/", include("accounts.urls")),
     path("admin/", admin.site.urls),
