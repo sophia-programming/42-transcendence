@@ -5,6 +5,7 @@ from django.urls import reverse
 from django_otp.oath import TOTP
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
+from .forms import SignUpForm
 from .models import CustomUser
 
 
@@ -122,3 +123,56 @@ class VerifyOTPViewTests(TestCase):
         self.assertTemplateUsed(response, "accounts/verify_otp.html")
         form = response.context["form"]
         self.assertFormError(form, "otp_token", "Invalid OTP")
+
+
+class SignUpViewTests(TestCase):
+    def setUp(self):
+        self.url = reverse("accounts:signup")
+
+    def test_signup_view_get(self):
+        """GETリクエストでサインアップページが正しいテンプレートを使っていることを確認する"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/signup.html")
+        self.assertIsInstance(response.context["form"], SignUpForm)
+
+    def test_signup_view_post_valid(self):
+        """有効なデータでPOSTリクエストを送信した場合、ユーザーが作成され、OTPセットアップページにリダイレクトされることを確認する"""
+        data = {
+            "username": "newuser",
+            "password": "password123",
+            "email": "newuser@example.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertRedirects(response, reverse("accounts:setup_otp"))
+        user = CustomUser.objects.get(username="newuser")
+        self.assertIsNotNone(user)
+        self.assertTrue(user.check_password("password123"))
+
+    def test_signup_view_post_invalid_username(self):
+        """ユーザーネームが入力されていない場合、サインアップページが再表示され、エラーメッセージが表示されることを確認する"""
+        data = {
+            "username": "",
+            "password": "password123",
+            "email": "invalid-email",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/signup.html")
+        form = response.context["form"]
+        self.assertIsInstance(form, SignUpForm)
+        self.assertTrue(form.errors)
+
+    def test_signup_view_post_invalid_password(self):
+        """パスワードが入力されていない場合、サインアップページが再表示され、エラーメッセージが表示されることを確認する"""
+        data = {
+            "username": "user",
+            "password": "",
+            "email": "invalid-email",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/signup.html")
+        form = response.context["form"]
+        self.assertIsInstance(form, SignUpForm)
+        self.assertTrue(form.errors)
