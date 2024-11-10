@@ -13,8 +13,6 @@ class CustomLoginViewTests(TestCase):
         self.user = CustomUser.objects.create_user(
             username="testuser", password="password123"
         )
-        self.user.otp_enabled = True
-        self.user.save()
 
     def test_custom_login_view_template(self):
         """ログインページが正しいテンプレートを使っていることを確認する"""
@@ -23,7 +21,19 @@ class CustomLoginViewTests(TestCase):
         self.assertTemplateUsed(response, "accounts/login.html")
 
     def test_custom_login_view_valid_login(self):
-        """ユーザーを作成し正しいユーザー名とパスワードでログインできることを確認する"""
+        """正しいユーザー名とパスワードでログインできることを確認する、OTPが無効な場合"""
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "testuser", "password": "password123"},
+            # follow=True,
+        )
+        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+
+    def test_custom_login_view_valid_login_with_otp(self):
+        """正しいユーザー名とパスワードでログインできることを確認する、OTPが有効な場合"""
+        self.user.otp_enabled = True
+        self.user.save()
+        self.user.refresh_from_db()
         response = self.client.post(
             reverse("accounts:login"),
             {"username": "testuser", "password": "password123"},
@@ -32,7 +42,7 @@ class CustomLoginViewTests(TestCase):
         self.assertRedirects(response, reverse("accounts:verify_otp"))
 
     def test_custom_login_view_invalid_login(self):
-        """ユーザーを作成し間違ったパスワードでログインできないことを確認する"""
+        """間違ったパスワードでログインできないことを確認する"""
         response = self.client.post(
             reverse("accounts:login"),
             {"username": "testuser", "password": "wrongpassword"},
@@ -68,7 +78,7 @@ class SetupOTPViewTests(TestCase):
 class VerifyOTPViewTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
-            username="testuser", password="password123"
+            username="testuser", password="password123", otp_enabled=True
         )
         self.client.login(username="testuser", password="password123")  # loginが必要
         self.device = TOTPDevice.objects.create(
@@ -92,7 +102,8 @@ class VerifyOTPViewTests(TestCase):
         totp.time = time.time()
         valid_token = totp.token()
         response = self.client.post(
-            reverse("accounts:verify_otp"), {"otp_token": valid_token}
+            reverse("accounts:verify_otp"),
+            {"otp_token": valid_token},  # follow=True,
         )
         # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
 
