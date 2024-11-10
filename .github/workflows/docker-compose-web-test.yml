@@ -1,0 +1,42 @@
+name: docker-compose-web-test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Download wait-for-it.sh
+        run: |
+          curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+          chmod +x wait-for-it.sh
+
+      - name: Build and run Docker Compose
+        run: |
+          mv .env_template .env
+          docker-compose up -d --build
+
+      - name: Wait for services to be healthy
+        run: |
+          ./wait-for-it.sh localhost:8000 --timeout=60 --strict -- echo "Web service is up"
+
+      - name: Run Django tests
+        run: |
+          docker-compose exec -T web python3 web/manage.py test
+
+      - name: Tear down Docker Compose
+        run: |
+          docker-compose down

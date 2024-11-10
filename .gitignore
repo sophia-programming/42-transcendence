@@ -17,3 +17,4 @@
 !.pre-commit-config.yaml
 
 !wait-for-it.sh
+!.github/workflows/*
