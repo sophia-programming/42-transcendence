@@ -33,15 +33,15 @@ class SignUpForm(forms.ModelForm):
         fields = ["username", "password", "email"]
         widgets = {
             "username": forms.TextInput(
-                attrs={"class": "form-control", "id": "exampleInputUsername"}
+                attrs={"class": "form-control", "id": "InputUsername"}
             ),
             "password": forms.PasswordInput(
-                attrs={"class": "form-control", "id": "exampleInputPassword"}
+                attrs={"class": "form-control", "id": "InputPassword"}
             ),
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "id": "exampleInputEmail1",
+                    "id": "InputEmail",
                     "aria-describedby": "emailHelp",
                 }
             ),
