@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
+from .forms import OTPForm, SignUpForm
 from .models import CustomUser
 
 
@@ -25,37 +26,6 @@ class CustomLoginView(LoginView):
         if user.otp_enabled:
             return redirect("accounts:verify_otp")
         return redirect("accounts:home")
-
-
-class SignUpForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ["username", "password", "email"]
-        widgets = {
-            "username": forms.TextInput(
-                attrs={"class": "form-control", "id": "InputUsername"}
-            ),
-            "password": forms.PasswordInput(
-                attrs={"class": "form-control", "id": "InputPassword"}
-            ),
-            "email": forms.EmailInput(
-                attrs={
-                    "class": "form-control",
-                    "id": "InputEmail",
-                    "aria-describedby": "emailHelp",
-                }
-            ),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(SignUpForm, self).__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs.update(
-                {
-                    "class": field.widget.attrs.get("class", "")
-                    + (" is-invalid" if self.errors.get(field_name) else "")
-                }
-            )
 
 
 @method_decorator([never_cache], name="dispatch")
@@ -114,10 +84,6 @@ class SetupOTPView(View):
 class HomeView(View):
     def get(self, request):
         return render(request, "accounts/home.html")
-
-
-class OTPForm(forms.Form):
-    otp_token = forms.CharField(label="Enter OTP Token", max_length=6)
 
 
 @method_decorator(
