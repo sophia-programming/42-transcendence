@@ -60,10 +60,13 @@ class SetupOTPViewTests(TestCase):
         self.client.login(username="testuser", password="password123")  # loginが必要
 
     def test_setup_otp_view_get(self):
-        """OTPセットアップページが正しいテンプレートを使っていることを確認する"""
+        """OTPセットアップページが正しいテンプレートを使っていることを確認し、デバイスが作成されていて無効であることを確認する"""
         response = self.client.get(reverse("accounts:setup_otp"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/setup_otp.html")
+        device = TOTPDevice.objects.filter(user=self.user).first()
+        self.assertIsNotNone(device)
+        self.assertFalse(device.confirmed)
 
     def test_setup_otp_view_post(self):
         """OTPセットアップが正しく完了することを確認する"""
@@ -72,6 +75,9 @@ class SetupOTPViewTests(TestCase):
         response = self.client.post(reverse("accounts:setup_otp"))
         self.user.refresh_from_db()
         self.assertTrue(self.user.otp_enabled)
+        device = TOTPDevice.objects.filter(user=self.user).first()
+        self.assertIsNotNone(device)
+        self.assertTrue(device.confirmed)
         # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
 
 
