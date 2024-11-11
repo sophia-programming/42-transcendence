@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>member</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+        {% load static %}
+        body {
+            background-image: url("{% static 'tournament/images/game.webp' %}"); /* 背景画像の指定 */
+            background-size: cover; /* 画面全体に画像を拡大 */
+            background-position: center; /* 画像の中心を表示 */
+            color: white;
+            min-height: 100vh; /* ビューポートの高さをカバー */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 縦方向の中央寄せ */
+            align-items: center;
+        }
+        .bracket {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0; /* 上下に余白を追加 */
+        }
+        .match {
+            margin: 0 30px; /* 各match要素の左右に余白を追加 */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 500px; /* 中央寄せする幅を制限 */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">メンバー</h1>
+    <div id="round1" class="round">
+        <div class="bracket mb-4">
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー1">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー2">
+            </div>
+        </div>
+        <div class="bracket mb-4">
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー3">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー4">
+            </div>
+        </div>
+        <div class="bracket mb-4">
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー5">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー6">
+            </div>
+        </div>
+        <div class="bracket mb-4">
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー7">
+            </div>
+            <div class="match">
+                <input type="text" class="form-control text-center" placeholder="プレイヤー8">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 決定ボタンをページ下部中央に追加 -->
+<div class="text-center mt-3 mb-4">
+    <button type="button" class="btn btn-outline-secondary"> 決定 </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>
