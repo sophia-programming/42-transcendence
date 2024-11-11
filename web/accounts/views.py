@@ -42,7 +42,7 @@ class SignUpView(View):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             email = form.cleaned_data["email"]
-            user = CustomUser.objects.create_user(
+            CustomUser.objects.create_user(
                 username=username, password=password, email=email
             )
             return redirect("accounts:login")
