@@ -28,7 +28,9 @@ class CustomLoginView(LoginView):
         return redirect("accounts:home")
 
 
-@method_decorator([never_cache], name="dispatch")
+@method_decorator(
+    [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
+)
 class SignUpView(View):
     def get(self, request):
         form = SignUpForm()
