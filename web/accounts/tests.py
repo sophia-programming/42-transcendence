@@ -65,7 +65,9 @@ class LogoutViewTests(TestCase):
         response = self.client.get(reverse("accounts:logout"))
         self.assertRedirects(response, reverse("accounts:login"))
         response = self.client.get(reverse("homepage"))
-        self.assertFalse(response.context["user"].is_authenticated)
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={reverse('homepage')}"
+        )
 
 
 class SetupOTPViewTests(TestCase):
