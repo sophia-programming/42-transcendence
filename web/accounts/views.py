@@ -25,7 +25,7 @@ class CustomLoginView(LoginView):
         login(self.request, user)
         if user.otp_enabled:
             return redirect("accounts:verify_otp")
-        return redirect("accounts:home")
+        return redirect("homepage")
 
 
 @method_decorator(
@@ -78,7 +78,7 @@ class SetupOTPView(View):
         user.otp_enabled = True
         device.save()
         user.save()
-        return redirect("accounts:home")
+        return redirect("homepage")
 
 
 @method_decorator([login_required], name="dispatch")
@@ -101,7 +101,7 @@ class VerifyOTPView(View):
             otp = form.cleaned_data["otp_token"]
             device = TOTPDevice.objects.filter(user=request.user).first()
             if device and device.verify_token(otp):
-                return redirect("accounts:home")
+                return redirect("homepage")
             else:
                 form.add_error("otp_token", "Invalid OTP")
         return render(request, "accounts/verify_otp.html", {"form": form})

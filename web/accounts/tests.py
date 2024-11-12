@@ -28,7 +28,7 @@ class CustomLoginViewTests(TestCase):
             {"username": "testuser", "password": "password123"},
             # follow=True,
         )
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
     def test_custom_login_view_valid_login_with_otp(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが有効な場合"""
@@ -79,7 +79,7 @@ class SetupOTPViewTests(TestCase):
         device = TOTPDevice.objects.filter(user=self.user).first()
         self.assertIsNotNone(device)
         self.assertTrue(device.confirmed)
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
 
 class VerifyOTPViewTests(TestCase):
@@ -112,7 +112,7 @@ class VerifyOTPViewTests(TestCase):
             reverse("accounts:verify_otp"),
             {"otp_token": valid_token},  # follow=True,
         )
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
     def test_verify_otp_view_post_invalid_otp(self):
         """間違ったOTPトークンでOTP確認が失敗することを確認する"""
