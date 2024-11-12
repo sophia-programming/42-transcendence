@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>test</title>
+    <script>
+<!--      domを読み込んでから-->
+        document.addEventListener("DOMContentLoaded", function() {
+            let interval;
+            // websocketの接続先
+            const url = "ws://" + window.location.host + "/ws/websocket/"
+            const ws = new WebSocket(url);
+            console.log(url)
+            const button = document.getElementById("send");
+
+            // websocketでの接続が確立されたときに動く
+            ws.onopen = function() {
+                console.log("Connected");
+            };
+            //websocketでメッセージを受信されたら動く
+            ws.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                console.log("Received message:", data.message);
+            };
+
+            //ボタンを長押ししたら送り続ける
+            button.addEventListener("mousedown", function() {
+                console.log()
+                interval = setInterval(function (){
+                    sendMessage("Hello WebSocket");
+                },10
+                )
+            });
+
+            //ボタンを離したら送るのをやめる
+            button.addEventListener("mouseup",function(){
+                clearInterval(interval)
+            })
+
+            function sendMessage(message) {
+                ws.send(JSON.stringify({"message": message}));
+            }
+});
+
+    </script>
+</head>
+<body>
+    <button id="send">Send Hello</button>
+</body>
+</html>

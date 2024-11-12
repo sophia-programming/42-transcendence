@@ -1,0 +1,27 @@
+services:
+  web:
+    build: .
+    container_name: web
+    command: >
+      sh -c "python3 manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"
+    volumes:
+      - .:/usr/src/app
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file: .env
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    env_file: .env
