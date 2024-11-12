@@ -53,6 +53,21 @@ class CustomLoginViewTests(TestCase):
         self.assertFalse(response.context["user"].is_authenticated)
 
 
+class LogoutViewTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="testuser", password="password123"
+        )
+        self.client.login(username="testuser", password="password123")  # loginが必要
+
+    def test_logout_view(self):
+        """ログアウトしたら、ログインページにリダイレクトされてホームにアクセスできないことを確認する"""
+        response = self.client.get(reverse("accounts:logout"))
+        self.assertRedirects(response, reverse("accounts:login"))
+        response = self.client.get(reverse("homepage"))
+        self.assertFalse(response.context["user"].is_authenticated)
+
+
 class SetupOTPViewTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
