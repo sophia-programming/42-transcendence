@@ -31,7 +31,7 @@
         <label for="id_password" class="form-label">{{ form.password.label }}</label>
         {{ form.password }}
       </div>
-      <input type="hidden" name="next" value="{{ next }}" />
+      <input type="hidden" value="{% url 'accounts:verify_otp' %}" />
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
   </main>
