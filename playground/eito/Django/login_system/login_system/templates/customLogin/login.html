@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load i18n static %}
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}¥
+{% block extrastyle %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+{% if form.errors and not form.non_field_errors %}
+<p class="errornote">
+{% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+<h1>Sign in.</h1>
+<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="form-row">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+    </div>
+    {% endfor %}
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" value="{% trans 'Sign in' %}" />
+    </div>
+</form>
+
+<hr>
+<div class="card col-md-6">
+    <div class="card-body">
+        <a href="{% url 'customLogin:user_create' %}" class="btn btn-success btn-lg btn-block" >Sign up.</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+document.getElementById('id_username').focus()
+</script>
+</div>
+{% endblock %}

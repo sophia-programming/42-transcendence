@@ -1,0 +1,8 @@
+django
+psycopg2
+black
+isort
+django_otp
+qrcode
+Pillow
+pyotp

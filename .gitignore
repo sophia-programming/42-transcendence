@@ -1,0 +1,20 @@
+# .gitignore
+# Ignore All
+*
+!*/
+
+# Allowlist
+!.git/*
+!.gitignore
+!.gitattributes
+!*.py
+!*.txt
+!*.html
+!*.css
+!docker-compose.yml
+!Dockerfile
+!.env_template
+!.pre-commit-config.yaml
+
+!wait-for-it.sh
+!.github/workflows/*
