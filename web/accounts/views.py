@@ -1,5 +1,4 @@
-from django import forms
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
@@ -26,6 +25,11 @@ class CustomLoginView(LoginView):
         if user.otp_enabled:
             return redirect("accounts:verify_otp")
         return redirect("homepage")
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("accounts:login")
 
 
 @method_decorator(
