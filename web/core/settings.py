@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "gameplay",
     "accounts",
     "tournament",
+    "matches",
     "homepage",
 ]
 
