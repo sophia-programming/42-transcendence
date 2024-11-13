@@ -21,53 +21,21 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         print("Websocket disconnected")
 
     async def receive(self, text_data=None):
-        print("Received websocket message", text_data)
+        data = json.loads(text_data)
+        key = data.get("key")
+        action = data.get("action")
 
-        # 受けったデータに内容がなかったら終了
-        if not text_data.strip():
-            return
-        try:
-            # jsonをparseする
-            data = json.loads(text_data)
-        except json.JSONDecodeError as e:
-            print(e)
-            return
-        
-        message = data.get("message")
+        if key and action:
+            print(f"Key: {key}, Action: {action}")
+        if key == "D" and action == "pressed":
+            self.left_paddle_y += 1
+        elif key == "E" and action == "pressed":
+            self.left_paddle_y -= 1
+        elif key == "K" and action == "pressed":
+            self.right_paddle_y += 1
+        elif key == "I" and action == "pressed":
+            self.right_paddle_y -= 1
 
-        if message == "E pressed!":
-            await self.handle_e_pressed()
-        elif message == "D pressed!":
-            await self.handle_d_pressed()
-        elif message == "I pressed!":
-            await self.handle_i_pressed()
-        elif message == "K pressed!":
-            await self.handle_k_pressed()
-        else:
-            self.handle_other_message(message)
-
-    async def handle_e_pressed(self):
-        # "E pressed!" に対応する処理
-        print("E key pressed action triggered!")
-        self.left_paddle_y -= 1
-        await self.send_pos()
-
-    async def handle_d_pressed(self):
-        # "D pressed!" に対応する処理
-        print("D key pressed action triggered!")
-        self.left_paddle_y += 1
-        await self.send_pos()
-
-    async def handle_i_pressed(self):
-        # "I pressed!" に対応する処理
-        print("I key pressed action triggered!")
-        self.right_paddle_y -= 1
-        await self.send_pos()
-
-    async def handle_k_pressed(self):
-        # "K pressed!" に対応する処理
-        print("K key pressed action triggered!")
-        self.right_paddle_y += 1
         await self.send_pos()
 
     async def handle_other_message(self, message):
@@ -83,7 +51,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {"left_paddle_y": f"{self.left_paddle_y}", "right_paddle_y": f"{self.right_paddle_y}"}
+        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y}
         await self.channel_layer.group_send(
             "sendmessage",
             {

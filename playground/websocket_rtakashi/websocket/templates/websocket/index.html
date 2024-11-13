@@ -26,7 +26,7 @@
             //websocketでメッセージを受信されたら動く
             ws.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                console.log("Received message:", data.message);
+                console.log("Received message:", data);
 
                 document.getElementById("left_paddle_y").innerText = "left_paddle_y: " + data.left_paddle_y;
                 document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
@@ -35,41 +35,22 @@
             let keyIsPressed = false;
             //ボタンを長押ししたら送り続ける
             document.addEventListener("keydown", function(event) {
-                if (event.key === "D" || event.key === "d")
-                {
-                    if (!keyIsPressed) {
-                        keyIsPressed = true;
-                        interval = setInterval(function() {
-                            sendMessage("D pressed!");
-                        }, 100);
-                    }
+                let message = null;
+                if (event.key === "D" || event.key === "d") {
+                    message = { key: "D", action: "pressed" };
+                } else if (event.key === "E" || event.key === "e") {
+                    message = { key: "E", action: "pressed" };
+                } else if (event.key === "I" || event.key === "i") {
+                    message = { key: "I", action: "pressed" };
+                } else if (event.key === "K" || event.key === "k") {
+                    message = { key: "K", action: "pressed" };
                 }
-                else if (event.key === "E" || event.key === "e")
-                {
-                    if (!keyIsPressed) {
-                        keyIsPressed = true;
-                        interval = setInterval(function() {
-                            sendMessage("E pressed!");
-                        }, 100);
-                    }
-                }
-                else if (event.key === "I" || event.key === "i")
-                {
-                    if (!keyIsPressed) {
-                        keyIsPressed = true;
-                        interval = setInterval(function() {
-                            sendMessage("I pressed!");
-                        }, 100);
-                    }
-                }
-                else if (event.key === "K" || event.key === "k")
-                {
-                    if (!keyIsPressed) {
-                        keyIsPressed = true;
-                        interval = setInterval(function() {
-                            sendMessage("K pressed!");
-                        }, 100);
-                    }
+
+                if (message && !keyIsPressed) {
+                    keyIsPressed = true;
+                    interval = setInterval(function() {
+                        sendMessage(message);
+                    }, 100);
                 }
             });
 
@@ -82,14 +63,14 @@
             });
 
             function sendMessage(message) {
-                ws.send(JSON.stringify({"message": message}));
+                ws.send(JSON.stringify(message));
             }
 });
 
     </script>
 </head>
 <body>
-    <h1 id="left_paddle_y">left_paddle_y: id</h1>
-    <h1 id="right_paddle_y">right_paddle_y: id</h1>
+    <h1 id="left_paddle_y">left_paddle_y: 0</h1>
+    <h1 id="right_paddle_y">right_paddle_y: 0</h1>
 </body>
 </html>
