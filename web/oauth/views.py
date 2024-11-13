@@ -1,8 +1,11 @@
 import os
 
 import requests
+from django.contrib.auth import login
 from django.http import JsonResponse
 from django.shortcuts import redirect
+
+from accounts.models import CustomUser
 
 
 def oauth_view(request):
@@ -20,7 +23,7 @@ def oauth_callback_view(request):
         )
 
     if code:
-        requests.post(
+        response = requests.post(
             "https://api.intra.42.fr/oauth/token",
             data={
                 "grant_type": "authorization_code",
@@ -30,5 +33,23 @@ def oauth_callback_view(request):
                 "redirect_uri": "http://localhost:8000/oauth/callback/",
             },
         )
-        return redirect("accounts:login")
+        token_data = response.json()
+        access_token = token_data.get("access_token")
+
+        if access_token:
+            user_info_response = requests.get(
+                "https://api.intra.42.fr/v2/me",
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+
+            user_info = user_info_response.json()
+            username = user_info.get("login")
+
+            user, created = CustomUser.objects.get_or_create(username=username)
+            if created:
+                user.set_unusable_password()
+                user.save()
+
+            login(request, user)
+            return redirect("homepage")
     return JsonResponse({"error": "No code provided"})
