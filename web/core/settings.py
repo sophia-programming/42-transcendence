@@ -55,7 +55,6 @@ MIDDLEWARE = [
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "oauth.middleware.oauth_middleware",  # 42 oauth middleware
 ]
 
 ROOT_URLCONF = "core.urls"
