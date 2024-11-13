@@ -2,8 +2,7 @@ import os
 
 import requests
 from django.contrib.auth import login
-from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from accounts.models import CustomUser
 
@@ -18,8 +17,10 @@ def oauth_callback_view(request):
     code = request.GET.get("code")
     error = request.GET.get("error")
     if error:
-        return JsonResponse(
-            {"error": error, "error_description": request.GET.get("error_description")}
+        return render(
+            request,
+            "oauth/error.html",
+            {"error": error, "error_description": request.GET.get("error_description")},
         )
 
     if code:
@@ -52,4 +53,11 @@ def oauth_callback_view(request):
 
             login(request, user)
             return redirect("homepage")
-    return JsonResponse({"error": "No code provided"})
+    return render(
+        request,
+        "oauth/error.html",
+        {
+            "error": "No code provided",
+            "error_description": "認証コードが提供されていません。",
+        },
+    )
