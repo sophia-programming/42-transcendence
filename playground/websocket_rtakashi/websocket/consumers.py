@@ -6,7 +6,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 class WebsocketConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.counter = 0
+        self.left_paddle_y = 0
+        self.right_paddle_y = 0
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -38,20 +39,36 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
             await self.handle_e_pressed()
         elif message == "D pressed!":
             await self.handle_d_pressed()
+        elif message == "I pressed!":
+            await self.handle_i_pressed()
+        elif message == "K pressed!":
+            await self.handle_k_pressed()
         else:
             self.handle_other_message(message)
 
     async def handle_e_pressed(self):
         # "E pressed!" に対応する処理
         print("E key pressed action triggered!")
-        self.counter -= 1
-        await self.send_counter()
+        self.left_paddle_y -= 1
+        await self.send_pos()
 
     async def handle_d_pressed(self):
         # "D pressed!" に対応する処理
         print("D key pressed action triggered!")
-        self.counter += 1
-        await self.send_counter()
+        self.left_paddle_y += 1
+        await self.send_pos()
+
+    async def handle_i_pressed(self):
+        # "I pressed!" に対応する処理
+        print("I key pressed action triggered!")
+        self.right_paddle_y -= 1
+        await self.send_pos()
+
+    async def handle_k_pressed(self):
+        # "K pressed!" に対応する処理
+        print("K key pressed action triggered!")
+        self.right_paddle_y += 1
+        await self.send_pos()
 
     async def handle_other_message(self, message):
         # その他のメッセージに対応する処理
@@ -65,8 +82,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def send_counter(self):
-        response_message = {"message": f"{self.counter}"}
+    async def send_pos(self):
+        response_message = {"left_paddle_y": f"{self.left_paddle_y}", "right_paddle_y": f"{self.right_paddle_y}"}
         await self.channel_layer.group_send(
             "sendmessage",
             {

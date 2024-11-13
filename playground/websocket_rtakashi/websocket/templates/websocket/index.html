@@ -22,14 +22,14 @@
 
             ws.onclose = function(event) {
                 console.log("Disconnected");
-                setTimeout(connect, 1000);
             };
             //websocketでメッセージを受信されたら動く
             ws.onmessage = function(e) {
                 const data = JSON.parse(e.data);
                 console.log("Received message:", data.message);
 
-                document.getElementById("counter").innerText = data.message;
+                document.getElementById("left_paddle_y").innerText = "left_paddle_y: " + data.left_paddle_y;
+                document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
             };
 
             let keyIsPressed = false;
@@ -53,11 +53,29 @@
                         }, 100);
                     }
                 }
+                else if (event.key === "I" || event.key === "i")
+                {
+                    if (!keyIsPressed) {
+                        keyIsPressed = true;
+                        interval = setInterval(function() {
+                            sendMessage("I pressed!");
+                        }, 100);
+                    }
+                }
+                else if (event.key === "K" || event.key === "k")
+                {
+                    if (!keyIsPressed) {
+                        keyIsPressed = true;
+                        interval = setInterval(function() {
+                            sendMessage("K pressed!");
+                        }, 100);
+                    }
+                }
             });
 
             //ボタンを離したら送るのをやめる
             document.addEventListener("keyup",function(event) {
-                if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d") {
+                if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d" || event.key === "I" || event.key === "i" || event.key === "K" || event.key === "k") {
                     clearInterval(interval);  // メッセージ送信の間隔を止める
                     keyIsPressed = false;
                 }
@@ -71,6 +89,7 @@
     </script>
 </head>
 <body>
-    <h1 id="counter">id</h1>
+    <h1 id="left_paddle_y">left_paddle_y: id</h1>
+    <h1 id="right_paddle_y">right_paddle_y: id</h1>
 </body>
 </html>
