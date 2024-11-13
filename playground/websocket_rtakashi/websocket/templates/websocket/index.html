@@ -29,10 +29,7 @@
                 const data = JSON.parse(e.data);
                 console.log("Received message:", data.message);
 
-                if (data.message.startsWith("Counter"))
-                {
-                    document.getElementById("counter").innerText = data.message;
-                }
+                document.getElementById("counter").innerText = data.message;
             };
 
             let keyIsPressed = false;

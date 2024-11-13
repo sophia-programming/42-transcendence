@@ -66,7 +66,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_counter(self):
-        response_message = {"message": f"Counter: {self.counter}"}
+        response_message = {"message": f"{self.counter}"}
         await self.channel_layer.group_send(
             "sendmessage",
             {
