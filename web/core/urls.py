@@ -19,13 +19,12 @@ from django.contrib import admin
 from django.urls import include, path
 
 from homepage.views import homepage_view
-from oauth.views import oauth_callback_view
 
 urlpatterns = [
+    path("", include("oauth.urls")),
     path("tournament/", include("tournament.urls")),
     path("accounts/", include("accounts.urls")),
     path("gameplay/", include("gameplay.urls")),
     path("admin/", admin.site.urls),
     path("homepage/", homepage_view, name="homepage"),
-    path("oauth/callback/", oauth_callback_view, name="oauth_callback"),
 ]

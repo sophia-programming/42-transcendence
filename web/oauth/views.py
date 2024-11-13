@@ -5,6 +5,12 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 
 
+def oauth_view(request):
+    return redirect(
+        f"https://api.intra.42.fr/oauth/authorize?client_id={os.environ.get('UID')}&redirect_uri=http://localhost:8000/oauth/callback/&response_type=code"
+    )
+
+
 def oauth_callback_view(request):
     code = request.GET.get("code")
     error = request.GET.get("error")
