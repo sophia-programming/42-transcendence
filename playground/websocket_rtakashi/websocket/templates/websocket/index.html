@@ -30,6 +30,8 @@
 
                 document.getElementById("left_paddle_y").innerText = "left_paddle_y: " + data.left_paddle_y;
                 document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
+                document.getElementById("ball_x").innerText = "ball_x: " + data.ball_x;
+                document.getElementById("ball_y").innerText = "ball_y: " + data.ball_y;
             };
 
             const keyStates = { left: false, right: false };
@@ -52,7 +54,7 @@
                         sendMessage(message);
                     }, 100);
                 }
-                if (message.paddle === "right" && !keyStates.right) {
+                if (message && message.paddle === "right" && !keyStates.right) {
                     keyStates.right = true;
                     rightinterval = setInterval(function() {
                         sendMessage(message);
@@ -82,5 +84,7 @@
 <body>
     <h1 id="left_paddle_y">left_paddle_y: 0</h1>
     <h1 id="right_paddle_y">right_paddle_y: 0</h1>
+    <h1 id="ball_x">ball_x: 0</h1>
+    <h1 id="ball_y">ball_y: 0</h1>
 </body>
 </html>

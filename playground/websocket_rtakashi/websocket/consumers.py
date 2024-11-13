@@ -1,13 +1,15 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+import asyncio
 
 class WebsocketConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.left_paddle_y = 0
         self.right_paddle_y = 0
+        self.ball_x = 0
+        self.ball_y = 0
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -15,6 +17,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add("sendmessage", self.channel_name)
         print("Websocket connected")
         await self.accept()
+        asyncio.create_task(self.game_loop())
+
+    async def game_loop(self):
+        while True:
+            self.ball_x += 1
+            self.ball_y += 1
+            await self.send_pos()
+            await asyncio.sleep(1)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
@@ -51,7 +61,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y}
+        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y, \
+                            "ball_x": self.ball_x, "ball_y": self.ball_y}
         await self.channel_layer.group_send(
             "sendmessage",
             {
