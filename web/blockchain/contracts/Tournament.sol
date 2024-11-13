@@ -11,6 +11,19 @@ contract Tournament {
         uint8 loserScore;
     }
 
+
+    // イベントの宣言
+    event TournamentStarted();
+    event TournamentEnded();
+    event MatchRecorded(
+        uint8 matchNumber,
+        address winner,
+        uint8 winnerScore,
+        address loser,
+        uint8 loserScore
+    );
+
+
     MatchRecord[] public records; // 全試合の記録を保持する配列
     uint8 public constant MAX_MATCHES = 7;  // 最大試合数
     bool public isActive;
@@ -34,10 +47,12 @@ contract Tournament {
 
     function startTournament() public onlyOwner {
         isActive = true;
+        emit TournamentStarted();
     }
 
     function endTournament() public onlyOwner {
         isActive = false;
+        emit TournamentEnded();
     }
 
 
@@ -59,6 +74,8 @@ contract Tournament {
             loser: loser,
             loserScore: loserScore
         }));
+
+        emit MatchRecorded(matchNumber, winner, winnerScore, loser, loserScore);
 
         if (records.length == MAX_MATCHES) {
             endTournament();
