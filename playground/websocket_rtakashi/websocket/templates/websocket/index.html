@@ -32,23 +32,29 @@
                 document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
             };
 
-            let keyIsPressed = false;
+            const keyStates = { left: false, right: false };
             //ボタンを長押ししたら送り続ける
             document.addEventListener("keydown", function(event) {
                 let message = null;
                 if (event.key === "D" || event.key === "d") {
-                    message = { key: "D", action: "pressed" };
+                    message = { key: "D", action: "pressed", paddle: "left" };
                 } else if (event.key === "E" || event.key === "e") {
-                    message = { key: "E", action: "pressed" };
+                    message = { key: "E", action: "pressed", paddle: "left" };
                 } else if (event.key === "I" || event.key === "i") {
-                    message = { key: "I", action: "pressed" };
+                    message = { key: "I", action: "pressed", paddle: "right" };
                 } else if (event.key === "K" || event.key === "k") {
-                    message = { key: "K", action: "pressed" };
+                    message = { key: "K", action: "pressed", paddle: "right" };
                 }
 
-                if (message && !keyIsPressed) {
-                    keyIsPressed = true;
-                    interval = setInterval(function() {
+                if (message && message.paddle === "left" && !keyStates.left) {
+                    keyStates.left = true;
+                    leftinterval = setInterval(function() {
+                        sendMessage(message);
+                    }, 100);
+                }
+                if (message.paddle === "right" && !keyStates.right) {
+                    keyStates.right = true;
+                    rightinterval = setInterval(function() {
                         sendMessage(message);
                     }, 100);
                 }
@@ -56,9 +62,13 @@
 
             //ボタンを離したら送るのをやめる
             document.addEventListener("keyup",function(event) {
-                if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d" || event.key === "I" || event.key === "i" || event.key === "K" || event.key === "k") {
-                    clearInterval(interval);  // メッセージ送信の間隔を止める
-                    keyIsPressed = false;
+                if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d") {
+                    clearInterval(leftinterval);  // メッセージ送信の間隔を止める
+                    keyStates.left = false;
+                }
+                else if (event.key === "I" || event.key === "i" || event.key === "K" || event.key === "k") {
+                    clearInterval(rightinterval);  // メッセージ送信の間隔を止める
+                    keyStates.right = false;
                 }
             });
 
