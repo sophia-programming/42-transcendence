@@ -5,5 +5,5 @@ from . import views
 app_name = "oauth"
 urlpatterns = [
     path("", views.oauth_view, name="oauth"),
-    path("oauth/callback/", views.oauth_callback_view, name="callback"),
+    path("callback/", views.oauth_callback_view, name="callback"),
 ]
