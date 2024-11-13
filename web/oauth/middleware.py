@@ -1,4 +1,4 @@
-from oauth.views import oauth_view
+from .views import oauth_view
 
 
 def oauth_middleware(get_response):
