@@ -1,4 +1,4 @@
-<<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,32 +13,58 @@
             // websocketの接続先
             const url = "ws://" + window.location.host + "/ws/websocket/"
             const ws = new WebSocket(url);
-            console.log(url)
-            const button = document.getElementById("send");
+            console.log(url);
 
             // websocketでの接続が確立されたときに動く
             ws.onopen = function() {
                 console.log("Connected");
             };
+
+            ws.onclose = function(event) {
+                console.log("Disconnected");
+                setTimeout(connect, 1000);
+            };
             //websocketでメッセージを受信されたら動く
             ws.onmessage = function(e) {
                 const data = JSON.parse(e.data);
                 console.log("Received message:", data.message);
+
+                if (data.message.startsWith("Counter"))
+                {
+                    document.getElementById("counter").innerText = data.message;
+                }
             };
 
+            let keyIsPressed = false;
             //ボタンを長押ししたら送り続ける
-            button.addEventListener("mousedown", function() {
-                console.log()
-                interval = setInterval(function (){
-                    sendMessage("Hello WebSocket");
-                },10
-                )
+            document.addEventListener("keydown", function(event) {
+                if (event.key === "D" || event.key === "d")
+                {
+                    if (!keyIsPressed) {
+                        keyIsPressed = true;
+                        interval = setInterval(function() {
+                            sendMessage("D pressed!");
+                        }, 100);
+                    }
+                }
+                else if (event.key === "E" || event.key === "e")
+                {
+                    if (!keyIsPressed) {
+                        keyIsPressed = true;
+                        interval = setInterval(function() {
+                            sendMessage("E pressed!");
+                        }, 100);
+                    }
+                }
             });
 
             //ボタンを離したら送るのをやめる
-            button.addEventListener("mouseup",function(){
-                clearInterval(interval)
-            })
+            document.addEventListener("keyup",function(event) {
+                if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d") {
+                    clearInterval(interval);  // メッセージ送信の間隔を止める
+                    keyIsPressed = false;
+                }
+            });
 
             function sendMessage(message) {
                 ws.send(JSON.stringify({"message": message}));
@@ -48,6 +74,6 @@
     </script>
 </head>
 <body>
-    <button id="send">Send Hello</button>
+    <h1 id="counter">id</h1>
 </body>
 </html>

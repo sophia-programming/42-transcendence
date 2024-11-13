@@ -4,6 +4,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class WebsocketConsumer(AsyncWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.counter = 0
+
     async def connect(self):
         # グループ定義しないと動かなかったです
         # 現在のwebsocketをsendmessageというグループに追加します
@@ -27,17 +31,47 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         except json.JSONDecodeError as e:
             print(e)
             return
+        
+        message = data.get("message")
 
-        # 辞書を作成
-        messages = {
-            "message": data.get("message"),
-        }
+        if message == "E pressed!":
+            await self.handle_e_pressed()
+        elif message == "D pressed!":
+            await self.handle_d_pressed()
+        else:
+            self.handle_other_message(message)
 
+    async def handle_e_pressed(self):
+        # "E pressed!" に対応する処理
+        print("E key pressed action triggered!")
+        self.counter -= 1
+        await self.send_counter()
+
+    async def handle_d_pressed(self):
+        # "D pressed!" に対応する処理
+        print("D key pressed action triggered!")
+        self.counter += 1
+        await self.send_counter()
+
+    async def handle_other_message(self, message):
+        # その他のメッセージに対応する処理
+        print(f"Other message received: {message}")
+        response_message = {"message": f"Received: {message}"}
         await self.channel_layer.group_send(
             "sendmessage",
             {
-                "type": "send_message",  # websocket通信を受け取ったら下のsend_messageを呼び出す
-                "content": messages,
+                "type": "send_message",
+                "content": response_message,
+            },
+        )
+
+    async def send_counter(self):
+        response_message = {"message": f"Counter: {self.counter}"}
+        await self.channel_layer.group_send(
+            "sendmessage",
+            {
+                "type": "send_message",
+                "content": response_message,
             },
         )
 
