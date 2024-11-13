@@ -1,14 +1,83 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        .background {
+            width: 1000px;
+            height: 700px;
+        }
+
+        /* 中央の点線 */
+        .dashed-line {
+            border-left: 8px dashed;
+            height: 100vh;
+        }
+
+        /* スコア表 */
+        .score {
+            font-size: 5rem;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* ラケットのスタイル */
+        .racket {
+            width: 1vw;
+            height: 10vh;
+        }
+
+        /* ボールのスタイル */
+        .bg-warning {
+            width: 2vw;
+            height: 2vw;
+            border-radius: 50%;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%)
+        }
+    </style>
     <title>test</title>
+</head>
+
+<body class="text-white">
+    <div class="b-container d-flex justify-content-center vw-100">
+        <div class="background position-relative bg-dark">
+            <canvas class="position-absolute z-0"></canvas>
+            <div class="d-flex justify-content-center position-relative">
+                <div class="h1 p-5 score">0</div>
+                <div class="dashed-line"></div>
+                <div class="h1 p-5 score">0</div>
+            </div>
+        </div>
+    </div>
     <script>
-<!--      domを読み込んでから-->
-        document.addEventListener("DOMContentLoaded", function() {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const screen =
+        {
+            paddle_ratio: 0.2,
+            ball_ratio: 0.05,
+            paddle_w: gameCanvas.width * paddle_ratio,
+            paddle_h: gameCanvas.height * paddle_ratio,
+            ball_radius: gameCanvas.width * ball_ratio,
+        };
+        const paddle = {
+            left_y: 0,
+            right_y: 0
+        };
+        const ball = {
+            x: 0,
+            y: 0
+        };
+        const keyStates = { left: false, right: false };
+
+        document.addEventListener("DOMContentLoaded", function () {
             let interval;
             // websocketの接続先
             const url = "ws://" + window.location.host + "/ws/websocket/"
@@ -16,27 +85,26 @@
             console.log(url);
 
             // websocketでの接続が確立されたときに動く
-            ws.onopen = function() {
+            ws.onopen = function () {
                 console.log("Connected");
             };
 
-            ws.onclose = function(event) {
+            ws.onclose = function (event) {
                 console.log("Disconnected");
             };
             //websocketでメッセージを受信されたら動く
-            ws.onmessage = function(e) {
+            ws.onmessage = function (e) {
                 const data = JSON.parse(e.data);
-                console.log("Received message:", data);
+                console.log("Received message by consumers.py:", data);
 
-                document.getElementById("left_paddle_y").innerText = "left_paddle_y: " + data.left_paddle_y;
-                document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
-                document.getElementById("ball_x").innerText = "ball_x: " + data.ball_x;
-                document.getElementById("ball_y").innerText = "ball_y: " + data.ball_y;
+                // document.getElementById("left_paddle_y").innerText = "left_paddle_y: " + data.left_paddle_y;
+                // document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
+                // document.getElementById("ball_x").innerText = "ball_x: " + data.ball_x;
+                // document.getElementById("ball_y").innerText = "ball_y: " + data.ball_y;
             };
 
-            const keyStates = { left: false, right: false };
             //ボタンを長押ししたら送り続ける
-            document.addEventListener("keydown", function(event) {
+            document.addEventListener("keydown", function (event) {
                 let message = null;
                 if (event.key === "D" || event.key === "d") {
                     message = { key: "D", action: "pressed", paddle: "left" };
@@ -50,20 +118,20 @@
 
                 if (message && message.paddle === "left" && !keyStates.left) {
                     keyStates.left = true;
-                    leftinterval = setInterval(function() {
+                    leftinterval = setInterval(function () {
                         sendMessage(message);
                     }, 100);
                 }
                 if (message && message.paddle === "right" && !keyStates.right) {
                     keyStates.right = true;
-                    rightinterval = setInterval(function() {
+                    rightinterval = setInterval(function () {
                         sendMessage(message);
                     }, 100);
                 }
             });
 
             //ボタンを離したら送るのをやめる
-            document.addEventListener("keyup",function(event) {
+            document.addEventListener("keyup", function (event) {
                 if (event.key === "E" || event.key === "e" || event.key === "D" || event.key === "d") {
                     clearInterval(leftinterval);  // メッセージ送信の間隔を止める
                     keyStates.left = false;
@@ -77,14 +145,19 @@
             function sendMessage(message) {
                 ws.send(JSON.stringify(message));
             }
-});
+
+            // function draw() {
+            //     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            //     //背景(中央線、スコア)
+
+            // }
+        });
 
     </script>
-</head>
-<body>
-    <h1 id="left_paddle_y">left_paddle_y: 0</h1>
-    <h1 id="right_paddle_y">right_paddle_y: 0</h1>
-    <h1 id="ball_x">ball_x: 0</h1>
-    <h1 id="ball_y">ball_y: 0</h1>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
