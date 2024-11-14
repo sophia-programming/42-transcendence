@@ -9,63 +9,84 @@
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        body {
+            overflow: auto;
+            /* コンテンツが画面をはみ出したときにスクロールバーを表示 */
+        }
+
         .background {
-            width: 1000px;
-            height: 700px;
+            /* width: 800px;
+            height: 600px; */
+            width: 80vw;
+            height: 80vh;
         }
 
         /* 中央の点線 */
         .dashed-line {
             border-left: 8px dashed;
-            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         /* スコア表 */
         .score {
             font-size: 5rem;
+            /* font-size: 5vw; */
             font-family: 'Press Start 2P', cursive;
         }
 
         /* ラケットのスタイル */
-        .racket {
-            width: 1vw;
-            height: 10vh;
+        .paddle {
+            width: 20px;
+            height: 120px;
         }
 
         /* ボールのスタイル */
-        .bg-warning {
-            width: 2vw;
-            height: 2vw;
+        .ball {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            top: 50%;
+            /* top: 50%;
             right: 10%;
-            transform: translateY(-50%)
+            transform: translateY(-50%) */
         }
     </style>
     <title>test</title>
 </head>
 
 <body class="text-white">
-    <div class="b-container d-flex justify-content-center vw-100">
-        <div class="background position-relative bg-dark">
-            <canvas class="position-absolute z-0"></canvas>
-            <div class="d-flex justify-content-center position-relative">
-                <div class="h1 p-5 score">0</div>
-                <div class="dashed-line"></div>
-                <div class="h1 p-5 score">0</div>
+    <div class="container d-flex justify-content-center align-items-center position-relative vw-100 vh-100">
+        <div id = "background" class="background position-absolute bg-dark">
+            <canvas id="b-canvas" class="position-absolute w-100 h-100 z-0"></canvas>
+            <div class="d-flex justify-content-center align-items-start position-relative w-100 h-100 z-0">
+                <div class="dashed-line z-0 h-100 position-absolute"></div>
+                <div class="d-flex justify-content-center align-items-start w-100 position-absolute z-1">
+                    <div id="r-score" class="h1 p-5 score z-0">0</div>
+                    <div id="l-score" class="h1 p-5 score z-0">0</div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100 h-100 z-1">
+                    <div id="r-paddle" class="paddle bg-light z-1"></div>
+                    <div id="ball" class="ball bg-warning z-1"></div>
+                    <div id="l-paddle" class="paddle bg-light z-1"></div>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+        const b_canvas = document.getElementById("b-canvas");
+        const ctx = b_canvas.getContext("2d");
+        const ratio =
+        {
+            paddle: 0.2,
+            ball: 0.05,
+        };
         const screen =
         {
-            paddle_ratio: 0.2,
-            ball_ratio: 0.05,
-            paddle_w: gameCanvas.width * paddle_ratio,
-            paddle_h: gameCanvas.height * paddle_ratio,
-            ball_radius: gameCanvas.width * ball_ratio,
+            paddle_w: b_canvas.width * ratio.paddle,
+            paddle_h: b_canvas.height * ratio.paddle,
+            ball_radius: b_canvas.width * ratio.ball,
         };
         const paddle = {
             left_y: 0,
@@ -76,7 +97,10 @@
             y: 0
         };
         const keyStates = { left: false, right: false };
-
+        let r_score = document.getElementById("r-score");
+        let l_score = document.getElementById("l-score");
+        let r_num = 0;
+        let l_num = 0;
         document.addEventListener("DOMContentLoaded", function () {
             let interval;
             // websocketの接続先
@@ -101,7 +125,13 @@
                 // document.getElementById("right_paddle_y").innerText = "right_paddle_y: " + data.right_paddle_y;
                 // document.getElementById("ball_x").innerText = "ball_x: " + data.ball_x;
                 // document.getElementById("ball_y").innerText = "ball_y: " + data.ball_y;
+                l_num = data.left_paddle_y;
+                r_num = data.right_paddle_y;
             };
+
+            function sendMessage(message) {
+                ws.send(JSON.stringify(message));
+            }
 
             //ボタンを長押ししたら送り続ける
             document.addEventListener("keydown", function (event) {
@@ -118,6 +148,8 @@
 
                 if (message && message.paddle === "left" && !keyStates.left) {
                     keyStates.left = true;
+                    let w_size = document.getElementById("background");
+                    console.log("w_size: ",w_size.offsetWidth);
                     leftinterval = setInterval(function () {
                         sendMessage(message);
                     }, 100);
@@ -142,15 +174,18 @@
                 }
             });
 
-            function sendMessage(message) {
-                ws.send(JSON.stringify(message));
+            function draw() {
+                ctx.clearRect(0, 0, b_canvas.width, b_canvas.height);
+                //背景(中央線、スコア)
+                document.getElementById("l-score").innerText = l_num;
+                document.getElementById("r-score").innerText = r_num;
             }
 
-            // function draw() {
-            //     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            //     //背景(中央線、スコア)
-
-            // }
+            function update() {
+                draw();
+                requestAnimationFrame(update);
+            }
+            update();
         });
 
     </script>
