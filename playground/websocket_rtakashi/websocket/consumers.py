@@ -8,8 +8,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.left_paddle_y = 0
         self.right_paddle_y = 0
-        # self.ball_x = 0
-        # self.ball_y = 0
+        self.ball_x = 0
+        self.ball_y = 50
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -21,10 +21,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         while True:
-            # self.ball_x += 1
-            # self.ball_y += 1
+            self.ball_x += 7
+            # self.ball_y += 5
             await self.send_pos()
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.03)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
@@ -38,13 +38,13 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         if key and action:
             print(f"Key: {key}, Action: {action}")
         if key == "D" and action == "pressed":
-            self.left_paddle_y += 1
+            self.left_paddle_y += 3
         elif key == "E" and action == "pressed":
-            self.left_paddle_y -= 1
+            self.left_paddle_y -= 3
         elif key == "K" and action == "pressed":
-            self.right_paddle_y += 1
+            self.right_paddle_y += 3
         elif key == "I" and action == "pressed":
-            self.right_paddle_y -= 1
+            self.right_paddle_y -= 3
 
         await self.send_pos()
 
@@ -61,7 +61,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y}
+        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y, "ball_x": self.ball_x, "ball_y": self.ball_y}
         await self.channel_layer.group_send(
             "sendmessage",
             {

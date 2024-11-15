@@ -56,7 +56,6 @@
                 <div id="r-score" class="h1 score z-0 bg-warning"></div>
                 <div id="l-score" class="h1 score z-0 bg-warning"></div>
                 <!-- <div id="paddle" class="paddle"></div> -->
-                <div id="ball" class="ball bg-warning z-1"></div>
                 <!-- <div id="l-paddle" class="paddle bg-light z-1"></div> -->
             </div>
         </div>
@@ -132,10 +131,12 @@
             ws.onmessage = function (e) {
                 const data = JSON.parse(e.data);
                 console.log("Received message by consumers.py:", data);
-                paddle.left_y += data.left_paddle_y;
-                paddle.right_y += data.right_paddle_y;
+                paddle.left_y = data.left_paddle_y;
+                paddle.right_y = data.right_paddle_y;
                 l_num = data.left_paddle_y;
                 r_num = data.right_paddle_y;
+                ball.x = data.ball_x;
+                ball.y = data.ball_y;
             };
 
             function sendMessage(message) {
@@ -159,13 +160,13 @@
                     keyStates.left = true;
                     leftinterval = setInterval(function () {
                         sendMessage(message);
-                    }, 100);
+                    }, 1);
                 }
                 if (message && message.paddle === "right" && !keyStates.right) {
                     keyStates.right = true;
                     rightinterval = setInterval(function () {
                         sendMessage(message);
-                    }, 100);
+                    }, 1);
                 }
             });
 
@@ -192,8 +193,15 @@
                 ctx.fillText(r_num, r_left, top_pos);
                 //パドル
                 ctx.fillStyle = "white";
-                ctx.fillRect(paddle.left_x, paddle.right_y, paddle_w, paddle_h);
+                ctx.fillRect(paddle.left_x, paddle.left_y, paddle_w, paddle_h);
                 ctx.fillRect(paddle.right_x - paddle_w, paddle.right_y, paddle_w, paddle_h);
+                // ctx.fillCircle(ball.x, ball.y, 10, "white");
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, 10, 0, 2 * Math.PI);  // (x, y) は円の中心、10 は半径
+                console.log(ball.x, ball.y);
+                ctx.fillStyle = "yellow";  // 塗りつぶしの色
+                ctx.fill();  // 塗りつぶし
+
             }
 
             function update() {
