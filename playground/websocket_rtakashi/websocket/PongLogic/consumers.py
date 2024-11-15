@@ -2,8 +2,11 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
+import random
+import math
+from .utils import Utils
 
-class WebsocketConsumer(AsyncWebsocketConsumer):
+class PongLogic(AsyncWebsocketConsumer):
     class game_window:
         width = 1019
         height = 710
@@ -15,6 +18,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         angle = 0
         velocity = 10
         direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
+        bound_angle = {"left_top":math.pi * 4 / 3, "left_bottom":math.pi * 3 / 2, "right_top":math.pi * 5 / 3, "right_bottom":math.pi / 3}
 
     class paddle:
         width = 25
@@ -27,9 +31,46 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.left_score = 0
         self.right_score = 0
+        self.state = "stop"
+        self.turn_count = 0
         self.game_window = self.game_window()
         self.ball = self.ball()
         self.paddle = self.paddle()
+
+# PongLogic
+    async def game_start(self):
+        self.left_score = 0
+        self.right_score = 0
+        await self.game_loop()
+        
+    async def game_loop(self):
+        if (self.left_score == 15 or self.right_score == 15):
+            return
+
+        if (self.state == "stop"):
+            self.ball.x = self.game_window.width / 2
+            self.ball.y = self.game_window.height / 2
+            self.ball.angle = random.uniform(self.ball.bound_angle["left_bottom"], self.ball.bound_angle["left_top"])
+            if (self.turn_count % 2 == 0):
+                self.ball.angle += math.pi
+            self.ball.angle = Utils.normalize_angle(self.ball.angle)
+            self.turn_count += 1
+            Utils.set_direction(self.ball)
+            # print("angle: ", self.ball.angle)
+            # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
+        await self.rendering()
+        await self.update_pos()
+        await self.game_loop()
+
+    async def rendering(self):
+        await self.send_pos()
+        await asyncio.sleep(0.03)
+        if (self.state == "stop"):
+            await asyncio.sleep(2)
+            self.state = "running"
+
+    async def update_pos(self):
+        self.ball.x += self.ball.velocity
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -91,10 +132,3 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         message = event["content"]
         # 辞書をjson型にする
         await self.send(text_data=json.dumps(message))
-
-# ゲームループ
-    async def game_loop(self):
-        while True:
-            self.ball.x += 10
-            await self.send_pos()
-            await asyncio.sleep(0.03)

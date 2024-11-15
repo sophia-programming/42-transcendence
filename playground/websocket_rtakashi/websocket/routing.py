@@ -1,7 +1,7 @@
 from django.urls import path
 
-from . import consumers
+from .PongLogic import consumers
 
 websocket_urlpatterns = [
-    path("ws/websocket/", consumers.WebsocketConsumer.as_asgi()),
+    path("ws/websocket/", consumers.PongLogic.as_asgi()),
 ]
