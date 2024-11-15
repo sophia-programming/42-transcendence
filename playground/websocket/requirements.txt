@@ -1,8 +1,0 @@
-django
-psycopg2
-black
-isort
-channels
-channels_redis
-daphne
-asgiref
