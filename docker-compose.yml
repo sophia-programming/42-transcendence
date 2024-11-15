@@ -18,3 +18,15 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
+
+  blockchain:
+    image: ethereum/solc:0.8.28
+    container_name: blockchain
+    volumes:
+      - ./contracts:/contracts
+      - ./output:/output
+    command: >
+      sh -c "solc --optimize --bin --abi /contracts/*.sol -o /output"
+    depends_on:
+      - web
+

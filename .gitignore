@@ -12,6 +12,7 @@
 !*.html
 !*.css
 !*.js
+!*.sol
 !docker-compose.yml
 !Dockerfile
 !.env_template
