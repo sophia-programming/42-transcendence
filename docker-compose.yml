@@ -20,13 +20,12 @@ services:
     env_file: .env
 
   blockchain:
-    image: ethereum/solc:0.8.28
+    build: ./blockchain
+    image: trufflesuite/ganache-cli:latest
     container_name: blockchain
+    ports:
+      - "8545:8545"
     volumes:
-      - ./contracts:/contracts
-      - ./output:/output
-    command: >
-      sh -c "solc --optimize --bin --abi /contracts/*.sol -o /output"
-    depends_on:
-      - web
+      - ./ganache-data:/data
+    command: ganache-cli -h 0.0.0.0 --db /data
 

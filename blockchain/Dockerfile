@@ -1,15 +1,18 @@
-# ベースイメージとして solc を使用
-FROM ethereum/solc:0.8.28
+# ベースイメージとして Node.js を使用（Truffleを利用するため）
+FROM node:18
 
-# コンテナの作業ディレクトリを設定
-WORKDIR /contracts
+# コンテナ内の作業ディレクトリを設定
+WORKDIR /app
 
-# スマートコントラクトのソースコードをコンテナにコピー
-# ここでは、ホスト側の "contracts" フォルダをイメージ内の "/contracts" フォルダにコピーする
-COPY ./contracts /contracts
+# Truffleと必要な依存関係をインストール
+RUN npm install -g truffle ganache-cli
 
-# コンパイルされたファイルを確認するために、出力先ディレクトリを用意
-VOLUME /output
+# プロジェクトのファイルをコンテナにコピー
+COPY . /app
 
-# コンテナ起動時にスマートコントラクトをコンパイルする
-ENTRYPOINT ["solc", "--optimize", "--bin", "--abi", "Tournament.sol", "-o", "/output"]
+# 必要なパッケージをインストール
+
+RUN npm install
+
+# Ganache CLI をバックグラウンドで起動し、その後に Truffle migrate を実行
+CMD ganache-cli -h 0.0.0.0 & truffle migrate --network development && tail -f /dev/null

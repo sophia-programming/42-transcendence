@@ -20,3 +20,6 @@
 
 !wait-for-it.sh
 !.github/workflows/*
+
+# Ignore node_modules directory
+node_modules/
