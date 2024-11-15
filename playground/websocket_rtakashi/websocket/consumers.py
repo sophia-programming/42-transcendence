@@ -4,12 +4,32 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
 
 class WebsocketConsumer(AsyncWebsocketConsumer):
+    class game_window:
+        width = 1019
+        height = 710
+
+    class ball:
+        radius = 10
+        x = 515
+        y = 355
+        angle = 0
+        velocity = 10
+        direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
+
+    class paddle:
+        width = 25
+        height = 140
+        left_y = 285
+        right_y = 285
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.left_paddle_y = 0
-        self.right_paddle_y = 0
-        self.ball_x = 0
-        self.ball_y = 50
+        self.left_score = 0
+        self.right_score = 0
+        self.game_window = self.game_window()
+        self.ball = self.ball()
+        self.paddle = self.paddle()
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -18,13 +38,6 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         print("Websocket connected")
         await self.accept()
         asyncio.create_task(self.game_loop())
-
-    async def game_loop(self):
-        while True:
-            self.ball_x += 7
-            # self.ball_y += 5
-            await self.send_pos()
-            await asyncio.sleep(0.03)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
@@ -38,13 +51,13 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         if key and action:
             print(f"Key: {key}, Action: {action}")
         if key == "D" and action == "pressed":
-            self.left_paddle_y += 3
+            self.paddle.left_y += 3
         elif key == "E" and action == "pressed":
-            self.left_paddle_y -= 3
+            self.paddle.left_y -= 3
         elif key == "K" and action == "pressed":
-            self.right_paddle_y += 3
+            self.paddle.right_y += 3
         elif key == "I" and action == "pressed":
-            self.right_paddle_y -= 3
+            self.paddle.right_y -= 3
 
         await self.send_pos()
 
@@ -61,7 +74,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y, "ball_x": self.ball_x, "ball_y": self.ball_y}
+        response_message = {"left_paddle_y": self.paddle.left_y,
+                            "right_paddle_y": self.paddle.right_y,
+                            "ball_x": self.ball.x,
+                            "ball_y": self.ball.y}
         await self.channel_layer.group_send(
             "sendmessage",
             {
@@ -75,3 +91,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         message = event["content"]
         # 辞書をjson型にする
         await self.send(text_data=json.dumps(message))
+
+# ゲームループ
+    async def game_loop(self):
+        while True:
+            self.ball.x += 10
+            await self.send_pos()
+            await asyncio.sleep(0.03)

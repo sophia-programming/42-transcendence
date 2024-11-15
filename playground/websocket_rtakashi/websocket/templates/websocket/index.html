@@ -86,8 +86,8 @@
         // let paddle_h = paddle_rect.height;
         // let paddle_w = paddle_rect.width;
         // const paddle_color = window.getComputedStyle(paddle_element).backgroundColor;
-        let paddle_h = gameCanvas.height * 0.8;
-        let paddle_w = gameCanvas.width * 0.1;
+        let paddle_h = 140;
+        let paddle_w = 25;
 
         const paddle = {
             left_x: 0,
@@ -201,6 +201,7 @@
                 console.log(ball.x, ball.y);
                 ctx.fillStyle = "yellow";  // 塗りつぶしの色
                 ctx.fill();  // 塗りつぶし
+                console.log("Game Canvas Bottom Coordinate:", gameCanvas.height);
 
             }
 
