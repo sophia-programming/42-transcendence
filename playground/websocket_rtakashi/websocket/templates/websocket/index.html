@@ -9,11 +9,6 @@
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        body {
-            overflow: auto;
-            /* コンテンツが画面をはみ出したときにスクロールバーを表示 */
-        }
-
         .background {
             width: 80vw;
             height: 80vh;
@@ -31,35 +26,18 @@
             font-size: 7vw;
             font-family: 'Press Start 2P', cursive;
         }
-
-        .paddle {
-            width: 2.0vw;
-            height: 15vh;
-            background-color: white;
-        }
-
-        .ball {
-            width: 3vw;
-            height: 3vw;
-            border-radius: 50%;
-        }
     </style>
     <title>test</title>
 </head>
 
 <body class="text-white">
-    <div class="container d-flex justify-content-center align-items-center position-relative vw-100 vh-100">
-        <div id="background" class="background position-absolute bg-dark">
-            <canvas id="gameCanvas" class="position-absolute w-100 h-100 z-0"></canvas>
-            <div class="position-relative w-100 h-100 z-0">
-                <div class="dashed-line z-0 h-100 position-absolute"></div>
-                <div id="r-score" class="h1 score z-0 bg-warning"></div>
-                <div id="l-score" class="h1 score z-0 bg-warning"></div>
-                <!-- <div id="paddle" class="paddle"></div> -->
-                <!-- <div id="l-paddle" class="paddle bg-light z-1"></div> -->
-            </div>
+    <div class="container d-flex justify-content-center align-items-center vw-100 vh-100">
+        <div id="background" class="background position-relative bg-dark vw-80 vh-80">
+            <canvas id="gameCanvas" class="position-absolute w-100 h-100"></canvas>
+                <div class="dashed-line h-100 position-absolute"></div>
+                <div id="r-score" class="h1 score"></div>
+                <div id="l-score" class="h1 score"></div>
         </div>
-    </div>
     </div>
 
     <script>
@@ -80,12 +58,6 @@
         let r_num = 0;
         let l_num = 0;
 
-        //paddleに関する変数
-        // let paddle_element = document.getElementById("paddle");
-        // let paddle_rect = paddle_element.getBoundingClientRect();
-        // let paddle_h = paddle_rect.height;
-        // let paddle_w = paddle_rect.width;
-        // const paddle_color = window.getComputedStyle(paddle_element).backgroundColor;
         let paddle_h = gameCanvas.height * 0.8;
         let paddle_w = gameCanvas.width * 0.1;
 
