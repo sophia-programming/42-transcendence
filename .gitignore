@@ -18,4 +18,5 @@
 !.env_template
 !.pre-commit-config.yaml
 
+!wait-for-it.sh
 !.github/workflows/*

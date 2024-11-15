@@ -31,9 +31,10 @@
         <label for="id_password" class="form-label">{{ form.password.label }}</label>
         {{ form.password }}
       </div>
-      <input type="hidden" name="next" value="{{ next }}" />
-      <button type="submit" class="btn btn-primary">Login</button>
+      <input type="hidden" value="{% url 'accounts:verify_otp' %}" />
+      <button type="submit" class="btn btn-primary mb-2 w-100">Login</button>
     </form>
+    <a href="{% url 'accounts:signup' %}" class="btn btn-secondary w-100" style="max-width: 282px;">Sign Up</a>
   </main>
 
   {# Assumes you set up the password_reset view in your URLconf #}
