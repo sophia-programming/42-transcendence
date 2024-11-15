@@ -23,9 +23,10 @@
   </style>
   <title>test</title>
 </head>
-<!-- 背景と中央線のみ設定 -->
 
-<body>
+
+<body class="text-white">
+  <!-- 背景と中央線のみ設定 backgroundにcanvasを重ねて描画 -->
   <div class="container d-flex justify-content-center align-items-center vw-100 vh-100">
     <div class="background position-relative bg-dark">
       <canvas id="gameCanvas" class="position-absolute w-100 h-100"></canvas>
@@ -169,7 +170,7 @@
           paddle_w,
           paddle_h
         );
-        ctx.fillStyle = "yellow";
+        ctx.fillStyle = "orange";
         ctx.fillRect(ball.x, ball.y, 20, 20);
       }
 
