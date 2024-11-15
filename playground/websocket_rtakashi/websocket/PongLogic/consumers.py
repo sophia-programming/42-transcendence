@@ -60,6 +60,7 @@ class PongLogic(AsyncWebsocketConsumer):
             # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
         await self.rendering()
         await self.update_pos()
+        await self.check_game_state()
         await self.game_loop()
 
     async def rendering(self):
@@ -71,6 +72,11 @@ class PongLogic(AsyncWebsocketConsumer):
 
     async def update_pos(self):
         self.ball.x += self.ball.velocity
+
+    async def check_game_state(self):
+        if (self.ball.x - self.ball.radius > self.game_window.width):
+            self.left_score += 1
+            self.state = "stop"
 
     async def connect(self):
         # グループ定義しないと動かなかったです
@@ -118,7 +124,9 @@ class PongLogic(AsyncWebsocketConsumer):
         response_message = {"left_paddle_y": self.paddle.left_y,
                             "right_paddle_y": self.paddle.right_y,
                             "ball_x": self.ball.x,
-                            "ball_y": self.ball.y}
+                            "ball_y": self.ball.y,
+                            "left_score": self.left_score,
+                            "right_score": self.right_score}
         await self.channel_layer.group_send(
             "sendmessage",
             {
