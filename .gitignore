@@ -18,3 +18,6 @@
 
 !wait-for-it.sh
 !.github/workflows/*
+
+!logstash.conf
+!create_index_pattern.sh
