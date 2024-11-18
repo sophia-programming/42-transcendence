@@ -18,3 +18,5 @@
 
 !wait-for-it.sh
 !.github/workflows/*
+
+!elk/*
