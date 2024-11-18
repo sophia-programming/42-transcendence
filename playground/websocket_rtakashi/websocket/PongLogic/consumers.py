@@ -18,7 +18,7 @@ class PongLogic(AsyncWebsocketConsumer):
         angle = 0
         velocity = 10
         direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
-        bound_angle = {"left_top":math.pi * 4 / 3, "left_bottom":math.pi * 3 / 2, "right_top":math.pi * 5 / 3, "right_bottom":math.pi / 3}
+        bound_angle = {"left_top":math.pi * 5 / 4, "left_bottom":math.pi * 3 / 4, "right_top":math.pi * 7 / 4, "right_bottom":math.pi / 4}
 
     class paddle:
         width = 25
@@ -74,6 +74,8 @@ class PongLogic(AsyncWebsocketConsumer):
         # self.ball.angle = math.pi / 3 #test用
         x_velocity = self.ball.velocity * math.cos(self.ball.angle)
         y_velocity = self.ball.velocity * math.sin(self.ball.angle)
+        self.ball.x += x_velocity
+        self.ball.y += y_velocity
 
     async def check_game_state(self):
         if (self.ball.x - self.ball.radius > self.game_window.width):
