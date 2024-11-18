@@ -74,12 +74,19 @@ class PongLogic(AsyncWebsocketConsumer):
         # self.ball.angle = math.pi / 3 #test用
         x_velocity = self.ball.velocity * math.cos(self.ball.angle)
         y_velocity = self.ball.velocity * math.sin(self.ball.angle)
+        if ((self.ball.y + self.ball.radius >= self.game_window.height and self.ball.direction["facing_down"]) or
+        self.ball.y - self.ball.radius <= 0 and self.ball.direction["facing_up"]):
+            y_velocity *= -1
+            self.ball.angle = 2 * math.pi - self.ball.angle
         self.ball.x += x_velocity
         self.ball.y += y_velocity
 
     async def check_game_state(self):
         if (self.ball.x - self.ball.radius > self.game_window.width):
             self.left_score += 1
+            self.state = "stop"
+        elif (self.ball.x + self.ball.radius < 0):
+            self.right_score += 1
             self.state = "stop"
 
     async def connect(self):
