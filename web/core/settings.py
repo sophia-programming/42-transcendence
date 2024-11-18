@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "tournament",
     "matches",
     "homepage",
-    "django_elasticsearch_dsl",
 ]
 
 MIDDLEWARE = [
@@ -138,10 +137,6 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
-
-ELASTICSEARCH_DSL = {
-    "default": {"hosts": "es01:9200"},
-}
 
 LOGGING = {
     "version": 1,

@@ -7,4 +7,3 @@ qrcode
 Pillow
 pyotp
 python-logstash
-django_elasticsearch_dsl
