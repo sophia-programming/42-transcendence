@@ -110,7 +110,6 @@ services:
       retries: 120
 
   logstash01:
-    env_file: .env
     depends_on:
       es01:
         condition: service_healthy
@@ -124,6 +123,7 @@ services:
       - certs:/usr/share/logstash/config/certs
       - "./elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
       - "./elk/create_index_pattern.sh:/usr/local/bin/create_index_pattern.sh"
+    env_file: .env
     environment:
       - xpack.monitoring.enabled=false
       - ELASTIC_USER=elastic
