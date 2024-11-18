@@ -3,16 +3,12 @@ services:
     # todo: ディレクトリ名とサービス名をappに変更
     build: ./web
     container_name: web
-    command:
-      - /bin/sh
-      - -c
-      - |
-        python3 web/manage.py makemigrations &&
-        python3 web/manage.py migrate &&
-        python3 web/manage.py runserver 0.0.0.0:8000
+    command: /bin/sh -c "web/entrypoint.sh"
     volumes:
       - .:/usr/src/app
     env_file: .env
+    environment:
+      - DEBUG=True
     ports:
       - "8000:8000"
     depends_on:
