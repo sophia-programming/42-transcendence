@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "tournament",
     "matches",
     "homepage",
-    'django_elasticsearch_dsl',
+    "django_elasticsearch_dsl",
 ]
 
 MIDDLEWARE = [
@@ -139,49 +139,45 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-ELASTICSEARCH_DSL={
-    'default': {
-        'hosts': 'elasticsearch:9200'
-    },
+ELASTICSEARCH_DSL = {
+    "default": {"hosts": "es01:9200"},
 }
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '[%(asctime)s] %(levelname)s | %(funcName)s | %(name)s | %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "[%(asctime)s] %(levelname)s | %(funcName)s | %(name)s | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
-        'logstash': {
-            'level': 'DEBUG',
-            'class': 'logstash.TCPLogstashHandler',
-            'host': 'logstash01',  # The host of the logstash server
-            'port': 5959,  # Default value: 5959
-            'version': 1,  # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
-            'message_type': 'django',  # 'type' field in logstash message. Default value: 'logstash'.
-            'fqdn': False,  # Fully qualified domain name. Default value: false.
-            'tags': ['django'],  # すべてのログに対してタグを設定
+        "logstash": {
+            "level": "WARNING",
+            "class": "logstash.TCPLogstashHandler",
+            "host": "logstash01",  # The host of the logstash server
+            "port": 5959,  # Default value: 5959
+            "version": 1,  # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
+            "message_type": "django",  # 'type' field in logstash message. Default value: 'logstash'.
+            "fqdn": False,  # Fully qualified domain name. Default value: false.
+            "tags": ["django"],  # list of tags. Default: None.
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'logstash'],  # consoleとlogstashの両方にハンドラーを追加
-            'level': 'DEBUG',  # ログレベルをDEBUGに設定
-            'propagate': True,
+    "loggers": {
+        "django.request": {
+            "handlers": ["logstash"],
+            "level": "WARNING",
+            "propagate": True,
         },
-        # すべてのロガーに適用する場合は、ルートロガーを設定
-        '': {
-            'handlers': ['logstash'],
-            'level': 'DEBUG',
-            'propagate': True,
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
         },
     },
 }
