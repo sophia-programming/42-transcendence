@@ -28,7 +28,7 @@ class CustomLoginViewTests(TestCase):
             {"username": "testuser", "password": "password123"},
             # follow=True,
         )
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
     def test_custom_login_view_valid_login_with_otp(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが有効な場合"""
@@ -51,6 +51,23 @@ class CustomLoginViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/login.html")
         self.assertFalse(response.context["user"].is_authenticated)
+
+
+class LogoutViewTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="testuser", password="password123"
+        )
+        self.client.login(username="testuser", password="password123")  # loginが必要
+
+    def test_logout_view(self):
+        """ログアウトしたら、ログインページにリダイレクトされてホームにアクセスできないことを確認する"""
+        response = self.client.get(reverse("accounts:logout"))
+        self.assertRedirects(response, reverse("accounts:login"))
+        response = self.client.get(reverse("homepage"))
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={reverse('homepage')}"
+        )
 
 
 class SetupOTPViewTests(TestCase):
@@ -79,7 +96,7 @@ class SetupOTPViewTests(TestCase):
         device = TOTPDevice.objects.filter(user=self.user).first()
         self.assertIsNotNone(device)
         self.assertTrue(device.confirmed)
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
 
 class VerifyOTPViewTests(TestCase):
@@ -112,7 +129,7 @@ class VerifyOTPViewTests(TestCase):
             reverse("accounts:verify_otp"),
             {"otp_token": valid_token},  # follow=True,
         )
-        # self.assertRedirects(response, reverse("accounts:home")) # homeが未設定のため
+        self.assertRedirects(response, reverse("homepage"))
 
     def test_verify_otp_view_post_invalid_otp(self):
         """間違ったOTPトークンでOTP確認が失敗することを確認する"""
