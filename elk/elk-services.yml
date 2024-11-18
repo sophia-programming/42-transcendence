@@ -15,9 +15,6 @@ services:
       retries: 120
 
   es01:
-    depends_on:
-      setup_elk:
-        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     labels:
       co.elastic.logs/module: elasticsearch
@@ -55,9 +52,6 @@ services:
       retries: 120
 
   kibana:
-    depends_on:
-      es01:
-        condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     labels:
       co.elastic.logs/module: kibana
@@ -83,11 +77,6 @@ services:
       retries: 120
 
   logstash01:
-    depends_on:
-      es01:
-        condition: service_healthy
-      kibana:
-        condition: service_healthy
     image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     labels:
       co.elastic.logs/module: logstash

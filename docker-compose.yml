@@ -32,16 +32,27 @@ services:
       service: setup_elk
 
   es01:
+    depends_on:
+      setup_elk:
+        condition: service_healthy
     extends:
       file: ./elk/elk-services.yml
       service: es01
 
   kibana:
+    depends_on:
+      es01:
+        condition: service_healthy
     extends:
       file: ./elk/elk-services.yml
       service: kibana
 
   logstash01:
+    depends_on:
+      es01:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
     extends:
       file: ./elk/elk-services.yml
       service: logstash01
