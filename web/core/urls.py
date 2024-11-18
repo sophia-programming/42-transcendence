@@ -17,7 +17,6 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-
 from homepage.views import homepage_view
 
 urlpatterns = [
@@ -27,4 +26,5 @@ urlpatterns = [
     path("gameplay/", include("gameplay.urls")),
     path("admin/", admin.site.urls),
     path("homepage/", homepage_view, name="homepage"),
+    path("result/", include("resultpage.urls")),
 ]
