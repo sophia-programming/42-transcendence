@@ -1,8 +1,8 @@
 #!/bin/bash
 
-KIBANA_HOST="http://localhost:5601"
+KIBANA_HOST="http://kibana:5601"
 KIBANA_USER="elastic"
-KIBANA_PASS="changeme"
+KIBANA_PASS=${KIBANA_PASSWORD}
 INDEX_PATTERN_ID="logstash-"
 INDEX_PATTERN_TITLE="logstash-*"
 
