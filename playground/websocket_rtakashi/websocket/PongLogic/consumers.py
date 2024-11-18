@@ -16,7 +16,7 @@ class PongLogic(AsyncWebsocketConsumer):
         x = 640
         y = 355
         angle = 0
-        velocity = 20
+        velocity = 5
         direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
         bound_angle = {"left_top":math.pi * 7 / 4, "left_bottom":math.pi / 4, "right_top":math.pi * 5 / 4, "right_bottom":math.pi * 3 / 4}
 
@@ -63,7 +63,7 @@ class PongLogic(AsyncWebsocketConsumer):
 
     async def rendering(self):
         await self.send_pos()
-        await asyncio.sleep(0.02)
+        await asyncio.sleep(0.005)
         if (self.state == "stop"):
             await asyncio.sleep(2)
             self.state = "running"
@@ -138,7 +138,7 @@ class PongLogic(AsyncWebsocketConsumer):
                     # パドル下部
                     collision_distance = self.ball.y - (self.paddle.right_y + self.paddle.height / 2)
                     if (collision_distance > self.paddle.height / 2):
-                        self.ball.angle = self.ball.bound_angle.get("left_bottom")
+                        self.ball.angle = self.ball.bound_angle.get("right_bottom")
                     else:
                         self.ball.angle = math.pi - (math.pi - self.ball.bound_angle["right_bottom"]) / (self.paddle.height / 2) * collision_distance
                     x_velocity *= -1
@@ -200,6 +200,7 @@ class PongLogic(AsyncWebsocketConsumer):
                 if (self.paddle.right_y - 3 >= 0):
                     self.paddle.right_y -= 3
 
+        # if (self.state == "stop"):
         await self.send_pos()
 
     async def handle_other_message(self, message):
