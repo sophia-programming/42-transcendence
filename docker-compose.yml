@@ -23,7 +23,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - ./setup_elk.sh:/usr/local/bin/setup_elk.sh
+      - ./elk/setup_elk.sh:/usr/local/bin/setup_elk.sh
     env_file: .env
     user: "0"
     command: [ "/bin/bash", "/usr/local/bin/setup_elk.sh" ]
@@ -117,8 +117,8 @@ services:
     volumes:
       - certs:/usr/share/logstash/config/certs
       - logstashdata01:/usr/share/logstash/data
-      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      - "./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+      - "./elk/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+      - "./elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       - xpack.monitoring.enabled=false
       - ELASTIC_USER=elastic
