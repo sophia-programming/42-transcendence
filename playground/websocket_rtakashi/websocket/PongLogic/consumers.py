@@ -44,24 +44,21 @@ class PongLogic(AsyncWebsocketConsumer):
         await self.game_loop()
         
     async def game_loop(self):
-        if (self.left_score == 15 or self.right_score == 15):
-            return
-
-        if (self.state == "stop"):
-            self.ball.x = self.game_window.width / 2
-            self.ball.y = self.game_window.height / 2
-            self.ball.angle = random.uniform(self.ball.bound_angle["right_bottom"], self.ball.bound_angle["right_top"])
-            if (self.turn_count % 2 == 0):
-                self.ball.angle += math.pi
-            self.ball.angle = Utils.normalize_angle(self.ball.angle)
-            self.turn_count += 1
-            Utils.set_direction(self.ball)
-            # print("angle: ", self.ball.angle)
-            # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
-        await self.rendering()
-        await self.update_pos()
-        await self.check_game_state()
-        await self.game_loop()
+        while (self.left_score < 15 and self.right_score < 15):
+            if (self.state == "stop"):
+                self.ball.x = self.game_window.width / 2
+                self.ball.y = self.game_window.height / 2
+                self.ball.angle = random.uniform(self.ball.bound_angle["right_bottom"], self.ball.bound_angle["right_top"])
+                if (self.turn_count % 2 == 0):
+                    self.ball.angle += math.pi
+                self.ball.angle = Utils.normalize_angle(self.ball.angle)
+                self.turn_count += 1
+                Utils.set_direction(self.ball)
+                # print("angle: ", self.ball.angle)
+                # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
+            await self.rendering()
+            await self.update_pos()
+            await self.check_game_state()
 
     async def rendering(self):
         await self.send_pos()
@@ -191,8 +188,6 @@ class PongLogic(AsyncWebsocketConsumer):
 
         if (self.state == "updating"):
             return
-        if key and action:
-            print(f"Key: {key}, Action: {action}")
         if key == "D" and action == "pressed":
             if (self.paddle.left_y + 3 <= self.game_window.height - self.paddle.height):
                 self.paddle.left_y += 3
