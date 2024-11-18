@@ -2,8 +2,13 @@ services:
   web:
     build: ./web
     container_name: web
-    command: >
-      sh -c "python3 web/manage.py makemigrations && python3 web/manage.py migrate && python3 web/manage.py runserver 0.0.0.0:8000"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python3 web/manage.py makemigrations &&
+        python3 web/manage.py migrate &&
+        python3 web/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app
     env_file: .env
