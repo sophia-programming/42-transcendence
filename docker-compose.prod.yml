@@ -17,7 +17,7 @@ services:
     image: postgres
     container_name: db
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./data/db_prod:/var/lib/postgresql/data
     env_file: .env
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
