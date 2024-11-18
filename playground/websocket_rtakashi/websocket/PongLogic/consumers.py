@@ -37,6 +37,7 @@ class PongLogic(AsyncWebsocketConsumer):
         self.game_window = self.game_window()
         self.ball = self.ball()
         self.paddle = self.paddle()
+        self.tasks = {}
 
 # PongLogic
     async def game_start(self):
@@ -170,14 +171,16 @@ class PongLogic(AsyncWebsocketConsumer):
             self.state = "stop"
 
     async def connect(self):
-        # グループ定義しないと動かなかったです
-        # 現在のwebsocketをsendmessageというグループに追加します
+        if "game_loop" in self.tasks:
+            self.tasks["game_loop"].cancel()
         await self.channel_layer.group_add("sendmessage", self.channel_name)
         print("Websocket connected")
         await self.accept()
-        asyncio.create_task(self.game_loop())
+        self.tasks["game_loop"] = asyncio.create_task(self.game_loop())
 
     async def disconnect(self, close_code):
+        if "game_loop" in self.tasks:
+            self.tasks["game_loop"].cancel()
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
         print("Websocket disconnected")
 
@@ -200,8 +203,8 @@ class PongLogic(AsyncWebsocketConsumer):
                 if (self.paddle.right_y - 3 >= 0):
                     self.paddle.right_y -= 3
 
-        # if (self.state == "stop"):
-        await self.send_pos()
+        if (self.state == "stop"):
+            await self.send_pos()
 
     async def handle_other_message(self, message):
         # その他のメッセージに対応する処理
