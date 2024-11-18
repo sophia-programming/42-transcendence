@@ -17,3 +17,5 @@ class Utils:
 		else:
 			ball.direction["facing_left"] = False
 			ball.direction["facing_right"] = True
+
+		# print("ball.direction_left: ", ball.direction["facing_left"])

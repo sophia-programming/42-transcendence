@@ -92,8 +92,8 @@
       ws.onmessage = function (e) {
         const data = JSON.parse(e.data);
         console.log("Received message by consumers.py:", data);
-        score.left = data.left_paddle_y;
-        score.right = data.right_paddle_y;
+        score.left = data.left_score;
+        score.right = data.right_score;
         paddle.left_y = data.left_paddle_y;
         paddle.right_y = data.right_paddle_y;
         ball.x = data.ball_x;

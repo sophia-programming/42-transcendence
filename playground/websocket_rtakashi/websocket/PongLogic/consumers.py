@@ -16,13 +16,13 @@ class PongLogic(AsyncWebsocketConsumer):
         x = 640
         y = 355
         angle = 0
-        velocity = 10
+        velocity = 20
         direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
-        bound_angle = {"left_top":math.pi * 5 / 4, "left_bottom":math.pi * 3 / 4, "right_top":math.pi * 7 / 4, "right_bottom":math.pi / 4}
+        bound_angle = {"left_top":math.pi * 7 / 4, "left_bottom":math.pi / 4, "right_top":math.pi * 5 / 4, "right_bottom":math.pi * 3 / 4}
 
     class paddle:
-        width = 25
-        height = 140
+        width = 15
+        height = 120
         left_y = 285
         right_y = 285
 
@@ -50,7 +50,7 @@ class PongLogic(AsyncWebsocketConsumer):
         if (self.state == "stop"):
             self.ball.x = self.game_window.width / 2
             self.ball.y = self.game_window.height / 2
-            self.ball.angle = random.uniform(self.ball.bound_angle["left_bottom"], self.ball.bound_angle["left_top"])
+            self.ball.angle = random.uniform(self.ball.bound_angle["right_bottom"], self.ball.bound_angle["right_top"])
             if (self.turn_count % 2 == 0):
                 self.ball.angle += math.pi
             self.ball.angle = Utils.normalize_angle(self.ball.angle)
@@ -65,21 +65,104 @@ class PongLogic(AsyncWebsocketConsumer):
 
     async def rendering(self):
         await self.send_pos()
-        await asyncio.sleep(0.03)
+        await asyncio.sleep(0.02)
         if (self.state == "stop"):
             await asyncio.sleep(2)
             self.state = "running"
 
     async def update_pos(self):
+        self.state = "updating"
         # self.ball.angle = math.pi / 3 #test用
         x_velocity = self.ball.velocity * math.cos(self.ball.angle)
         y_velocity = self.ball.velocity * math.sin(self.ball.angle)
+
+        # 上下壁との衝突
         if ((self.ball.y + self.ball.radius >= self.game_window.height and self.ball.direction["facing_down"]) or
         self.ball.y - self.ball.radius <= 0 and self.ball.direction["facing_up"]):
             y_velocity *= -1
             self.ball.angle = 2 * math.pi - self.ball.angle
-        self.ball.x += x_velocity
-        self.ball.y += y_velocity
+            self.ball.angle = Utils.normalize_angle(self.ball.angle)
+            Utils.set_direction(self.ball)
+
+        # 左右パドルとの衝突
+        if ((self.ball.x - self.ball.radius == self.paddle.width and
+        self.paddle.left_y + self.paddle.height >= self.ball.y - self.ball.radius and self.ball.y + self.ball.radius >= self.paddle.left_y and
+        self.ball.direction["facing_left"])
+        or
+        (self.ball.x - self.ball.radius <= self.paddle.width and
+        self.paddle.left_y + self.paddle.height / 2 >= self.ball.y and self.ball.y >= self.paddle.left_y - self.ball.radius and
+        self.ball.direction["facing_left"])
+        or
+        (self.ball.x - self.ball.radius <= self.paddle.width and
+        self.paddle.left_y + self.paddle.height / 2 <= self.ball.y and self.ball.y <= self.paddle.left_y + self.paddle.height + self.ball.radius and
+        self.ball.direction["facing_left"])):
+            # 左パドルとの衝突
+            if (self.ball.y <= self.paddle.left_y + self.paddle.height / 2):
+                # パドル上部
+                collision_distance = (self.paddle.left_y + self.paddle.height / 2) - self.ball.y
+                if (collision_distance > self.paddle.height / 2):
+                    self.ball.angle = self.ball.bound_angle.get("left_top")
+                else:
+                    self.ball.angle = (self.ball.bound_angle["left_top"] - 2 * math.pi) / (self.paddle.height / 2) * collision_distance + 2 * math.pi
+                x_velocity *= -1
+                y_velocity = -1 * abs(y_velocity)
+            else:
+                # パドル下部
+                collision_distance = self.ball.y - (self.paddle.left_y + self.paddle.height / 2)
+                if (collision_distance > self.paddle.height / 2):
+                    self.ball.angle = self.ball.bound_angle.get("left_bottom")
+                else:
+                    self.ball.angle = self.ball.bound_angle.get("left_bottom") / (self.paddle.height / 2) * collision_distance
+                x_velocity *= -1
+                y_velocity = abs(y_velocity)
+        elif ((self.ball.x + self.ball.radius == self.game_window.width and
+        self.paddle.right_y <= self.ball.y and self.ball.y <= self.paddle.right_y + self.paddle.height and
+        self.ball.direction["facing_right"])
+        or
+        (self.ball.x + self.ball.radius >= self.game_window.width - self.paddle.width and
+        self.paddle.right_y + self.paddle.height / 2 >= self.ball.y and self.ball.y >= self.paddle.right_y - self.ball.radius and
+        self.ball.direction["facing_right"])
+        or
+        (self.ball.x + self.ball.radius >= self.game_window.width - self.paddle.width and
+        self.paddle.right_y + self.paddle.height / 2 <= self.ball.y and self.ball.y <= self.paddle.right_y + self.paddle.height + self.ball.radius and
+        self.ball.direction["facing_right"])):
+            # 右パドルとの衝突
+            if (self.ball.y <= self.paddle.right_y + self.paddle.height / 2):
+                # パドル上部
+                collision_distance = (self.paddle.right_y + self.paddle.height / 2) - self.ball.y
+                if (collision_distance > self.paddle.height / 2):
+                    self.ball.angle = self.ball.bound_angle.get("right_top")
+                else:
+                    self.ball.angle = math.pi + (self.ball.bound_angle["right_top"] - math.pi) / (self.paddle.height / 2) * collision_distance
+                x_velocity *= -1
+                y_velocity = -1 * abs(y_velocity)
+            else:
+                # パドル下部
+                collision_distance = self.ball.y - (self.paddle.right_y + self.paddle.height / 2)
+                if (collision_distance > self.paddle.height / 2):
+                    self.ball.angle = self.ball.bound_angle.get("left_bottom")
+                else:
+                    self.ball.angle = math.pi - (math.pi - self.ball.bound_angle["right_bottom"]) / (self.paddle.height / 2) * collision_distance
+                x_velocity *= -1
+                y_velocity = abs(y_velocity)
+
+        self.ball.angle = Utils.normalize_angle(self.ball.angle)
+        # print("angle: ", self.ball.angle)
+        Utils.set_direction(self.ball)
+        # ballの位置補正
+        if (self.ball.x - self.ball.radius > self.paddle.width and self.ball.x + x_velocity - self.ball.radius < self.paddle.width and self.ball.direction["facing_left"]):
+            self.ball.x = self.paddle.width + self.ball.radius
+        else:
+            self.ball.x += x_velocity
+        if (self.ball.x + self.ball.radius < self.game_window.width - self.paddle.width and self.ball.x + x_velocity + self.ball.radius > self.game_window.width - self.paddle.width and self.ball.direction["facing_right"]):
+            self.ball.x = self.game_window.width - self.paddle.width - self.ball.radius
+        else:
+            self.ball.y += y_velocity
+        if (self.ball.y - self.ball.radius < 0):
+            self.ball.y = self.ball.radius
+        if (self.ball.y + self.ball.radius > self.game_window.height):
+            self.ball.y = self.game_window.height - self.ball.radius
+        self.state = "running"
 
     async def check_game_state(self):
         if (self.ball.x - self.ball.radius > self.game_window.width):
@@ -106,16 +189,22 @@ class PongLogic(AsyncWebsocketConsumer):
         key = data.get("key")
         action = data.get("action")
 
+        if (self.state == "updating"):
+            return
         if key and action:
             print(f"Key: {key}, Action: {action}")
         if key == "D" and action == "pressed":
-            self.paddle.left_y += 3
+            if (self.paddle.left_y + 3 <= self.game_window.height - self.paddle.height):
+                self.paddle.left_y += 3
         elif key == "E" and action == "pressed":
-            self.paddle.left_y -= 3
+            if (self.paddle.left_y - 3 >= 0):
+                self.paddle.left_y -= 3
         elif key == "K" and action == "pressed":
-            self.paddle.right_y += 3
+            if (self.paddle.right_y + 3 <= self.game_window.height - self.paddle.height):
+                self.paddle.right_y += 3
         elif key == "I" and action == "pressed":
-            self.paddle.right_y -= 3
+            if (self.paddle.right_y - 3 >= 0):
+                self.paddle.right_y -= 3
 
         await self.send_pos()
 
