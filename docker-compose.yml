@@ -3,14 +3,15 @@ services:
     build: ./web
     container_name: web
     command: >
-      sh -c "web/wait-for-it.sh db:5432 -- python3 web/manage.py makemigrations && python3 web/manage.py migrate && python3 web/manage.py runserver 0.0.0.0:8000"
+      sh -c "python3 web/manage.py makemigrations && python3 web/manage.py migrate && python3 web/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/usr/src/app
     env_file: .env
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres
@@ -18,6 +19,12 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   setup_elk:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
