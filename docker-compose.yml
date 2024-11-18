@@ -26,6 +26,7 @@ services:
       retries: 5
       start_period: 30s
 
+  # elasticseach, kibana, logstash用のsslのセットアップ
   setup_elk:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
@@ -50,7 +51,6 @@ services:
     env_file: .env
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - esdata01:/usr/share/elasticsearch/data
     ports:
       - ${ES_PORT}:9200
     environment:
@@ -90,7 +90,6 @@ services:
       co.elastic.logs/module: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
-      - kibanadata:/usr/share/kibana/data
     env_file: .env
     ports:
       - ${KIBANA_PORT}:5601
@@ -123,8 +122,6 @@ services:
     user: root
     volumes:
       - certs:/usr/share/logstash/config/certs
-      - logstashdata01:/usr/share/logstash/data
-      - "./elk/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
       - "./elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
       - "./elk/create_index_pattern.sh:/usr/local/bin/create_index_pattern.sh"
     environment:
@@ -140,10 +137,4 @@ services:
 
 volumes:
   certs:
-    driver: local
-  esdata01:
-    driver: local
-  kibanadata:
-    driver: local
-  logstashdata01:
     driver: local
