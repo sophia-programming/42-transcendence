@@ -8,12 +8,12 @@ from .utils import Utils
 
 class PongLogic(AsyncWebsocketConsumer):
     class game_window:
-        width = 1019
+        width = 1280
         height = 710
 
     class ball:
         radius = 10
-        x = 515
+        x = 640
         y = 355
         angle = 0
         velocity = 10
@@ -128,7 +128,7 @@ class PongLogic(AsyncWebsocketConsumer):
                             "ball_x": self.ball.x,
                             "ball_y": self.ball.y,
                             "left_score": self.left_score,
-                            "right_score": self.right_score}
+                            "right_score": self.right_score,}
         await self.channel_layer.group_send(
             "sendmessage",
             {
