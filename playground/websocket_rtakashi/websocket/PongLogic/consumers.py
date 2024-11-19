@@ -61,6 +61,7 @@ class PongLogic(AsyncWebsocketConsumer):
             await self.rendering()
             await self.update_pos()
             await self.check_game_state()
+        await self.send_pos()
 
     async def rendering(self):
         await self.send_pos()
