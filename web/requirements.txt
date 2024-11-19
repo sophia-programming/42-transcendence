@@ -2,7 +2,7 @@ django
 psycopg2
 black
 isort
-channels
-channels_redis
-daphne
-asgiref
+django_otp
+qrcode
+Pillow
+pyotp

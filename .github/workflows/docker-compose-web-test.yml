@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Django tests
         run: |
-          docker-compose exec -T web python3 web/manage.py test
+          docker-compose exec -T web python3 web/manage.py test web
 
       - name: Tear down Docker Compose
         run: |
