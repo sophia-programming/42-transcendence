@@ -9,52 +9,44 @@
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
-    .background {
-      width: 80vw;
-      height: 80vh;
-    }
-
-    .dashed-line {
-      border-left: 8px dashed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    canvas {
+      display: block;
+      margin: 30px auto;
     }
   </style>
   <title>test</title>
 </head>
 
 
-<body class="text-white">
-  <!-- 背景と中央線のみ設定 backgroundにcanvasを重ねて描画 -->
-  <div class="container d-flex justify-content-center align-items-center vw-100 vh-100">
-    <div class="background position-relative bg-dark">
-      <canvas id="gameCanvas" class="position-absolute w-100 h-100"></canvas>
-      <div class="dashed-line h-100 position-absolute"></div>
-    </div>
-  </div>
-
+<body>
+  <canvas id="gameCanvas"></canvas>
   <script>
     const gameCanvas = document.getElementById("gameCanvas");
     const ctx = gameCanvas.getContext("2d");
 
+    gameCanvas.width = 1000;
+    gameCanvas.height = 600;
+    gameCanvas.style.width = "1000px";
+    gameCanvas.style.height = "600px";
+
     // スコア表の位置
-    const center_x = window.innerWidth / 2;
-    const center_y = window.innerHeight / 2;
-    const l_score_x = center_x - gameCanvas.width / 4;
-    const r_score_x = center_x + gameCanvas.width / 4;
-    const score_y = center_y - window.innerHeight / 3;
+    const center_x = gameCanvas.width / 2;
+    const center_y = gameCanvas.height / 2;
+    const l_score_x = center_x - gameCanvas.width / 6;
+    const r_score_x = center_x + gameCanvas.width / 6;
+    const score_y = center_y - gameCanvas.height / 3;
     const score = {
       right: 0,
       left: 0
     };
-
+    console.log("当初w:", gameCanvas.width, " 当初h:", gameCanvas.height, " 実際w:", gameCanvas.clientWidth, " 実際h:", gameCanvas.clientHeight);
+    console.log("inner w:", window.innerWidth, " inner h:", window.innerHeight);
     //パドルとボール
-    const paddle_h = gameCanvas.height * 0.8;
-    const paddle_w = gameCanvas.width * 0.05;
+    const paddle_h = 120;
+    const paddle_w = 15;
     const paddle = {
       left_x: 0,
-      right_x: window.innerWidth,
+      right_x: gameCanvas.width,
       left_y: center_y - paddle_h / 2,
       right_y: center_y - paddle_h / 2,
     };
@@ -65,35 +57,35 @@
 
     const keyStates = { left: false, right: false };
 
-    // 解像度上げる
-    const scale = window.devicePixelRatio || 1;
-    gameCanvas.width = window.innerWidth * scale;
-    gameCanvas.height = window.innerHeight * scale;
-    gameCanvas.style.width = "100%";
-    gameCanvas.style.height = "100%";
-    ctx.scale(scale, scale);
+    let animationFrameId;
 
     document.addEventListener("DOMContentLoaded", function () {
       // websocketの接続先
       const url = "ws://" + window.location.host + "/ws/websocket/";
-      const ws = new WebSocket(url);
+      let ws = new WebSocket(url);
       console.log(url);
 
       // websocketでの接続が確立されたときに動く
       ws.onopen = function () {
         console.log("Connected");
+        animationFrameId = requestAnimationFrame(update);
       };
 
       ws.onclose = function (event) {
         console.log("Disconnected");
       };
 
+      window.addEventListener("beforeunload", function () {
+        cancelAnimationFrame(animationFrameId);
+        ws.close();  // WebSocketの接続をクローズ
+      });
+
       // websocketでメッセージを受信されたら動く
       ws.onmessage = function (e) {
         const data = JSON.parse(e.data);
         console.log("Received message by consumers.py:", data);
-        score.left = data.left_score;
-        score.right = data.right_score;
+        score.left = data.left_paddle_y;
+        score.right = data.right_paddle_y;
         paddle.left_y = data.left_paddle_y;
         paddle.right_y = data.right_paddle_y;
         ball.x = data.ball_x;
@@ -154,6 +146,17 @@
 
       function draw() {
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        // 背景描画
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 5;
+        ctx.setLineDash([10, 10]);
+
+        ctx.beginPath();
+        ctx.moveTo(gameCanvas.width / 2, 0);
+        ctx.lineTo(gameCanvas.width / 2, gameCanvas.height);
+        ctx.stroke();
         //スコア描画
         ctx.font = `7vw "Press Start 2P", cursive`;
         ctx.fillStyle = "white";
@@ -170,7 +173,6 @@
           paddle_w,
           paddle_h
         );
-        ctx.fillStyle = "orange";
         ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
       }
 

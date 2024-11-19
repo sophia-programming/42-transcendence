@@ -8,13 +8,13 @@ from .utils import Utils
 
 class PongLogic(AsyncWebsocketConsumer):
     class game_window:
-        width = 1280
-        height = 710
+        width = 1000
+        height = 600
 
     class ball:
         radius = 10
-        x = 640
-        y = 355
+        x = 500
+        y = 300
         angle = 0
         velocity = 5
         direction = {"facing_up":False, "facing_down":False, "facing_right":False, "facing_left":False}
@@ -23,8 +23,8 @@ class PongLogic(AsyncWebsocketConsumer):
     class paddle:
         width = 15
         height = 120
-        left_y = 285
-        right_y = 285
+        left_y = 240
+        right_y = 240
 
 
     def __init__(self, *args, **kwargs):
