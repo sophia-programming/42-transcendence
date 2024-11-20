@@ -1,4 +1,5 @@
 django
+requests
 psycopg2
 black
 isort
