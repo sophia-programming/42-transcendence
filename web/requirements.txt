@@ -7,3 +7,4 @@ django_otp
 qrcode
 Pillow
 pyotp
+python-logstash
