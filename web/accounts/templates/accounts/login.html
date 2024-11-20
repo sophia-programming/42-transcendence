@@ -34,7 +34,8 @@
       <input type="hidden" value="{% url 'accounts:verify_otp' %}" />
       <button type="submit" class="btn btn-primary mb-2 w-100">Login</button>
     </form>
-    <a href="{% url 'accounts:signup' %}" class="btn btn-secondary w-100" style="max-width: 282px;">Sign Up</a>
+    <a href="{% url 'accounts:signup' %}" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;">Sign Up</a>
+    <a href="{% url 'oauth:oauth' %}" class="btn btn-primary w-100" style="max-width: 282px;">Login with 42</a>
   </main>
 
   {# Assumes you set up the password_reset view in your URLconf #}

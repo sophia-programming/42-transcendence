@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "tournament",
     "matches",
     "homepage",
+    "oauth",
     "resultpage",
 ]
 

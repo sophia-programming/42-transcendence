@@ -20,6 +20,7 @@ from django.urls import include, path
 from homepage.views import homepage_view
 
 urlpatterns = [
+    path("oauth/", include("oauth.urls")),
     path("tournament/", include("tournament.urls")),
     path("accounts/", include("accounts.urls")),
     path("gameplay/", include("gameplay.urls")),
