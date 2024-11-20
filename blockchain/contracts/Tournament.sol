@@ -2,88 +2,96 @@
 pragma solidity ^0.8.0;
 
 contract Tournament {
-    struct MatchRecord {
+    struct Match {
         uint256 timestamp;
-        uint8 matchNumber;
-        address winner;
-        uint8 winnerScore;
-        address loser;
-        uint8 loserScore;
+        uint256 matchNumber;
+        uint256 winnerId;
+        uint256 winnerScore;
+        uint256 loserId;
+        uint256 loserScore;
     }
 
+    Match[] public matches;
+    bool public isActive;
+    uint256 public constant MAX_MATCHES = 7;
 
-    // イベントの宣言
-    event TournamentStarted();
-    event TournamentEnded();
     event MatchRecorded(
-        uint8 matchNumber,
-        address winner,
-        uint8 winnerScore,
-        address loser,
-        uint8 loserScore
+        uint256 timestamp,
+        uint256 matchNumber,
+        uint256 winnerId,
+        uint256 winnerScore,
+        uint256 loserId,
+        uint256 loserScore
     );
 
-
-    MatchRecord[] public records; // 全試合の記録を保持する配列
-    uint8 public constant MAX_MATCHES = 7;  // 最大試合数
-    bool public isActive;
-
-    address public owner;
-
     constructor() {
-        owner = msg.sender;
-        isActive = true;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can perform this action");
-        _;
-    }
-
-    modifier tournamentActive() {
-        require(isActive, "Tournament is not active");
-        _;
-    }
-
-    function startTournament() public onlyOwner {
-        isActive = true;
-        emit TournamentStarted();
-    }
-
-    function endTournament() public onlyOwner {
         isActive = false;
-        emit TournamentEnded();
     }
 
+    function startTournament() public {
+        require(!isActive, "Tournament is already active");
+        isActive = true;
+    }
 
-    // 試合の記録を追加する関数.(記録が最大数に達した場合はトーナメントを自動的に終了)
     function recordMatch(
-        uint8 matchNumber,
-        address winner,
-        uint8 winnerScore,
-        address loser,
-        uint8 loserScore
-    ) public onlyOwner tournamentActive {
-        require(records.length < MAX_MATCHES, "Maximum match limit reached");
+        uint256 matchNumber,
+        uint256 winnerId,
+        uint256 winnerScore,
+        uint256 loserId,
+        uint256 loserScore
+    ) public {
+        // 最大試合数のチェックを最初に行う
+        require(matches.length < MAX_MATCHES, "Tournament is already complete");
+        require(isActive, "Tournament is not active");
+        // require(matchNumber < MAX_MATCHES, "Invalid match number");
 
-        records.push(MatchRecord({
+        Match memory newMatch = Match({
             timestamp: block.timestamp,
             matchNumber: matchNumber,
-            winner: winner,
+            winnerId: winnerId,
             winnerScore: winnerScore,
-            loser: loser,
+            loserId: loserId,
             loserScore: loserScore
-        }));
+        });
 
-        emit MatchRecorded(matchNumber, winner, winnerScore, loser, loserScore);
+        matches.push(newMatch);
 
-        if (records.length == MAX_MATCHES) {
-            endTournament();
+        emit MatchRecorded(
+            block.timestamp,
+            matchNumber,
+            winnerId,
+            winnerScore,
+            loserId,
+            loserScore
+        );
+
+        // 最大試合数に達したらトーナメントを終了
+        if (matches.length >= MAX_MATCHES) {
+            isActive = false;
         }
     }
 
-    function getMatchRecord(uint8 index) public view returns (MatchRecord memory) {
-        require(index < records.length, "Invalid match index");
-        return records[index];
+    function getMatchCount() public view returns (uint256) {
+        return matches.length;
+    }
+
+    function getMatch(uint256 index) public view returns (
+        uint256 timestamp,
+        uint256 matchNumber,
+        uint256 winnerId,
+        uint256 winnerScore,
+        uint256 loserId,
+        uint256 loserScore
+    ) {
+        require(index < matches.length, "Match does not exist");
+        Match memory matchData = matches[index];
+        return (
+            matchData.timestamp,
+            matchData.matchNumber,
+            matchData.winnerId,
+            matchData.winnerScore,
+            matchData.loserId,
+            matchData.loserScore
+        );
     }
 }
