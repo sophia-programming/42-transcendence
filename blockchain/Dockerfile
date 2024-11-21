@@ -10,11 +10,14 @@ COPY package*.json ./
 # 必要なパッケージをインストール
 RUN npm install
 
-# Truffleをグローバルにインストール
+# TruffleとGanache CLIをグローバルにインストール
 RUN npm install -g truffle ganache-cli
 
 # プロジェクトのファイルをコンテナにコピー
 COPY . .
 
 # Ganache CLI をバックグラウンドで起動し、その後に Truffle migrate を実行
-CMD ganache-cli -h 0.0.0.0 & truffle migrate --network development && tail -f /dev/null
+CMD ganache-cli -h 0.0.0.0 --db /data & \
+    sleep 5 && \
+    truffle migrate --network development && \
+    tail -f /dev/null

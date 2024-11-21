@@ -24,17 +24,6 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
-
-  blockchain:
-    build: ./blockchain
-    image: trufflesuite/ganache-cli:latest
-    container_name: blockchain
-    ports:
-      - "8545:8545"
-    volumes:
-      - ./ganache-data:/data
-    command: ganache-cli -h 0.0.0.0 --db /data
-
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
       interval: 30s
@@ -72,6 +61,19 @@ services:
     extends:
       file: ./elk/elk-services.yml
       service: logstash01
+
+  blockchain:
+    build: ./blockchain
+    container_name: blockchain
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./blockchain:/app
+      - ./ganache-data:/data
+    command: sh -c "ganache-cli -h 0.0.0.0 --db /data & \
+      sleep 5 && \
+      truffle migrate --network development && \
+      tail -f /dev/null"
 
 volumes:
   certs:
