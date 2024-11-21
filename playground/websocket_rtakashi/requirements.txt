@@ -1,0 +1,7 @@
+asgiref==3.8.1
+Django==5.1.3
+django-otp==1.5.4
+sqlparse==0.5.1
+channels
+channels_redis
+daphne
