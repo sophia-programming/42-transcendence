@@ -13,6 +13,7 @@
 !*.css
 !*.js
 !*.sol
+!blockchain/package.json
 !docker-compose.yml
 !Dockerfile
 !.env_template
@@ -24,3 +25,6 @@
 # Ignore node_modules directory
 node_modules/
 !elk/*
+
+# Ignore build directory
+build/contracts/
