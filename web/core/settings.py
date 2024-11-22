@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "homepage",
     "oauth",
     "resultpage",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -78,12 +79,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-
+ASGI_APPLICATION = "core.asgi.application"
+import os
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [('redis', 6379)], 
+        },
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-import os
 
 DATABASES = {
     "default": {

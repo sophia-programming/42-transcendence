@@ -8,3 +8,8 @@ qrcode
 Pillow
 pyotp
 python-logstash
+asgiref
+sqlparse
+channels
+channels_redis
+daphne
