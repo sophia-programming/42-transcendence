@@ -62,18 +62,38 @@ services:
       file: ./elk/elk-services.yml
       service: logstash01
 
-  blockchain:
-    build: ./blockchain
-    container_name: blockchain
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    container_name: ganache
     ports:
       - "8545:8545"
     volumes:
-      - ./blockchain:/app
       - ./ganache-data:/data
-    command: sh -c "ganache-cli -h 0.0.0.0 --db /data & \
-      sleep 5 && \
-      truffle migrate --network development && \
-      tail -f /dev/null"
+    command: ["ganache-cli", "--host", "0.0.0.0", "--db", "/data"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - blockchain_net
+
+  truffle:
+    build:
+      context: ./blockchain
+    container_name: truffle
+    volumes:
+      - ./blockchain:/app
+    working_dir: /app
+    command: sh -c "truffle migrate --network development && tail -f /dev/null"
+    depends_on:
+      ganache:
+        condition: service_healthy
+    networks:
+      - blockchain_net
+
+networks:
+  blockchain_net:
 
 volumes:
   certs:

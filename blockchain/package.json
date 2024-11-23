@@ -6,9 +6,12 @@
     "start": "ganache-cli -h 0.0.0.0 --db ./data & sleep 5 && truffle migrate --network development",
     "test": "truffle test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "dotenv": "^16.4.5"
+  },
   "devDependencies": {
-    "truffle": "^5.11.5",
-    "ganache-cli": "^6.12.2"
+    "ganache-cli": "^6.12.2",
+    "truffle": "^5.11.5"
   }
 }

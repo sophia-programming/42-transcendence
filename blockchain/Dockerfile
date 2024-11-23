@@ -21,3 +21,6 @@ CMD ganache-cli -h 0.0.0.0 --db /data & \
     sleep 5 && \
     truffle migrate --network development && \
     tail -f /dev/null
+
+# ポートの公開
+EXPOSE 8545
