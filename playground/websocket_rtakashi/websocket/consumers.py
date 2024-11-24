@@ -3,6 +3,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
 
+
 class WebsocketConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,7 +62,12 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {"left_paddle_y": self.left_paddle_y, "right_paddle_y": self.right_paddle_y, "ball_x": self.ball_x, "ball_y": self.ball_y}
+        response_message = {
+            "left_paddle_y": self.left_paddle_y,
+            "right_paddle_y": self.right_paddle_y,
+            "ball_x": self.ball_x,
+            "ball_y": self.ball_y,
+        }
         await self.channel_layer.group_send(
             "sendmessage",
             {
