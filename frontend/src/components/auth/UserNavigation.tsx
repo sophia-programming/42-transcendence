@@ -24,9 +24,7 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
       }
       id="basic-nav-dropdown"
     >
-      <NavDropdown.Item href={`/user/${user.uid}`}>
-        {user.name || ""}
-      </NavDropdown.Item>
+      <NavDropdown.Item href={`/user/${user.uid}`}>Profile</NavDropdown.Item>
       <NavDropdown.Item href="/settings/profile">
         Account Settings
       </NavDropdown.Item>

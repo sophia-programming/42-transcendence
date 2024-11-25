@@ -11,6 +11,8 @@ const fetchAPI = async (url: string, options: RequestInit) => {
     const response = await fetch(`${apiUrl}${url}`, options);
 
     if (!response.ok) {
+      console.error(options);
+      console.error(response);
       return { success: false, error: "APIでエラーが発生しました" };
     }
 
