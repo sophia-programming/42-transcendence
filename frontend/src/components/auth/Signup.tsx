@@ -56,11 +56,11 @@ const Signup = () => {
   };
 
   return (
-    <div className="max-w-[400px] m-auto">
+    <div className="container d-flex justify-content-center">
       {isSignUp ? (
-        <>
-          <div className="text-2xl font-bold text-center mb-10">仮登録完了</div>
-          <div className="">
+        <div className="w-50">
+          <div className="h2 fw-bold text-center mb-5">仮登録完了</div>
+          <div>
             アカウント本登録に必要なメールを送信しました。
             <br />
             メールのURLより本登録画面へ進んでいただき、本登録を完了させてください。
@@ -69,12 +69,12 @@ const Signup = () => {
             <br />
             お手数ですが、再度、新規登録からやり直してください。
           </div>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="w-50">
           <p className="h2 fw-bold text-center mb-5">新規登録</p>
 
-          <Form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <Form onSubmit={handleSubmit(onSubmit)} className="mb-3">
             <Form.Group className="mb-3" controlId="name">
               <Form.Label>名前</Form.Label>
               <Form.Control
@@ -131,11 +131,11 @@ const Signup = () => {
           </Form>
 
           <div className="text-center mt-5">
-            <Link href="/login" className="text-sm text-blue-500">
+            <Link href="/login" className="small text-primary">
               すでにアカウントをお持ちの方
             </Link>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

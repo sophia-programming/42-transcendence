@@ -19,6 +19,7 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
           alt={user.name || "avatar"}
           width={60}
           height={60}
+          roundedCircle
         />
       }
       id="basic-nav-dropdown"
