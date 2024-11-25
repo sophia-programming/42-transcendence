@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Spinner from "react-bootstrap/Spinner";
+import {
+  Form,
+  Button,
+  Spinner,
+  Container,
+  Toast,
+  ToastContainer,
+} from "react-bootstrap";
 import { temporarrySignup } from "@/actions/user";
 import Link from "next/link";
 
@@ -21,12 +26,20 @@ type InputType = z.infer<typeof schema>;
 const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<InputType>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit: SubmitHandler<InputType> = async (data) => {
@@ -41,103 +54,123 @@ const Signup = () => {
       });
 
       if (!res.success) {
-        // toast.error("サインアップに失敗しました");
-        console.log("サインアップに失敗しました");
+        setToastMessage("サインアップに失敗しました");
+        setShowToast(true);
         return;
       }
 
       setIsSignUp(true);
     } catch {
-      //   toast.error("サインアップに失敗しました");
-      console.log("サインアップに失敗しました");
+      setToastMessage("サインアップに失敗しました");
+      setShowToast(true);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="container d-flex justify-content-center">
-      {isSignUp ? (
-        <div className="w-50">
-          <div className="h2 fw-bold text-center mb-5">仮登録完了</div>
+    <Container className="d-flex justify-content-center">
+      <div className="w-50">
+        {isSignUp ? (
+          <div className="text-center">
+            <h2 className="h2 fw-bold text-center mb-5">仮登録完了</h2>
+            <div>
+              アカウント本登録に必要なメールを送信しました。
+              <br />
+              メールのURLより本登録画面へ進んでいただき、本登録を完了させてください。
+              <br />
+              ※メールが届かない場合、入力したメールアドレスが間違っている可能性があります。
+              <br />
+              お手数ですが、再度、新規登録からやり直してください。
+            </div>
+          </div>
+        ) : (
           <div>
-            アカウント本登録に必要なメールを送信しました。
-            <br />
-            メールのURLより本登録画面へ進んでいただき、本登録を完了させてください。
-            <br />
-            ※メールが届かない場合、入力したメールアドレスが間違っている可能性があります。
-            <br />
-            お手数ですが、再度、新規登録からやり直してください。
+            <h2 className="h2 fw-bold text-center mb-5">新規登録</h2>
+
+            <Form onSubmit={handleSubmit(onSubmit)} className="mb-3">
+              <Form.Group className="mb-3" controlId="name">
+                <Form.Label>名前</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="名前"
+                  {...register("name")}
+                  isInvalid={!!errors.name}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.name?.message}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="email">
+                <Form.Label>メールアドレス</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="xxxx@gmail.com"
+                  {...register("email")}
+                  isInvalid={!!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email?.message}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="password">
+                <Form.Label>パスワード</Form.Label>
+                <Form.Control
+                  type="password"
+                  {...register("password")}
+                  isInvalid={!!errors.password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password?.message}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Text className="text-muted">
+                サインアップすることで、利用規約、プライバシーポリシーに同意したことになります。
+              </Form.Text>
+
+              <Button
+                variant="primary"
+                type="submit"
+                className="w-100"
+                disabled={isLoading}
+              >
+                {isLoading && (
+                  <Spinner animation="border" size="sm" className="me-2" />
+                )}
+                アカウント作成
+              </Button>
+            </Form>
+
+            <div className="text-center mt-5">
+              <Link
+                href="/login"
+                className="small text-primary text-decoration-none"
+              >
+                すでにアカウントをお持ちの方
+              </Link>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="w-50">
-          <p className="h2 fw-bold text-center mb-5">新規登録</p>
+        )}
+      </div>
 
-          <Form onSubmit={handleSubmit(onSubmit)} className="mb-3">
-            <Form.Group className="mb-3" controlId="name">
-              <Form.Label>名前</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="名前"
-                {...register("name")}
-                isInvalid={!!errors.name}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.name?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>メールアドレス</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="xxxx@gmail.com"
-                {...register("email")}
-                isInvalid={!!errors.email}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.email?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="password">
-              <Form.Label>パスワード</Form.Label>
-              <Form.Control
-                type="password"
-                {...register("password")}
-                isInvalid={!!errors.password}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.password?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Text className="text-muted">
-              サインアップすることで、利用規約、プライバシーポリシーに同意したことになります。
-            </Form.Text>
-
-            <Button
-              variant="primary"
-              type="submit"
-              className="w-100"
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <Spinner animation="border" size="sm" className="me-2" />
-              )}
-              アカウント作成
-            </Button>
-          </Form>
-
-          <div className="text-center mt-5">
-            <Link href="/login" className="small text-primary">
-              すでにアカウントをお持ちの方
-            </Link>
-          </div>
-        </div>
-      )}
-    </div>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          show={showToast}
+          onClose={() => setShowToast(false)}
+          bg="danger"
+          delay={3000}
+          autohide
+        >
+          <Toast.Header>
+            <strong className="me-auto">エラー</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </Container>
   );
 };
 
