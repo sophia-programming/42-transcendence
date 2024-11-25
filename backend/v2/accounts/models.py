@@ -37,7 +37,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField("メールアドレス", max_length=255, unique=True)
     name = models.CharField("名前", max_length=255)
     avatar = models.ImageField(
-        upload_to="avatar", verbose_name="プロフィール画像", null=True, blank=True
+        upload_to="media", verbose_name="プロフィール画像", null=True, blank=True
     )
     introduction = models.TextField("自己紹介", null=True, blank=True)
     updated_at = models.DateTimeField("更新日", auto_now=True)
