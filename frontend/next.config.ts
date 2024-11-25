@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    domains: ["localhost"],
   },
   experimental: {
     serverActions: {

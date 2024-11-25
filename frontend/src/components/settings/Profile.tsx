@@ -202,7 +202,7 @@ const Profile = ({ user }: ProfileProps) => {
             パスワード変更
           </Link>
         </Col>
-      </Row>‰
+      </Row>
 
       <ToastContainer position="top-end" className="p-3">
         <Toast
