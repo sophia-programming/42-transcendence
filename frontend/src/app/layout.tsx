@@ -24,17 +24,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     <html lang="ja">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="flex min-h-screen flex-col">
+          <div className="d-flex flex-column min-vh-100">
             <Navigation user={user} />
             <ToastProvider />
 
-            <main className="container mx-auto max-w-screen-md flex-1 px-2">
+            <main className="container mx-auto flex-grow-1 px-2 my-4">
               {children}
             </main>
 
-            {/* フッター */}
             <footer className="py-5">
-              <div className="text-center text-sm">
+              <div className="text-center fs-sm">
                 Copyright © All rights reserved | 42 Transcendence Team
               </div>
             </footer>

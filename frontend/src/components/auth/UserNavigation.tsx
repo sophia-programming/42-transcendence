@@ -17,6 +17,8 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
           src={user.avatar || "/default.png"}
           className="rounded-full object-cover"
           alt={user.name || "avatar"}
+          width={60}
+          height={60}
         />
       }
       id="basic-nav-dropdown"
@@ -28,7 +30,7 @@ const UserNavigation = ({ user }: UserNavigationProps) => {
         Account Settings
       </NavDropdown.Item>
       <NavDropdown.Item
-        onSelect={async () => {
+        onClick={async () => {
           await signOut({ callbackUrl: "/" });
         }}
       >
