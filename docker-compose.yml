@@ -1,17 +1,14 @@
 services:
   web:
+    # todo: ディレクトリ名とサービス名をappに変更
     build: ./web
     container_name: web
-    command:
-      - /bin/sh
-      - -c
-      - |
-        python3 web/manage.py makemigrations &&
-        python3 web/manage.py migrate &&
-        python3 web/manage.py runserver 0.0.0.0:8000
+    command: /bin/sh -c "web/entrypoint.sh"
     volumes:
       - .:/usr/src/app
     env_file: .env
+    environment:
+      - DEBUG=True
     ports:
       - "8000:8000"
     depends_on:
@@ -30,38 +27,3 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-
-  setup_elk:
-    extends:
-      file: ./elk/elk-services.yml
-      service: setup_elk
-
-  es01:
-    depends_on:
-      setup_elk:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: es01
-
-  kibana:
-    depends_on:
-      es01:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: kibana
-
-  logstash01:
-    depends_on:
-      es01:
-        condition: service_healthy
-      kibana:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: logstash01
-
-volumes:
-  certs:
-    driver: local

@@ -1,0 +1,73 @@
+services:
+  app:
+    # todo: ディレクトリ名もappに変更
+    build: ./web
+    container_name: app
+    command: /bin/sh -c "web/entrypoint.sh"
+    volumes:
+      - .:/usr/src/app
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - ./data/db_prod:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  web:
+    image: nginx
+    container_name: web
+    volumes:
+      # - ./web/static:/usr/share/nginx/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+
+  setup_elk:
+    extends:
+      file: ./elk/elk-services.yml
+      service: setup_elk
+
+  es01:
+    depends_on:
+      setup_elk:
+        condition: service_healthy
+    extends:
+      file: ./elk/elk-services.yml
+      service: es01
+
+  kibana:
+    depends_on:
+      es01:
+        condition: service_healthy
+    extends:
+      file: ./elk/elk-services.yml
+      service: kibana
+
+  logstash01:
+    depends_on:
+      es01:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    extends:
+      file: ./elk/elk-services.yml
+      service: logstash01
+
+volumes:
+  certs:
+    driver: local

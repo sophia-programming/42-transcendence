@@ -12,11 +12,13 @@
 !*.html
 !*.css
 !docker-compose.yml
+!docker-compose.prod.yml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
 
-!wait-for-it.sh
 !.github/workflows/*
 
+!web/*
 !elk/*
+!nginx/default.conf
