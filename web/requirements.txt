@@ -8,3 +8,4 @@ qrcode
 Pillow
 pyotp
 python-logstash
+gunicorn

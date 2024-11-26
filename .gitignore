@@ -15,16 +15,18 @@
 !*.sol
 !blockchain/package.json
 !docker-compose.yml
+!docker-compose.prod.yml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
 
-!wait-for-it.sh
 !.github/workflows/*
 
 # Ignore node_modules directory
 node_modules/
-!elk/*
 
 # Ignore build directory
 build/contracts/
+!web/*
+!elk/*
+!nginx/default.conf
