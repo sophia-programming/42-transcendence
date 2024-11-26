@@ -19,6 +19,7 @@
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
+!blockchain/docker-compose.blockchain.yml
 
 !.github/workflows/*
 

@@ -60,34 +60,17 @@ services:
       service: logstash01
 
   ganache:
-    image: trufflesuite/ganache-cli:latest
-    container_name: ganache
-    ports:
-      - "8545:8545"
-    volumes:
-      - ./ganache-data:/data
-    command: ["ganache-cli", "--host", "0.0.0.0", "--db", "/data"]
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:8545"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - blockchain_net
+    extends:
+      file: ./blockchain/docker-compose.blockchain.yml
+      service: ganache
 
   truffle:
-    build:
-      context: ./blockchain
-    container_name: truffle
-    volumes:
-      - ./blockchain:/app
-    working_dir: /app
-    command: sh -c "truffle migrate --network development && tail -f /dev/null"
     depends_on:
       ganache:
         condition: service_healthy
-    networks:
-      - blockchain_net
+    extends:
+      file: ./blockchain/docker-compose.blockchain.yml
+      service: truffle
 
 networks:
   blockchain_net:
