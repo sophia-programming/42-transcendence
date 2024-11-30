@@ -65,9 +65,6 @@ services:
       service: ganache
 
   truffle:
-    depends_on:
-      ganache:
-        condition: service_healthy
     extends:
       file: ./blockchain/docker-compose.blockchain.yml
       service: truffle

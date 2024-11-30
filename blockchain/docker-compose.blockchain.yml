@@ -1,33 +1,33 @@
 services:
   ganache:
-    image: trufflesuite/ganache-cli:latest
+    image: trufflesuite/ganache:latest
     platform: linux/amd64
     container_name: ganache
     ports:
       - "8545:8545"
     volumes:
-      - ../ganache/ganache-data:/data
-    command: ["ganache-cli", "--host", "0.0.0.0", "--db", "/data"]
-    healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:8545"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - ./ganache/ganache-data:/data
     networks:
       - blockchain_net
+    command:
+      - --host
+      - "0.0.0.0"
 
   truffle:
-    image: node:14
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile
     container_name: truffle
-    working_dir: /app
     volumes:
-      - .:/app
-    command: sh -c "npm install -g truffle && truffle test --network development"
+      - ./truffle:/app
     depends_on:
-      ganache:
-        condition: service_healthy
+      - ganache
     networks:
       - blockchain_net
+    tty: true
+    stdin_open: true
+#    command: ["truffle", "migrate", "--network", "development"]
+    command: /bin/sh
 
 networks:
   blockchain_net:
