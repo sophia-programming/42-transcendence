@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
+from .models import CustomUser
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -18,3 +20,19 @@ class LoginSerializer(serializers.Serializer):
 
         data["user"] = user
         return data
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ["username", "password", "email"]
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+            email=validated_data["email"],
+        )
+        return user

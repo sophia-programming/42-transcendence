@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from .forms import OTPForm, SignUpForm
 from .models import CustomUser
-from .serializers import LoginSerializer
+from .serializers import LoginSerializer, SignUpSerializer
 
 
 class CustomLoginView(APIView):
@@ -40,28 +40,14 @@ class LogoutView(APIView):
 @method_decorator(
     [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
 )
-class SignUpView(View):
-    def get(self, request):
-        form = SignUpForm()
-        return render(request, "accounts/signup.html", {"form": form})
-
+class SignUpView(APIView):
     def post(self, request):
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            email = form.cleaned_data["email"]
-            CustomUser.objects.create_user(
-                username=username, password=password, email=email
+        serializer = SignUpSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(
+                {"redirect": "accounts:login"}, status=status.HTTP_201_CREATED
             )
-            return redirect("accounts:login")
-        return render(
-            request,
-            "accounts/signup.html",
-            {
-                "form": form,
-            },
-        )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator([never_cache, login_required], name="dispatch")
