@@ -8,23 +8,27 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .forms import OTPForm, SignUpForm
 from .models import CustomUser
+from .serializers import LoginSerializer
 
 
-@method_decorator(
-    [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
-)
-class CustomLoginView(LoginView):
-    template_name = "accounts/login.html"
-
-    def form_valid(self, form):
-        user = form.get_user()
-        login(self.request, user)
-        if user.otp_enabled:
-            return redirect("accounts:verify_otp")
-        return redirect("homepage")
+class CustomLoginView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data["user"]
+            login(request, user)
+            if user.otp_enabled:
+                return Response(
+                    {"redirect": "accounts:verify_otp"}, status=status.HTTP_200_OK
+                )
+            return Response({"redirect": "homepage"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def logout_view(request):
