@@ -7,7 +7,7 @@ urlpatterns = [
     path("api/login/", views.CustomLoginView.as_view(), name="api_login"),
     path("api/logout/", views.LogoutView.as_view(), name="logout"),
     path("api/signup/", views.SignUpView.as_view(), name="signup"),
-    path("setup-otp/", views.SetupOTPView.as_view(), name="setup_otp"),
+    path("api/setup-otp/", views.SetupOTPView.as_view(), name="setup_otp"),
     path("verify-otp/", views.VerifyOTPView.as_view(), name="verify_otp"),
     path("", views.HomeView.as_view(), name="home"),
 ]

@@ -54,7 +54,7 @@ class SignUpView(APIView):
 
 
 @method_decorator([never_cache, login_required], name="dispatch")
-class SetupOTPView(View):
+class SetupOTPView(APIView):
     def get(self, request):
         user = request.user
         if not TOTPDevice.objects.filter(user=user, confirmed=True).exists():
@@ -62,12 +62,13 @@ class SetupOTPView(View):
             uri = device.config_url
             secret_key = device.bin_key.hex()
 
-            return render(
-                request,
-                "accounts/setup_otp.html",
+            return Response(
                 {"otpauth_url": uri, "secret_key": secret_key},
+                status=status.HTTP_200_OK,
             )
-        return render(request, "accounts/already_setup_otp.html")
+        return Response(
+            {"message": "OTP already set up"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     def post(self, request):
         user = request.user
@@ -76,7 +77,7 @@ class SetupOTPView(View):
         user.otp_enabled = True
         device.save()
         user.save()
-        return redirect("homepage")
+        return Response({"message": "OTP setup successful"}, status=status.HTTP_200_OK)
 
 
 @method_decorator([login_required], name="dispatch")
