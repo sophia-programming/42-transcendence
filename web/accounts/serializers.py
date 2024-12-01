@@ -36,3 +36,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
         )
         return user
+
+
+class OTPSerializer(serializers.Serializer):
+    otp_token = serializers.CharField(max_length=6)

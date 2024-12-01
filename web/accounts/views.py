@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from .forms import OTPForm, SignUpForm
 from .models import CustomUser
-from .serializers import LoginSerializer, SignUpSerializer
+from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
 
 
 @method_decorator(
@@ -83,18 +83,16 @@ class SetupOTPView(APIView):
 @method_decorator(
     [sensitive_post_parameters(), csrf_protect, login_required], name="dispatch"
 )
-class VerifyOTPView(View):
-    def get(self, request):
-        form = OTPForm()
-        return render(request, "accounts/verify_otp.html", {"form": form})
-
+class VerifyOTPView(APIView):
     def post(self, request):
-        form = OTPForm(request.POST)
-        if form.is_valid():
-            otp = form.cleaned_data["otp_token"]
+        serializer = OTPSerializer(data=request.data)
+        if serializer.is_valid():
+            otp = serializer.validated_data["otp_token"]
             device = TOTPDevice.objects.filter(user=request.user).first()
             if device and device.verify_token(otp):
-                return redirect("homepage")
+                return Response({"redirect": "homepage"}, status=status.HTTP_200_OK)
             else:
-                form.add_error("otp_token", "Invalid OTP")
-        return render(request, "accounts/verify_otp.html", {"form": form})
+                return Response(
+                    {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
