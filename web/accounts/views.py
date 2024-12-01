@@ -1,9 +1,6 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -12,8 +9,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import OTPForm, SignUpForm
-from .models import CustomUser
 from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
 
 
