@@ -80,12 +80,6 @@ class SetupOTPView(APIView):
         return Response({"message": "OTP setup successful"}, status=status.HTTP_200_OK)
 
 
-@method_decorator([login_required], name="dispatch")
-class HomeView(View):
-    def get(self, request):
-        return render(request, "accounts/home.html")
-
-
 @method_decorator(
     [sensitive_post_parameters(), csrf_protect, login_required], name="dispatch"
 )

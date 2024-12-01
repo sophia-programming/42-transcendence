@@ -9,5 +9,4 @@ urlpatterns = [
     path("api/signup/", views.SignUpView.as_view(), name="signup"),
     path("api/setup-otp/", views.SetupOTPView.as_view(), name="setup_otp"),
     path("verify-otp/", views.VerifyOTPView.as_view(), name="verify_otp"),
-    path("", views.HomeView.as_view(), name="home"),
 ]
