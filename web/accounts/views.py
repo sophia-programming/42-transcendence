@@ -31,9 +31,10 @@ class CustomLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def logout_view(request):
-    logout(request)
-    return redirect("accounts:login")
+class LogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({"redirect": "accounts:login"}, status=status.HTTP_200_OK)
 
 
 @method_decorator(
