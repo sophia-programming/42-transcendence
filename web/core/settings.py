@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "rest_framework",
     "gameplay",
     "accounts",
     "tournament",
@@ -146,7 +147,7 @@ STATIC_URL = "static/"
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
 # Default primary key field type
