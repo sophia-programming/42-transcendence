@@ -67,7 +67,7 @@
       // websocketでの接続が確立されたときに動く
       ws.onopen = function () {
         console.log("Connected");
-        animationFrameId = requestAnimationFrame(update);
+        animationFrameId = requestAnimationFrame(draw);
       };
 
       ws.onclose = function (event) {
@@ -174,13 +174,10 @@
           paddle_h
         );
         ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
-      }
 
-      function update() {
-        draw();
-        requestAnimationFrame(update);
+        // 次の描画呼び出し
+        requestAnimationFrame(draw);
       }
-      update();
     });
   </script>
   <!-- Bootstrap JS -->
