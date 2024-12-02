@@ -65,6 +65,8 @@ services:
       service: ganache
 
   truffle:
+    depends_on:
+      - ganache
     extends:
       file: ./blockchain/docker-compose.blockchain.yml
       service: truffle

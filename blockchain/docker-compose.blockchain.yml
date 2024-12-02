@@ -20,8 +20,6 @@ services:
     container_name: truffle
     volumes:
       - ./truffle:/app
-    depends_on:
-      - ganache
     networks:
       - blockchain_net
     tty: true
