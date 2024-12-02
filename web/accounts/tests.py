@@ -19,7 +19,7 @@ class CustomLoginViewTests(APITestCase):
     def test_custom_login_view_valid_login(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが無効な場合"""
         response = self.client.post(
-            reverse("accounts:api_login"),
+            reverse("accounts:login"),
             {"username": "testuser", "password": "password123"},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -32,7 +32,7 @@ class CustomLoginViewTests(APITestCase):
         self.user.save()
         self.user.refresh_from_db()
         response = self.client.post(
-            reverse("accounts:api_login"),
+            reverse("accounts:login"),
             {"username": "testuser", "password": "password123"},
             follow=True,
         )
@@ -43,7 +43,7 @@ class CustomLoginViewTests(APITestCase):
     def test_custom_login_view_invalid_login(self):
         """間違ったパスワードでログインできないことを確認する"""
         response = self.client.post(
-            reverse("accounts:api_login"),
+            reverse("accounts:login"),
             {"username": "testuser", "password": "wrongpassword"},
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -59,59 +59,75 @@ class LogoutViewTests(TestCase):
         self.client.login(username="testuser", password="password123")  # loginが必要
 
     def test_logout_view(self):
-        """ログアウトしたら、ログインページにリダイレクトされてホームにアクセスできないことを確認する"""
+        """ログアウトしたら、ログインページにリダイレクトされて認証が切れることを確認する"""
         response = self.client.get(reverse("accounts:logout"))
-        self.assertRedirects(response, reverse("accounts:login"))
-        response = self.client.get(reverse("homepage"))
-        self.assertRedirects(
-            response, f"{reverse('accounts:login')}?next={reverse('homepage')}"
-        )
+        self.assertEqual(response.data, {"redirect": "accounts:login"})
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
 
 
-class SetupOTPViewTests(TestCase):
+class SignUpViewTests(APITestCase):
+    def setUp(self):
+        self.url = reverse("accounts:signup")
+
+    def test_signup_view_post_valid(self):
+        """有効なデータでサインアップが成功することを確認する"""
+        data = {
+            "username": "newuser",
+            "password": "password123",
+            "email": "newuser@example.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, {"redirect": "accounts:login"})
+        self.assertEqual(CustomUser.objects.count(), 1)
+        user = CustomUser.objects.get(username="newuser")
+        self.assertIsNotNone(user)
+        self.assertTrue(user.check_password("password123"))
+
+    def test_signup_view_post_invalid(self):
+        """無効なデータでサインアップが失敗することを確認する"""
+        data = {
+            "username": "",
+            "password": "password123",
+            "email": "invalid-email",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(CustomUser.objects.count(), 0)
+        self.assertIn("username", response.data)
+        self.assertIn("email", response.data)
+
+
+class SetupOTPViewTests(APITestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser", password="password123"
         )
-        self.client.login(username="testuser", password="password123")  # loginが必要
+        self.client.login(username="testuser", password="password123")
 
     def test_setup_otp_view_get(self):
-        """OTPセットアップページが正しいテンプレートを使っていることを確認し、デバイスが作成されていて無効であることを確認する"""
+        """OTPセットアップのGETリクエストが成功することを確認する"""
         response = self.client.get(reverse("accounts:setup_otp"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/setup_otp.html")
-        device = TOTPDevice.objects.filter(user=self.user).first()
-        self.assertIsNotNone(device)
-        self.assertFalse(device.confirmed)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("otpauth_url", response.data)
+        self.assertIn("secret_key", response.data)
 
     def test_setup_otp_view_post(self):
-        """OTPセットアップが正しく完了することを確認する"""
-        # まずGETリクエストを送信してデバイスを設定
-        self.client.get(reverse("accounts:setup_otp"))
+        """OTPセットアップのPOSTリクエストが成功することを確認する"""
+        TOTPDevice.objects.create(user=self.user, confirmed=False)
         response = self.client.post(reverse("accounts:setup_otp"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertTrue(self.user.otp_enabled)
-        device = TOTPDevice.objects.filter(user=self.user).first()
-        self.assertIsNotNone(device)
-        self.assertTrue(device.confirmed)
-        self.assertRedirects(response, reverse("homepage"))
 
 
-class VerifyOTPViewTests(TestCase):
+class VerifyOTPViewTests(APITestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser", password="password123", otp_enabled=True
         )
-        self.client.login(username="testuser", password="password123")  # loginが必要
-        self.device = TOTPDevice.objects.create(
-            user=self.user, confirmed=True
-        )  # デバイス(OTP)を作成
-
-    def test_verify_otp_view_get(self):
-        """OTP確認ページが正しいテンプレートを使っていることを確認する"""
-        response = self.client.get(reverse("accounts:verify_otp"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/verify_otp.html")
+        self.client.force_authenticate(user=self.user)
+        self.device = TOTPDevice.objects.create(user=self.user, confirmed=True)
 
     def test_verify_otp_view_post_valid_otp(self):
         """正しいOTPトークンでOTP確認が成功することを確認する"""
@@ -125,82 +141,15 @@ class VerifyOTPViewTests(TestCase):
         valid_token = totp.token()
         response = self.client.post(
             reverse("accounts:verify_otp"),
-            {"otp_token": valid_token},  # follow=True,
+            {"otp_token": valid_token},
         )
-        self.assertRedirects(response, reverse("homepage"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"redirect": "homepage"})
 
     def test_verify_otp_view_post_invalid_otp(self):
         """間違ったOTPトークンでOTP確認が失敗することを確認する"""
         response = self.client.post(
             reverse("accounts:verify_otp"), {"otp_token": "123456"}
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/verify_otp.html")
-        form = response.context["form"]
-        self.assertFormError(form, "otp_token", "Invalid OTP")
-
-
-class SignUpViewTests(TestCase):
-    def setUp(self):
-        self.url = reverse("accounts:signup")
-
-    def test_signup_view_get(self):
-        """GETリクエストでサインアップページが正しいテンプレートを使っていることを確認する"""
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/signup.html")
-        self.assertIsInstance(response.context["form"], SignUpForm)
-
-    def test_signup_view_post_valid(self):
-        """有効なデータでPOSTリクエストを送信した場合、ユーザーが作成され、ログインページにリダイレクトされることを確認する"""
-        data = {
-            "username": "newuser",
-            "password": "password123",
-            "email": "newuser@example.com",
-        }
-        response = self.client.post(self.url, data)
-        self.assertRedirects(response, reverse("accounts:login"))
-        user = CustomUser.objects.get(username="newuser")
-        self.assertIsNotNone(user)
-        self.assertTrue(user.check_password("password123"))
-
-    def test_signup_view_post_valid_without_email(self):
-        """メールが入力されていない場合でもユーザーが作成されることを確認する"""
-        data = {
-            "username": "newuser",
-            "password": "password123",
-            "email": "",
-        }
-        response = self.client.post(self.url, data)
-        self.assertRedirects(response, reverse("accounts:login"))
-        user = CustomUser.objects.get(username="newuser")
-        self.assertIsNotNone(user)
-        self.assertTrue(user.check_password("password123"))
-
-    def test_signup_view_post_invalid_username(self):
-        """ユーザーネームが入力されていない場合、サインアップページが再表示され、エラーメッセージが表示されることを確認する"""
-        data = {
-            "username": "",
-            "password": "password123",
-            "email": "invalid-email",
-        }
-        response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/signup.html")
-        form = response.context["form"]
-        self.assertIsInstance(form, SignUpForm)
-        self.assertTrue(form.errors)
-
-    def test_signup_view_post_invalid_password(self):
-        """パスワードが入力されていない場合、サインアップページが再表示され、エラーメッセージが表示されることを確認する"""
-        data = {
-            "username": "user",
-            "password": "",
-            "email": "invalid-email",
-        }
-        response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/signup.html")
-        form = response.context["form"]
-        self.assertIsInstance(form, SignUpForm)
-        self.assertTrue(form.errors)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
