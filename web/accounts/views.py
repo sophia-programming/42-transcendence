@@ -20,11 +20,11 @@ class CustomLoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data["user"]
-            login(request, user)
             if user.otp_enabled:
                 return Response(
                     {"redirect": "accounts:verify_otp"}, status=status.HTTP_200_OK
                 )
+            login(request, user)
             return Response({"redirect": "homepage"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,6 +42,7 @@ class SignUpView(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.save()
             return Response(
                 {"redirect": "accounts:login"}, status=status.HTTP_201_CREATED
             )
@@ -75,9 +76,7 @@ class SetupOTPView(APIView):
         return Response({"message": "OTP setup successful"}, status=status.HTTP_200_OK)
 
 
-@method_decorator(
-    [sensitive_post_parameters(), csrf_protect, login_required], name="dispatch"
-)
+@method_decorator([sensitive_post_parameters(), csrf_protect], name="dispatch")
 class VerifyOTPView(APIView):
     def post(self, request):
         serializer = OTPSerializer(data=request.data)
@@ -85,6 +84,7 @@ class VerifyOTPView(APIView):
             otp = serializer.validated_data["otp_token"]
             device = TOTPDevice.objects.filter(user=request.user).first()
             if device and device.verify_token(otp):
+                login(request, request.user)
                 return Response({"redirect": "homepage"}, status=status.HTTP_200_OK)
             else:
                 return Response(
