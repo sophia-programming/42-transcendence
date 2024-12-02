@@ -12,6 +12,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+      redis:
+        condition: service_healthy
       db:
         condition: service_healthy
 
@@ -27,21 +29,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-
-  websocket:
-    build: ./web
-    container_name: websocket
-    command: daphne -b 0.0.0.0 -p 4242 core.asgi:application
-    volumes:
-      - ./web:/usr/src/app
-    env_file: .env
-    ports:
-      - "4242:4242"
-    depends_on:
-      redis:
-        condition: service_healthy
-      db:
-        condition: service_healthy
 
   redis:
     image: redis
