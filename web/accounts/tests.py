@@ -4,31 +4,27 @@ from django.test import TestCase
 from django.urls import reverse
 from django_otp.oath import TOTP
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from rest_framework import status
+from rest_framework.test import APITestCase
 
-from .forms import SignUpForm
 from .models import CustomUser
 
 
-class CustomLoginViewTests(TestCase):
+class CustomLoginViewTests(APITestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser", password="password123"
         )
 
-    def test_custom_login_view_template(self):
-        """ログインページが正しいテンプレートを使っていることを確認する"""
-        response = self.client.get(reverse("accounts:login"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/login.html")
-
     def test_custom_login_view_valid_login(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが無効な場合"""
         response = self.client.post(
-            reverse("accounts:login"),
+            reverse("accounts:api_login"),
             {"username": "testuser", "password": "password123"},
-            # follow=True,
         )
-        self.assertRedirects(response, reverse("homepage"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"redirect": "homepage"})
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
 
     def test_custom_login_view_valid_login_with_otp(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが有効な場合"""
@@ -36,21 +32,23 @@ class CustomLoginViewTests(TestCase):
         self.user.save()
         self.user.refresh_from_db()
         response = self.client.post(
-            reverse("accounts:login"),
+            reverse("accounts:api_login"),
             {"username": "testuser", "password": "password123"},
             follow=True,
         )
-        self.assertRedirects(response, reverse("accounts:verify_otp"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"redirect": "accounts:verify_otp"})
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_custom_login_view_invalid_login(self):
         """間違ったパスワードでログインできないことを確認する"""
         response = self.client.post(
-            reverse("accounts:login"),
+            reverse("accounts:api_login"),
             {"username": "testuser", "password": "wrongpassword"},
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "accounts/login.html")
-        self.assertFalse(response.context["user"].is_authenticated)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("non_field_errors", response.data)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
 
 
 class LogoutViewTests(TestCase):
