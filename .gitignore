@@ -1,24 +1,4 @@
-# .gitignore
-# Ignore All
-*
-!*/
-
-# Allowlist
-!.git/*
-!.gitignore
-!.gitattributes
-!*.py
-!*.txt
-!*.html
-!*.css
-!docker-compose.yml
-!docker-compose.prod.yml
-!Dockerfile
-!.env_template
-!.pre-commit-config.yaml
-
-!.github/workflows/*
-
-!web/*
-!elk/*
-!nginx/default.conf
+*.idea
+data
+.vscode
+.env
