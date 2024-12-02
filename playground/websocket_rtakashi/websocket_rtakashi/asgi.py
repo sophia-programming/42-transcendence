@@ -1,5 +1,5 @@
 """
-ASGI config for core project.
+ASGI config for websocket_rtakashi project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -12,9 +12,9 @@ import os
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from gameplay.routing import websocket_urlpatterns
+from websocket.routing import websocket_urlpatterns
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "websocket_rtakashi.settings")
 
 
 application = ProtocolTypeRouter(

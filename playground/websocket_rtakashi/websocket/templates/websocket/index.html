@@ -14,7 +14,7 @@
       margin: 30px auto;
     }
   </style>
-  <title>gameplay</title>
+  <title>test</title>
 </head>
 
 
@@ -60,7 +60,7 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       // websocketの接続先
-      const url = "ws://" + "localhost:4242" + "/ws/gameplay/";
+      const url = "ws://" + window.location.host + "/ws/websocket/";
       let ws = new WebSocket(url);
       console.log(url);
 
