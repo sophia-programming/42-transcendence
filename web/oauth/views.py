@@ -31,7 +31,7 @@ def oauth_callback_view(request):
                 "client_id": os.environ.get("UID"),
                 "client_secret": os.environ.get("SECRET"),
                 "code": code,
-                "redirect_uri": "http://localhost:8000/oauth/callback/",
+                "redirect_uri": "http://localhost:/oauth/callback/",
             },
         )
         token_data = response.json()
