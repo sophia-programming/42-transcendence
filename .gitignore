@@ -12,6 +12,7 @@
 !*.html
 !*.css
 !*.js
+!*.sol
 !docker-compose.yml
 !docker-compose.prod.yml
 !Dockerfile
