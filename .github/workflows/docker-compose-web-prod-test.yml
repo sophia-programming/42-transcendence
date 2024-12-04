@@ -42,7 +42,7 @@ jobs:
       - name: Build and run Docker Compose
         run: |
           mv .env_template .env
-          docker-compose -f docker-compose.prod.yml up -d --build --wait
+          docker compose -f docker-compose.prod.yml up -d --build --wait
 
       - name: Wait for services to be healthy
         run: |
@@ -50,8 +50,8 @@ jobs:
 
       - name: Run Django tests
         run: |
-          docker-compose -f docker-compose.prod.yml exec -T app python3 web/manage.py test web
+          docker compose -f docker-compose.prod.yml exec -T app python3 web/manage.py test web
 
       - name: Tear down Docker Compose
         run: |
-          docker-compose -f docker-compose.prod.yml down
+          docker compose -f docker-compose.prod.yml down
