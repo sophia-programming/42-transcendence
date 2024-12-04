@@ -12,9 +12,7 @@ from rest_framework.views import APIView
 from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
 
 
-# @method_decorator(
-#     [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
-# )
+@method_decorator([sensitive_post_parameters(), never_cache], name="dispatch")
 class CustomLoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -35,9 +33,7 @@ class LogoutView(APIView):
         return Response({"redirect": "accounts:login"}, status=status.HTTP_200_OK)
 
 
-@method_decorator(
-    [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
-)
+@method_decorator([sensitive_post_parameters(), never_cache], name="dispatch")
 class SignUpView(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
@@ -76,7 +72,7 @@ class SetupOTPView(APIView):
         return Response({"message": "OTP setup successful"}, status=status.HTTP_200_OK)
 
 
-@method_decorator([sensitive_post_parameters(), csrf_protect], name="dispatch")
+@method_decorator([sensitive_post_parameters()], name="dispatch")
 class VerifyOTPView(APIView):
     def post(self, request):
         serializer = OTPSerializer(data=request.data)
