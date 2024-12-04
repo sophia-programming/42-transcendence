@@ -44,10 +44,13 @@ const Login = {
           }
         );
 
+        const data = await response.json();
+
         if (response.ok) {
-          console.log("success: " + response.content);
+          console.log("success: ", data);
+          window.location.hash = "#/";
         } else {
-          console.log("error: " + response.content);
+          console.log("error: ", data);
         }
       });
   },
