@@ -11,11 +11,13 @@
 !*.txt
 !*.html
 !*.css
+!*.js
 !docker-compose.yml
 !docker-compose.prod.yml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
+
 
 !.github/workflows/*
 
