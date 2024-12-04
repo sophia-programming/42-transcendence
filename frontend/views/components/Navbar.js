@@ -17,21 +17,21 @@ const Navbar = {
                     <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                        <a class="nav-link active" href="">Home</a>
+                        <a class="nav-link active" href="#/">Home</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="">Tournament</a>
+                        <a class="nav-link" href="#/tournament">Tournament</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="">Setup Otp</a>
+                        <a class="nav-link" href="#/setup-otp">Setup Otp</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#">My Page</a>
+                        <a class="nav-link" href="#/mypage">My Page</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                        <a class="nav-link" href="">Logout</a>
+                        <a class="nav-link" href="#/login">Login</a>
                         </li>
                     </ul>
                     </div>

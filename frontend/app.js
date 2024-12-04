@@ -18,11 +18,8 @@ const router = async () => {
   await Navbar.after_render();
   // footer
 
+  const location = window.location.hash.slice(1).toLowerCase() || "/";
   console.log(location);
-  const location = window.location.pathname;
-  if (location.length == 0) {
-    location = "/";
-  }
 
   const page = routes[location];
 
