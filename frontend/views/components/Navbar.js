@@ -36,7 +36,7 @@ const Navbar = {
                     </ul>
                     </div>
                 </div>
-                </nav>`;
+            </nav>`;
   },
   after_render: async () => {},
 };
