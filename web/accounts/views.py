@@ -12,9 +12,9 @@ from rest_framework.views import APIView
 from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
 
 
-@method_decorator(
-    [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
-)
+# @method_decorator(
+#     [sensitive_post_parameters(), csrf_protect, never_cache], name="dispatch"
+# )
 class CustomLoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
