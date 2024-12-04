@@ -13,6 +13,8 @@
 !*.css
 !*.js
 !*.sol
+!blockchain/package.json
+!blockchain/package-lock.json
 !docker-compose.yml
 !docker-compose.prod.yml
 !Dockerfile
@@ -25,3 +27,6 @@
 !web/*
 !elk/*
 !nginx/default.conf
+
+# Ignore node_modules directory
+node_modules/
