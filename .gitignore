@@ -13,8 +13,9 @@
 !*.css
 !*.js
 !*.sol
-!blockchain/package.json
-!blockchain/package-lock.json
+!package.json
+!package-lock.json
+!docker-compose.blockchain.yml
 !docker-compose.yml
 !docker-compose.prod.yml
 !Dockerfile
