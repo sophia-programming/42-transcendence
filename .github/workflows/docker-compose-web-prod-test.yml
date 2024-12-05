@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Django tests
         run: |
-          docker compose -f compose.yml -f compose.prod.yml exec -T backend python3 web/manage.py test web
+          docker compose -f compose.yml -f compose.prod.yml exec -T backend python3 /usr/src/app/manage.py test
 
       - name: Tear down Docker Compose
         run: |
