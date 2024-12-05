@@ -41,3 +41,22 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+
+  ganache:
+    extends:
+      file: ./blockchain/docker-compose.blockchain.yml
+      service: ganache
+
+  truffle:
+    depends_on:
+      - ganache
+    extends:
+      file: ./blockchain/docker-compose.blockchain.yml
+      service: truffle
+
+networks:
+  blockchain_net:
+
+volumes:
+  certs:
+    driver: local
