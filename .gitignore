@@ -16,8 +16,8 @@
 !package.json
 !package-lock.json
 !blockchain.yml
-!docker-compose.yml
-!docker-compose.prod.yml
+!compose.yml
+!compose.prod.yml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
