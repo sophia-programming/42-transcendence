@@ -13,4 +13,3 @@ sqlparse
 channels
 channels_redis
 daphne
-gunicorn

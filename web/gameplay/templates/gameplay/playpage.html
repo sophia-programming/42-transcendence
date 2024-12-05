@@ -60,14 +60,14 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       // websocketの接続先
-      const url = "ws://" + "localhost:4242" + "/ws/gameplay/";
+      const url = "ws://" + "localhost:8000" + "/ws/gameplay/";
       let ws = new WebSocket(url);
       console.log(url);
 
       // websocketでの接続が確立されたときに動く
       ws.onopen = function () {
         console.log("Connected");
-        animationFrameId = requestAnimationFrame(update);
+        animationFrameId = requestAnimationFrame(draw);
       };
 
       ws.onclose = function (event) {
@@ -174,13 +174,10 @@
           paddle_h
         );
         ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
-      }
 
-      function update() {
-        draw();
-        requestAnimationFrame(update);
+        // 次の描画呼び出し
+        requestAnimationFrame(draw);
       }
-      update();
     });
   </script>
   <!-- Bootstrap JS -->

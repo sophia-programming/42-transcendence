@@ -1,0 +1,32 @@
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    platform: linux/amd64
+    container_name: ganache
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./ganache/ganache-data:/data
+    networks:
+      - blockchain_net
+    command:
+      - --host
+      - "0.0.0.0"
+
+  truffle:
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile
+    container_name: truffle
+    volumes:
+      - ./truffle:/app
+    networks:
+      - blockchain_net
+    tty: true
+    stdin_open: true
+    #    command: ["truffle", "migrate", "--network", "development"]
+    command: /bin/sh
+
+networks:
+  blockchain_net:
+    driver: bridge
