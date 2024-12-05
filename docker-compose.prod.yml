@@ -53,3 +53,4 @@ services:
 
 include:
   - ./elk/elk-services.yml
+  - ./blockchain/blockchain.yml
