@@ -37,37 +37,6 @@ services:
     depends_on:
       - app
 
-  setup_elk:
-    extends:
-      file: ./elk/elk-services.yml
-      service: setup_elk
-
-  es01:
-    depends_on:
-      setup_elk:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: es01
-
-  kibana:
-    depends_on:
-      es01:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: kibana
-
-  logstash01:
-    depends_on:
-      es01:
-        condition: service_healthy
-      kibana:
-        condition: service_healthy
-    extends:
-      file: ./elk/elk-services.yml
-      service: logstash01
-  
   websocket:
     build: ./web
     container_name: websocket
@@ -95,6 +64,5 @@ services:
       retries: 5
       start_period: 30s
 
-volumes:
-  certs:
-    driver: local
+include:
+  - ./elk/elk-services.yml
