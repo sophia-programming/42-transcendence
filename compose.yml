@@ -3,9 +3,9 @@ services:
     # todo: ディレクトリ名をbackendに
     build: ./web
     container_name: backend
-    command: /bin/sh -c "web/entrypoint.sh"
+    entrypoint: "web/entrypoint.sh"
     volumes:
-      - .:/usr/src/backend
+      - .:/usr/src/app
     env_file: .env
     environment:
       - DEBUG=True

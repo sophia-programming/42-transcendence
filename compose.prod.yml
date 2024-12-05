@@ -7,6 +7,7 @@ services:
     # todo: ディレクトリ名もappに変更
     # todo: env.prodを追加
     volumes: !reset []
+    entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
       - DEBUG=False
     development: !reset []
