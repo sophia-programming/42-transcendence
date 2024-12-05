@@ -11,15 +11,24 @@
 !*.txt
 !*.html
 !*.css
+!*.js
+!*.sol
+!package.json
+!package-lock.json
+!docker-compose.blockchain.yml
 !docker-compose.yml
 !docker-compose.prod.yml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
 
+
 !.github/workflows/*
 
 !web/*
 !elk/*
 !nginx/default.conf
+
+# Ignore node_modules directory
+node_modules/!web/fixtures/*
 !web/fixtures/*
