@@ -1,56 +1,29 @@
+# https://docs.docker.com/compose/how-tos/production/
+# https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+# https://docs.docker.com/reference/compose-file/merge/
+
 services:
-  app:
+  backend:
     # todo: ディレクトリ名もappに変更
-    build: ./web
-    container_name: app
-    command: /bin/sh -c "web/entrypoint.sh"
-    volumes:
-      - .:/usr/src/app
-    env_file: .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      redis:
-        condition: service_healthy
-      db:
-        condition: service_healthy
+    # todo: env.prodを追加
+    volumes: !reset []
+    environment: !override
+      - DEBUG=False
+    development: !reset []
 
   db:
-    image: postgres
-    container_name: db
-    volumes:
-      - ./data/db_prod:/var/lib/postgresql/data
-    env_file: .env
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
-      interval: 30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+    volumes: !reset []
 
   web:
     image: nginx
     container_name: web
-    volumes:
-      # - ./web/static:/usr/share/nginx/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    # volumes:
+    #   - ./web/static:/usr/share/nginx/html
+    #   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
     depends_on:
-      - app
-
-  redis:
-    image: redis
-    container_name: redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "localhost", "ping" ]
-      interval: 30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+      - backend
 
 include:
   - ./elk/elk-services.yml
-  - ./blockchain/blockchain.yml
