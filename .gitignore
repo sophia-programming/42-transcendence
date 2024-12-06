@@ -1,34 +1,4 @@
-# .gitignore
-# Ignore All
-*
-!*/
-
-# Allowlist
-!.git/*
-!.gitignore
-!.gitattributes
-!*.py
-!*.txt
-!*.html
-!*.css
-!*.js
-!*.sol
-!package.json
-!package-lock.json
-!blockchain.yml
-!compose.yaml
-!compose.prod.yaml
-!Dockerfile
-!.env_template
-!.pre-commit-config.yaml
-
-
-!.github/workflows/*
-
-!web/*
-!elk/*
-!nginx/default.conf
-
-# Ignore node_modules directory
-node_modules/!web/fixtures/*
-!web/fixtures/*
+*.idea
+data
+.vscode
+.env

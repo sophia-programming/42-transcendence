@@ -13,3 +13,5 @@ sqlparse
 channels
 channels_redis
 daphne
+djangorestframework
+django-cors-headers
