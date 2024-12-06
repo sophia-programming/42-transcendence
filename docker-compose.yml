@@ -27,6 +27,17 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+  
+  frontend:
+    image: node:latest
+    container_name: frontend
+    working_dir: /usr/src/frontend
+    command: /bin/sh -c "npm install && npm run server"
+    volumes:
+      - ./frontend:/usr/src/frontend
+    ports:
+      - "3000:3000"
+    # depends_on:
 
   websocket:
     build: ./web
