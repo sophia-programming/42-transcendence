@@ -1,5 +1,3 @@
-import { setLanguage } from "/utils/i18n.js";
-
 const Navbar = {
   render: async () => {
     return `<nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -38,6 +36,17 @@ const Navbar = {
                         <li class="nav-item">
                         <a class="nav-link" href="#/login" data-i18n="login">Login</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="language">
+                          Language
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                          <li><a class="dropdown-item" href="#" onclick="setLanguage('en')" data-i18n="english">English</a></li>
+                          <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')" data-i18n="japanese">Japanese</a></li>
+                        </ul>
+                      </li>
                     </ul>
                     </div>
                 </div>

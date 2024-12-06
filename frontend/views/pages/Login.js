@@ -1,3 +1,5 @@
+import { translate } from "/utils/i18n.js";
+
 const Login = {
   render: async () => {
     return `<main
@@ -6,21 +8,21 @@ const Login = {
                 >
                 <form id="login-form" method="post" action="/accounts/login/">
                     <div class="mb-3">
-                    <label for="id_username" class="form-label">Username</label>
+                    <label for="id_username" class="form-label">${translate("Username")}</label>
                     <input type="text" id="id_username" class="form-control" name="username" required />
                     </div>
                     <div class="mb-3">
-                    <label for="id_password" class="form-label">Password</label>
+                    <label for="id_password" class="form-label">${translate("Password")}</label>
                     <input type="password" id="id_password" class="form-control" name="password" required />
                     </div>
                     <input type="hidden" value="/accounts/verify_otp/" />
-                    <button type="submit" class="btn btn-primary mb-2 w-100">Login</button>
+                    <button type="submit" class="btn btn-primary mb-2 w-100">${translate("Login")}</button>
                 </form>
                 <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;"
-                    >Sign Up</a
+                    >${translate("Sign_Up")}</a
                 >
                 <a href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;"
-                    >Login with 42</a
+                    >${translate("Login_with_42")}</a
                 >
                 </main>`;
   },

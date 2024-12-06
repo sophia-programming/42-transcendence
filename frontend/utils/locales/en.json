@@ -9,5 +9,11 @@
 	"login": "Login",
 	"language": "Language",
 	"english": "English",
-	"japanese": "Japanese"
+	"japanese": "Japanese",
+	"welcome_home": "Welcome to the Home Page",
+	"Username": "Username",
+	"Password": "Password",
+	"Login": "Login",
+	"Sign_Up": "Signup",
+	"Login_with_42": "Login with 42"
 }

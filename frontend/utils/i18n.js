@@ -5,16 +5,17 @@ async function loadTranslations(lang) {
   const response = await fetch(`/utils/locales/${lang}.json`);
   const data = await response.json();
   translations[lang] = data;
+  console.log(translations);
 }
 
-function translate(key) {
+export function translate(key) {
   // ストレージから言語を取得する
   const lang = localStorage.getItem('lang') || 'en';
   // その言語のkeyに対応する値を返す
   return translations[lang][key] || key;
 }
 
-export async function setLanguage(lang) {
+window.setLanguage = async function(lang) {
   if (!translations[lang]) {
     await loadTranslations(lang);
   }
@@ -26,7 +27,7 @@ export async function setLanguage(lang) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = translate(el.getAttribute('data-i18n'));
   });
-}
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   const lang = localStorage.getItem('lang') || 'en';
