@@ -1,4 +1,4 @@
-name: docker-compose-web-prod-test
+name: docker-compose-prod-test
 
 on:
   push:
