@@ -20,6 +20,9 @@ const Navbar = {
                         <a class="nav-link active" href="#/">Home</a>
                         </li>
                         <li class="nav-item">
+                        <a class="nav-link active" href="#/gameplay">Gameplay</a>
+                        </li>
+                        <li class="nav-item">
                         <a class="nav-link" href="#/tournament">Tournament</a>
                         </li>
                         <li class="nav-item">

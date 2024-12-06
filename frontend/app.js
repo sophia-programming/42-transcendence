@@ -3,10 +3,12 @@
 import Navbar from "./views/components/Navbar.js";
 import Login from "./views/pages/Login.js";
 import Home from "./views/pages/Home.js";
+import Gameplay from "./views/pages/Gameplay.js";
 
 const routes = {
   "/": Home,
   "/login": Login,
+  "/gameplay": Gameplay,
 };
 
 const router = async () => {
