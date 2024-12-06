@@ -11,9 +11,8 @@
 	"english": "English",
 	"japanese": "Japanese",
 	"welcome_home": "Welcome to the Home Page",
-	"Username": "Username",
-	"Password": "Password",
-	"Login": "Login",
-	"Sign_Up": "Signup",
-	"Login_with_42": "Login with 42"
+	"username": "Username",
+	"password": "Password",
+	"sign_up": "Signup",
+	"login_with_42": "Login with 42"
 }

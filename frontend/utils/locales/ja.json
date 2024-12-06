@@ -11,9 +11,8 @@
 	"english": "英語",
 	"japanese": "日本語",
 	"welcome_home": "ホームページへようこそ",
-	"Username": "ユーザー名",
-	"Password": "パスワード",
-	"Login": "ログイン",
-	"Sign_Up": "アカウント作成",
-	"Login_with_42": "42アカウントでログイン"
+	"username": "ユーザー名",
+	"password": "パスワード",
+	"sign_up": "アカウント作成",
+	"login_with_42": "42アカウントでログイン"
 }
