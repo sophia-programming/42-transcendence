@@ -1,0 +1,13 @@
+{
+	"title": "My Application",
+	"navbar": "Navbar",
+	"home": "Home",
+	"tournament": "Tournament",
+	"setup-otp": "Setup Otp",
+	"my-page": "My Page",
+	"gameplay": "Gameplay",
+	"login": "Login",
+	"language": "Language",
+	"english": "English",
+	"japanese": "Japanese"
+}

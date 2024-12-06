@@ -1,8 +1,10 @@
+import { setLanguage } from "/utils/i18n.js";
+
 const Navbar = {
   render: async () => {
     return `<nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Navbar</a>
+                    <a class="navbar-brand" href="#" data-i18n="navbar">Navbar</a>
                     <button
                     class="navbar-toggler"
                     type="button"
@@ -17,31 +19,34 @@ const Navbar = {
                     <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                        <a class="nav-link active" href="#/">Home</a>
+                        <a class="nav-link active" href="#/" data-i18n="home">Home</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link active" href="#/gameplay">Gameplay</a>
+                        <a class="nav-link active" href="#/gameplay" data-i18n="gameplay">Gameplay</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#/tournament">Tournament</a>
+                        <a class="nav-link" href="#/tournament" data-i18n="tournament">Tournament</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#/setup-otp">Setup Otp</a>
+                        <a class="nav-link" href="#/setup-otp" data-i18n="setup-otp">Setup Otp</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#/mypage">My Page</a>
+                        <a class="nav-link" href="#/mypage" data-i18n="my-page">My Page</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                        <a class="nav-link" href="#/login">Login</a>
+                        <a class="nav-link" href="#/login" data-i18n="login">Login</a>
                         </li>
                     </ul>
                     </div>
                 </div>
             </nav>`;
   },
-  after_render: async () => {},
+  after_render: async () => {
+    const lang = localStorage.getItem("lang") || "en";
+    await setLanguage(lang);
+  },
 };
 
 export default Navbar;
