@@ -12,3 +12,14 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = ['url', 'name']
+
+# 以下を追加
+from rest_framework import serializers
+from .models import GameStatus
+
+
+class GameStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameStatus
+        fields = ['id', 'status']
+
