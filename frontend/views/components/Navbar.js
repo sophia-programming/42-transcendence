@@ -1,5 +1,3 @@
-import { setLanguage } from "/utils/i18n.js";
-
 const Navbar = {
   render: async () => {
     return `<nav class="navbar navbar-expand-lg bg-body-tertiary">
