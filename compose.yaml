@@ -1,9 +1,9 @@
 services:
-  web:
-    # todo: ディレクトリ名とサービス名をappに変更
+  backend:
+    # todo: ディレクトリ名をbackendに
     build: ./web
-    container_name: web
-    command: /bin/sh -c "web/entrypoint.sh"
+    container_name: backend
+    entrypoint: "web/entrypoint.sh"
     volumes:
       - .:/usr/src/app
     env_file: .env
@@ -16,6 +16,10 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: ./web/requirements.txt
 
   db:
     image: postgres
@@ -42,21 +46,5 @@ services:
       retries: 5
       start_period: 30s
 
-  ganache:
-    extends:
-      file: ./blockchain/docker-compose.blockchain.yml
-      service: ganache
-
-  truffle:
-    depends_on:
-      - ganache
-    extends:
-      file: ./blockchain/docker-compose.blockchain.yml
-      service: truffle
-
-networks:
-  blockchain_net:
-
-volumes:
-  certs:
-    driver: local
+include:
+  - ./blockchain/blockchain.yml

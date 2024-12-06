@@ -15,9 +15,9 @@
 !*.sol
 !package.json
 !package-lock.json
-!docker-compose.blockchain.yml
-!docker-compose.yml
-!docker-compose.prod.yml
+!blockchain.yml
+!compose.yaml
+!compose.prod.yaml
 !Dockerfile
 !.env_template
 !.pre-commit-config.yaml
@@ -30,4 +30,5 @@
 !nginx/default.conf
 
 # Ignore node_modules directory
-node_modules/
+node_modules/!web/fixtures/*
+!web/fixtures/*

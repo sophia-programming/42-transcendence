@@ -1,0 +1,20 @@
+[
+  {
+    "model": "accounts.CustomUser",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$sqhqrXUqH1sEouzcs2ChR7$1gFrxrbvFjfuV6nnLLe+e49RWXrmmQfUDLmjahUAHWY=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@example.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2017-12-16T17:42:43.941Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

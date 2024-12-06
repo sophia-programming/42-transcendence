@@ -1,0 +1,30 @@
+# https://docs.docker.com/compose/how-tos/production/
+# https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+# https://docs.docker.com/reference/compose-file/merge/
+
+services:
+  backend:
+    # todo: ディレクトリ名もappに変更
+    # todo: env.prodを追加
+    volumes: !reset []
+    entrypoint: !override "/usr/src/app/entrypoint.sh"
+    environment: !override
+      - DEBUG=False
+    development: !reset []
+
+  db:
+    volumes: !reset []
+
+  web:
+    image: nginx
+    container_name: web
+    # volumes:
+    #   - ./web/static:/usr/share/nginx/html
+    #   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+include:
+  - ./elk/elk-services.yml
