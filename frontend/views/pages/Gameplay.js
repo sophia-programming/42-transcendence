@@ -31,7 +31,7 @@ const Gameplay = {
 			right: 0,
 		};
 
-		let animationId = null;
+		let animationFrameId = null;
 		const keyStates = {
 			left: false,
 			right: false,
@@ -39,15 +39,23 @@ const Gameplay = {
 
 		// Websocket
 		const url = "ws://" + "localhost:8000" + "/ws/gameplay/";
-		const ws = new WebSocket(url);
+		if (window.ws) {
+			window.ws.close();
+			window.ws = null;
+			console.log("WebSocket closed");
+		}
+		window.ws = new WebSocket(url);
 		console.log(url + " WebSocket created");
 
-		ws.onopen = () => {
+		window.ws.onopen = () => {
 			console.log("WebSocket opened");
+			if (animationFrameId) {
+				cancelAnimationFrame(animationFrameId);
+			}
 			animationFrameId = requestAnimationFrame(update);
 		};
 
-		ws.onmessage = (e) => {
+		window.ws.onmessage = (e) => {
 			const coordinates = JSON.parse(e.data);
 			score.left = coordinates.left_score;
 			score.right = coordinates.right_score;
@@ -58,57 +66,59 @@ const Gameplay = {
 		};
 
 		function sendMessage(message) {
-			ws.send(JSON.stringify(message));
+			window.ws.send(JSON.stringify(message));
 		}
 
-		let leftInterval = null;
-		let rightInterval = null;
-		document.addEventListener('keydown', function (event) {
-			let message = null;
-			if (event.key === "D" || event.key === "d") {
-				message = { key: "D", action: "pressed", paddle: "left" };
-			} else if (event.key === "E" || event.key === "e") {
-				message = { key: "E", action: "pressed", paddle: "left" };
-			} else if (event.key === "I" || event.key === "i") {
-				message = { key: "I", action: "pressed", paddle: "right" };
-			} else if (event.key === "K" || event.key === "k") {
-				message = { key: "K", action: "pressed", paddle: "right" };
-			}
-		
-			if (message && message.paddle === "left" && !keyStates.left) {
-				keyStates.left = true;
-				leftInterval = setInterval(function () {
-					sendMessage(message);
-				}, 1);
-			}
-			if (message && message.paddle === "right" && !keyStates.right) {
-				keyStates.right = true;
-				rightInterval = setInterval(function () {
-					sendMessage(message);
-				}, 1);
-			}
-		});
+		if (!window.keydownListenerAdded) {
+			let leftInterval = null;
+			let rightInterval = null;
+			document.addEventListener('keydown', function (event) {
+				let message = null;
+				if (event.key === "D" || event.key === "d") {
+					message = { key: "D", action: "pressed", paddle: "left" };
+				} else if (event.key === "E" || event.key === "e") {
+					message = { key: "E", action: "pressed", paddle: "left" };
+				} else if (event.key === "I" || event.key === "i") {
+					message = { key: "I", action: "pressed", paddle: "right" };
+				} else if (event.key === "K" || event.key === "k") {
+					message = { key: "K", action: "pressed", paddle: "right" };
+				}
+			
+				if (message && message.paddle === "left" && !keyStates.left) {
+					keyStates.left = true;
+					leftInterval = setInterval(function () {
+						sendMessage(message);
+					}, 1);
+				}
+				if (message && message.paddle === "right" && !keyStates.right) {
+					keyStates.right = true;
+					rightInterval = setInterval(function () {
+						sendMessage(message);
+					}, 1);
+				}
+			});
+			document.addEventListener('keyup', function (event) {
+				if ( event.key === "E" ||
+					event.key === "e" ||
+					event.key === "D" ||
+					event.key === "d" )
+				{
+					clearInterval(leftInterval); // メッセージ送信の間隔を止める
+					keyStates.left = false;
+				}
+				else if ( event.key === "I" ||
+					event.key === "i" ||
+					event.key === "K" ||
+					event.key === "k" )
+				{
+					clearInterval(rightInterval); // メッセージ送信の間隔を止める
+					keyStates.right = false;
+				}
+			});
+			window.keydownListenerAdded = true;
+		}
 
-		document.addEventListener('keyup', function (event) {
-			if ( event.key === "E" ||
-				event.key === "e" ||
-				event.key === "D" ||
-				event.key === "d" )
-			{
-				clearInterval(leftInterval); // メッセージ送信の間隔を止める
-				keyStates.left = false;
-			}
-			else if ( event.key === "I" ||
-				event.key === "i" ||
-				event.key === "K" ||
-				event.key === "k" )
-			{
-				clearInterval(rightInterval); // メッセージ送信の間隔を止める
-				keyStates.right = false;
-			}
-		});
-
-		ws.onclose = () => console.log("Disconnected");
+		window.ws.onclose = () => console.log("Disconnected");
   
 		// 描画関数
 		function draw() {
@@ -128,7 +138,7 @@ const Gameplay = {
 
 		function update() {
 			draw();
-			animationId = requestAnimationFrame(update);
+			animationFrameId = requestAnimationFrame(update);
 		}
 
 		update();
