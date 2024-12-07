@@ -10,6 +10,7 @@ services:
     environment: !override
       - DEBUG=False
     development: !reset []
+    ports: !reset []
 
   db:
     volumes: !reset []
@@ -18,6 +19,7 @@ services:
     environment: !override
       - BACKEND_HOST=localhost:80/api
       - BACKEND_WS_HOST=localhost:80/ws
+    ports: !reset []
 
   web:
     build:
