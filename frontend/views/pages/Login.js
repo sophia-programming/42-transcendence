@@ -1,3 +1,5 @@
+import { API_ROOT } from "../../app-config.js";
+
 const Login = {
   render: async () => {
     return `<main
@@ -34,7 +36,7 @@ const Login = {
         let password = document.getElementById("id_password").value;
 
         const response = await fetch(
-          "http://localhost:8000/accounts/api/login/",
+          `http://${API_ROOT}/accounts/api/login/`,
           {
             method: "POST",
             headers: {
