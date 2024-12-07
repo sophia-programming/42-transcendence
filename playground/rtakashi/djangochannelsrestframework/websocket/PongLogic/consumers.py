@@ -19,13 +19,33 @@ class GameStatusConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = GameStatus.objects.all()
     serializer_class = GameStatusSerializer
     lookup_field = "pk"
-
+    
     @action()
-    async def init(self, pk, **kwargs):
+    async def init(self, content=None, **kwargs):
         print("game init")
+
+        # contentがNoneの場合のデフォルト処理
+        if content is None:
+            content = {}
+
+        # request_idの取得
+        request_id = content.pop("request_id", None)
+
+        # request_idがない場合の特別な処理
+        if request_id is None:
+            print("No request_id provided")
+            await self.send_json({
+                "error": "Missing request_id",
+                "response": "Failed to process your request."
+            })
+            return
+
+        # 通常の処理
         await self.send_json({
-            "response": f"Message received: {"game init"}"
+            "request_id": request_id,
+            "response": "Message received: game init"
         })
+
 
 class PongLogic(AsyncWebsocketConsumer):
     class game_window:

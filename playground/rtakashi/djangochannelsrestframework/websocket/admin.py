@@ -4,6 +4,6 @@ from django.contrib import admin
 
 from .models import GameStatus
 class GameStatusAdmin(admin.ModelAdmin):
-    list_display = ('id', 'status')
+    list_display = ('id', 'game_status')
 
 admin.site.register(GameStatus, GameStatusAdmin)

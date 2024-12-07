@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("status", models.CharField(max_length=10)),
+                ("game_status", models.CharField(max_length=10)),
             ],
         ),
     ]
