@@ -17,7 +17,7 @@ class Player(models.Model):
 
 class Match(models.Model):
     # on_delete=models.CASCADE：参照先のオブジェクトが削除されたときに、関連するオブジェクトも削除する
-    torunament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     match_number = models.PositiveIntegerField()
     timestamp = models.DateTimeField()
 

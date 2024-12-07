@@ -22,14 +22,14 @@ class ModelTests(TestCase):
     def test_match_creation(self):
         # マッチが正しく作成され,トーナメントと関連付けられているか
         match = Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
-        self.assertEqual(match.tournament, "Test Tournament")
+        self.assertEqual(match.tournament.name, "Test Tournament")
         self.assertEqual(match.match_number, 1)
 
     def test_player_match_creation(self):
         # PlayerMatchが正しく作成され,プレイヤーとマッチが関連付けられているか
         match = Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
         player_match = PlayerMatch.objects.create(player=self.player1, match=match, score=10, is_winner=True)
-        self.assertEqual(player_match.player, "Player 1")
+        self.assertEqual(player_match.player.name, "Player 1")
         self.assertEqual(player_match.match.match_number, 1)
         self.assertEqual(player_match.score, 10)
         self.assertEqual(player_match.is_winner, True)
