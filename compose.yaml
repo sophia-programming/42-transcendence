@@ -46,6 +46,9 @@ services:
     command: /bin/sh -c "npm install && npm run server"
     volumes:
       - ./frontend:/usr/src/frontend
+    environment:
+      - BACKEND_HOST=localhost:8000
+      - BACKEND_WS_HOST=localhost:8000/ws
     ports:
       - "3000:3000"
     depends_on:
