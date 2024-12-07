@@ -4,7 +4,6 @@
 
 services:
   backend:
-    # todo: ディレクトリ名もappに変更
     # todo: env.prodを追加
     volumes: !reset []
     entrypoint: !override "/usr/src/app/entrypoint.sh"
@@ -18,9 +17,10 @@ services:
   web:
     image: nginx
     container_name: web
-    # volumes:
+    # todo: volumeを無しに
+    volumes:
     #   - ./web/static:/usr/share/nginx/html
-    #   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
     depends_on:

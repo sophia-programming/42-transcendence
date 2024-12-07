@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# todo: ディレクトリ名変更
-cd /usr/src/app/web
+cd /usr/src/app/backend
 
 python manage.py makemigrations --noinput
 python manage.py migrate --noinput
