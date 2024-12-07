@@ -6,4 +6,4 @@ class WebsocketConfig(AppConfig):
     name = "websocket"
     def ready(self):
         # アプリケーションが完全に初期化された後に必要なインポートを行う
-        from . import consumers  # 必要な場合にだけインポート
+        from .PongLogic import consumers  # 必要な場合にだけインポート

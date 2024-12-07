@@ -5,5 +5,4 @@ sqlparse
 channels
 channels_redis
 daphne
-djangorestframework
 djangochannelsrestframework

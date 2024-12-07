@@ -5,7 +5,27 @@ import asyncio
 import random
 import math
 from .utils import Utils
-from websocket.models import GameStatus
+
+
+from channels.db import database_sync_to_async
+from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
+from djangochannelsrestframework.observer import model_observer
+from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin, action
+
+from websocket.serializers import GameStatusSerializer
+
+class GameStatusConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
+    from websocket.models import GameStatus
+    queryset = GameStatus.objects.all()
+    serializer_class = GameStatusSerializer
+    lookup_field = "pk"
+
+    @action()
+    async def init(self, pk, **kwargs):
+        print("game init")
+        await self.send_json({
+            "response": f"Message received: {"game init"}"
+        })
 
 class PongLogic(AsyncWebsocketConsumer):
     class game_window:
@@ -54,10 +74,6 @@ class PongLogic(AsyncWebsocketConsumer):
         self.left_score = 0
         self.right_score = 0
         await self.game_loop()
-
-    def get_game_status():
-        from .models import GameStatus
-        return GameStatus.objects.all()
 
     async def game_loop(self):
         while self.left_score < 15 and self.right_score < 15:
