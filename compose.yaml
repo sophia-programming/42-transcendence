@@ -33,12 +33,12 @@ services:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
+      test: ["CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb"]
       interval: 30s
       timeout: 30s
       retries: 5
       start_period: 30s
-  
+
   frontend:
     image: node:latest
     container_name: frontend
@@ -58,7 +58,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "localhost", "ping" ]
+      test: ["CMD", "redis-cli", "localhost", "ping"]
       interval: 30s
       timeout: 30s
       retries: 5
