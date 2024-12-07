@@ -24,6 +24,8 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+      frontend:
+        condition: service_healthy
     command: ["nginx", "-g", "daemon off;"]
 
 include:
