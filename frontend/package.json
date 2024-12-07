@@ -10,6 +10,6 @@
         "webpack-cli": "4.8.0"
     },
     "scripts": {
-        "server": "http-server -b 0.0.0.0 -p 3000"
+        "server": "node server.js"
     }
 }
