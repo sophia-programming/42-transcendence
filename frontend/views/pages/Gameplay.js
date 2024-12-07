@@ -39,11 +39,6 @@ const Gameplay = {
 
 		// Websocket
 		const url = "ws://" + "localhost:8000" + "/ws/gameplay/";
-		if (window.ws) {
-			window.ws.close();
-			window.ws = null;
-			console.log("WebSocket closed");
-		}
 		window.ws = new WebSocket(url);
 		console.log(url + " WebSocket created");
 
@@ -142,7 +137,15 @@ const Gameplay = {
 		}
 
 		update();
-	}
+	},
+
+	cleanup: () => {
+		if (window.ws) {
+			window.ws.close();
+			window.ws = null;
+			console.log("WebSocket closed");
+		}
+	},
 };
 
 export default Gameplay;
