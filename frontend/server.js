@@ -29,6 +29,15 @@ const server = http.createServer((req, res) => {
       .replace(
         '<div id="body_container"></div>',
         `<div id="body_container">${renderPage(req.url)}</div>`
+      )
+      .replace(
+        '<script id="load_env"></script>',
+        `<script>
+          window.env = {
+            BACKEND_HOST: '${process.env.BACKEND_HOST}',
+            BACKEND_WS_HOST: '${process.env.BACKEND_WS_HOST}'
+          };
+        </script>`
       );
     //   .replace(
     //     '<div id="footer_container"></div>',
