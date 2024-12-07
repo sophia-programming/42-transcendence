@@ -14,6 +14,8 @@ services:
   db:
     volumes: !reset []
 
+  frontend: !reset []
+
   web:
     image: nginx
     container_name: web
