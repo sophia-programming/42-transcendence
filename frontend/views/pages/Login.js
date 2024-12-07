@@ -1,5 +1,3 @@
-import { translate } from "/utils/i18n.js";
-
 const Login = {
   render: async () => {
     return `<main
