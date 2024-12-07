@@ -10,11 +10,16 @@ services:
     environment: !override
       - DEBUG=False
     development: !reset []
+    ports: !reset []
 
   db:
     volumes: !reset []
 
-  frontend: !reset []
+  frontend:
+    environment: !override
+      - BACKEND_HOST=localhost:80/api
+      - BACKEND_WS_HOST=localhost:80/ws
+    ports: !reset []
 
   web:
     build:
@@ -25,6 +30,8 @@ services:
       - "80:80"
     depends_on:
       backend:
+        condition: service_healthy
+      frontend:
         condition: service_healthy
     command: ["nginx", "-g", "daemon off;"]
 
