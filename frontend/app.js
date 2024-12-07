@@ -23,7 +23,12 @@ const router = async () => {
   const location = window.location.hash.slice(1).toLowerCase() || "/";
   console.log(location);
 
+  if (window.currentPage && window.currentPage.cleanup) {
+    window.currentPage.cleanup();
+  }
+
   const page = routes[location];
+  window.currentPage = page;
 
   body.innerHTML = await page.render();
   await page.after_render();
