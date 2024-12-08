@@ -9,7 +9,6 @@ services:
     entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
       - ENVIRONMENT=production
-    ports: !reset []
     development: !reset []
     ports: !reset []
 

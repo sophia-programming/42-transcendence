@@ -10,7 +10,7 @@ python manage.py migrate --noinput
 python manage.py flush --noinput
 python manage.py loaddata fixtures/users.json
 
-# 環境変数のENVIRONMENTの値がdevelopmentの時はrunserverを、Falseの時はdaphneを実行
+# 環境変数のENVIRONMENTの値がdevelopmentの時はrunserverを、developmentの時はdaphneを実行
 if [ $ENVIRONMENT = "development" ]
 then
     python manage.py runserver 0.0.0.0:8000
