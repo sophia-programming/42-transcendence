@@ -22,7 +22,15 @@ class Match(models.Model):
     timestamp = models.DateTimeField()
 
     def __str__(self):
-        return f"Match {self.match_number} in {self.torunament.name}"
+        return f"Match {self.match_number} in {self.tournament.name}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tournament", "match_number"], 
+                name="unique_match_number"
+            )
+        ]
 
 
 class PlayerMatch(models.Model):
