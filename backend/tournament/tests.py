@@ -33,3 +33,29 @@ class ModelTests(TestCase):
         self.assertEqual(player_match.match.match_number, 1)
         self.assertEqual(player_match.score, 10)
         self.assertEqual(player_match.is_winner, True)
+
+    def test_unique_match_number_constraint(self):
+        # 同じトーナメント内で同じマッチ番号を持つ試合を作成しようとするとエラーが発生するか
+        Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
+        with self.assertRaises(Exception):  # IntegrityErrorが発生するはず
+            Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
+
+    def test_cascade_delete(self):
+        # マッチが削除されるとそれに関連するPlayerMatchも削除されるか
+        match = Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
+        PlayerMatch.objects.create(player=self.player1, match=match, score=10, is_winner=True)
+
+        match_id = match.id  # 削除前に match の ID を取得
+        match.delete() 
+        
+        # match_id を使用して関連する PlayerMatch が存在しないことを確認
+        self.assertFalse(PlayerMatch.objects.filter(match_id=match_id).exists())
+
+    def test_winner_assignment(self):
+        # 勝者が正しく割り当てられるか
+        match = Match.objects.create(tournament=self.tournament, match_number=1, timestamp=timezone.now())
+        PlayerMatch.objects.create(player=self.player1, match=match, score=15, is_winner=True)
+        PlayerMatch.objects.create(player=self.player2, match=match, score=10, is_winner=False)
+
+        winner = PlayerMatch.objects.get(match=match, is_winner=True)
+        self.assertEqual(winner.player, self.player1)
