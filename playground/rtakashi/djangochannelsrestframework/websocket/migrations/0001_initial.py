@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="GameStatus",
+            name="GameState",
             fields=[
                 (
                     "id",
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("game_status", models.CharField(max_length=10)),
+                ("game_state", models.CharField(max_length=10)),
             ],
         ),
     ]

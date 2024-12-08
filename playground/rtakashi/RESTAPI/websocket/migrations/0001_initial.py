@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="GameStatus",
+            name="GameState",
             fields=[
                 (
                     "id",

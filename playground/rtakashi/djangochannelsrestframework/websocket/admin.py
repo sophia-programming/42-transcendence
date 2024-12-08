@@ -2,8 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import GameStatus
-class GameStatusAdmin(admin.ModelAdmin):
-    list_display = ('id', 'game_status')
+from .models import GameState
+class GameStateAdmin(admin.ModelAdmin):
+    list_display = ('id', 'action', 'game_state')
 
-admin.site.register(GameStatus, GameStatusAdmin)
+admin.site.register(GameState, GameStateAdmin)

@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from .models import GameState
 
-
-class GameStatusSerializer(serializers.ModelSerializer):
+class GameStateSerializer(serializers.ModelSerializer):
     class Meta:
-        from .models import GameStatus
-        model = GameStatus
-        fields = ['id', 'game_status']
+        from .models import GameState
+        model = GameState
+        fields = ['id', 'action', 'game_state']

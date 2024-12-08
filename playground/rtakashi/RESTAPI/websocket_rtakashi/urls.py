@@ -39,5 +39,5 @@ from websocket import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("websocket.urls")),
-    path('gamestatus/', include('websocket.urls'))
+    path('GameState/', include('websocket.urls'))
 ]

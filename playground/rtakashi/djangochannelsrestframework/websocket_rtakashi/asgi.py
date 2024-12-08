@@ -14,9 +14,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "websocket_rtakashi.settings")
-django.setup()  # Djangoアプリケーションを初期化
+django.setup()
 
-# routing.pyをここでインポート
 from websocket.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter(

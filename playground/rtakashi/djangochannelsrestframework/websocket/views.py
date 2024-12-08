@@ -1,16 +1,19 @@
+
+# SPAの場合はいらないかも
+
 from django.shortcuts import render
 
 
 def index(request):
     return render(request, "websocket/index.html")
 
-from rest_framework import permissions, viewsets
+# from rest_framework import permissions, viewsets
 
-from .models import GameStatus
-from .serializers import GameStatusSerializer
+# from .models import GameState
+# from .serializers import GameStateSerializer
 
 
-class GameStatusViewSet(viewsets.ModelViewSet):
+# class GameStateViewSet(viewsets.ModelViewSet):
 
-    queryset = GameStatus.objects.all()
-    serializer_class = GameStatusSerializer
+#     queryset = GameState.objects.all()
+#     serializer_class = GameStateSerializer

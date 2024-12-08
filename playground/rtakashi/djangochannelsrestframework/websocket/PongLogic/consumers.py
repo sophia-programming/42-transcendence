@@ -11,14 +11,14 @@ from channels.db import database_sync_to_async
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer import model_observer
 from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin, action
+from websocket.serializers import GameStateSerializer
 
-from websocket.serializers import GameStatusSerializer
-
-class GameStatusConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
-    from websocket.models import GameStatus
-    queryset = GameStatus.objects.all()
-    serializer_class = GameStatusSerializer
-    lookup_field = "pk"
+# ObserverModelInstanceMixinはなくても良いかも？
+class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
+    from websocket.models import GameState
+    queryset = GameState.objects.all()
+    serializer_class = GameStateSerializer
+    # lookup_field = "pk"
     
     @action()
     async def init(self, content=None, **kwargs):

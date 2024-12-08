@@ -2,14 +2,19 @@ from django.db import models
 
 # Create your models here.
 
-# この二つはユーザー情報のカスタマイズが必要な時に使用。今回はいらないかも？
-# from django.contrib.auth.models import AbstractUser
-# class User(AbstractUser):
-#     pass
+# ↓後でgame_state = models.JSONField(help_text="Game state data in JSON format, including players and ball positions.")にしてみる
+#     "action": "initialize_game",
+#     "game_state": {
+#         "players": {
+#             "player1": {"paddle_y": 50},
+#             "player2": {"paddle_y": 50}
+#         },
+#         "ball": {"x": 50, "y": 50, "vx": 1, "vy": 1}
+#     }
 
-# game_status: init,stop,restart
-class GameStatus(models.Model):
-    game_status = models.CharField(max_length=10)
-
+class GameState(models.Model):
+    action = models.CharField(max_length=50, null=False, default='waiting')
+    game_state = models.JSONField()
+    
     def __str__(self):
-        return f"GameStatus({self.id} {self.game_status})"
+        return f"GameState(id: {self.id}, action: {self.action})"
