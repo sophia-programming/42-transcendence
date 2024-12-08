@@ -5,78 +5,46 @@ import asyncio
 import random
 import math
 from .utils import Utils
-
+from .shared import game_window, ball, paddle
 
 from channels.db import database_sync_to_async
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer import model_observer
-from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin, action
+from djangochannelsrestframework.observer.generics import (
+    ObserverModelInstanceMixin,
+    action,
+)
 from websocket.serializers import GameStateSerializer
+
 
 # ObserverModelInstanceMixinはなくても良いかも？
 class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.game_window = game_window()
+        self.ball = ball()
+        self.paddle = paddle()
     from websocket.models import GameState
+
     queryset = GameState.objects.all()
     serializer_class = GameStateSerializer
+
     # lookup_field = "pk"
-    
-    @action()
-    async def init(self, content=None, **kwargs):
-        print("game init")
 
-        # contentがNoneの場合のデフォルト処理
-        if content is None:
-            content = {}
+    # {
+    #     "action":"moveup",
+    #     "player":"right"
+    # }
 
-        # request_idの取得
-        request_id = content.pop("request_id", None)
-
-        # request_idがない場合の特別な処理
-        if request_id is None:
-            print("No request_id provided")
-            await self.send_json({
-                "error": "Missing request_id",
-                "response": "Failed to process your request."
-            })
-            return
-
-        # 通常の処理
-        await self.send_json({
-            "request_id": request_id,
-            "response": "Message received: game init"
-        })
+    async def receive_json(self, content, **kwargs):
+        action = content.get("action")
+        if action == "move_up":
+            player = content.get("player")
+            if (player == "right"):
+               self.paddle.right_y += 3
 
 
 class PongLogic(AsyncWebsocketConsumer):
-    class game_window:
-        width = 1000
-        height = 600
-
-    class ball:
-        radius = 10
-        x = 500
-        y = 300
-        angle = 0
-        velocity = 5
-        direction = {
-            "facing_up": False,
-            "facing_down": False,
-            "facing_right": False,
-            "facing_left": False,
-        }
-        bound_angle = {
-            "left_top": math.pi * 7 / 4,
-            "left_bottom": math.pi / 4,
-            "right_top": math.pi * 5 / 4,
-            "right_bottom": math.pi * 3 / 4,
-        }
-
-    class paddle:
-        width = 15
-        height = 120
-        left_y = 240
-        right_y = 240
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.left_score = 0
@@ -84,9 +52,9 @@ class PongLogic(AsyncWebsocketConsumer):
         self.state = "stop"
         self.turn_count = 0
         self.lock = asyncio.Lock()
-        self.game_window = self.game_window()
-        self.ball = self.ball()
-        self.paddle = self.paddle()
+        self.game_window = game_window()
+        self.ball = ball()
+        self.paddle = paddle()
         self.tasks = {}
 
     # PongLogic

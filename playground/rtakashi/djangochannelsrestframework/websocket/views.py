@@ -1,4 +1,3 @@
-
 # SPAの場合はいらないかも
 
 from django.shortcuts import render
@@ -6,6 +5,7 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, "websocket/index.html")
+
 
 # from rest_framework import permissions, viewsets
 
