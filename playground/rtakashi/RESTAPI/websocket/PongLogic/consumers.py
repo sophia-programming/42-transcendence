@@ -54,6 +54,10 @@ class PongLogic(AsyncWebsocketConsumer):
         self.right_score = 0
         await self.game_loop()
 
+    def get_game_state():
+        from .models import GameState
+        return GameState.objects.all()
+
     async def game_loop(self):
         while self.left_score < 15 and self.right_score < 15:
             if self.state == "stop":

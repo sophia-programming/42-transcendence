@@ -10,9 +10,9 @@ services:
       - redis
     environment:
       - REDIS_URL=redis://redis:6379
+      # - DJANGO_SETTINGS_MODULE=websocket_rtakashi.settings
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
-

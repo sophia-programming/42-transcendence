@@ -8,14 +8,15 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
-
+import django
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from websocket.routing import websocket_urlpatterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "websocket_rtakashi.settings")
+django.setup()
 
+from websocket.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter(
     {
