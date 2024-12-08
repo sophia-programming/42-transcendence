@@ -8,7 +8,8 @@ services:
     volumes: !reset []
     entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
-      - DEBUG=False
+      - ENVIRONMENT=production
+    ports: !reset []
     development: !reset []
     ports: !reset []
 
@@ -17,8 +18,8 @@ services:
 
   frontend:
     environment: !override
-      - BACKEND_HOST=localhost:80/api
-      - BACKEND_WS_HOST=localhost:80/ws
+      - BACKEND_HOST=https://localhost:443/api
+      - BACKEND_WS_HOST=wss://localhost:443/ws
     ports: !reset []
 
   web:
