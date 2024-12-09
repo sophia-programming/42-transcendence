@@ -50,7 +50,9 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL")],  # import os を忘れないように
+            "hosts": [("redis", 6379)],
+            "capacity": 1500,  # default 100
+            "expiry": 10,  # default 60
         },
     }
 }
