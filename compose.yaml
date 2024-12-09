@@ -19,6 +19,12 @@ services:
       watch:
         - action: rebuild
           path: ./backend/requirements.txt
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:8000/health/"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   db:
     image: postgres
@@ -42,7 +48,9 @@ services:
       - ./frontend:/usr/src/frontend
     ports:
       - "3000:3000"
-    # depends_on:
+    depends_on:
+      backend:
+        condition: service_healthy
 
   redis:
     image: redis
