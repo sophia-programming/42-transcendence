@@ -17,9 +17,9 @@
   <title>gameplay</title>
 </head>
 
-
 <body>
   <canvas id="gameCanvas"></canvas>
+
   <script>
     const gameCanvas = document.getElementById("gameCanvas");
     const ctx = gameCanvas.getContext("2d");
@@ -55,8 +55,8 @@
     };
 
     const keyStates = { left: false, right: false };
-
     let animationFrameId;
+    let gameEnded = false;
 
     document.addEventListener("DOMContentLoaded", function () {
       // websocketの接続先
@@ -89,10 +89,25 @@
         paddle.right_y = data.right_paddle_y;
         ball.x = data.ball_x;
         ball.y = data.ball_y;
+
+        /* らざ追記：15点の点数判定を入れました。また、今は名前がわからないので、right,leftにしてますが、
+            DBから受信できるようになったら、対戦者の名前が表示されるようにしたいです。*/
+        if (!gameEnded && (score.left >= 15 || score.right >= 15)) {
+          gameEnded = true;
+          const winner = score.left >= 15 ? "left" : "right";
+          // Socketを閉じる→他にやることがあれば教えてください。
+          ws.close();
+          // 勝者ページにリダイレクト
+          window.location.href = `/result/winner/${winner}`;
+        }
       };
 
+
+      // らざ追記：gameendedつまりゲームが終わっていなければメッセージの送信をする仕様に変更
       function sendMessage(message) {
-        ws.send(JSON.stringify(message));
+        if (!gameEnded) {
+          ws.send(JSON.stringify(message));
+        }
       }
 
       // ボタンを長押ししたら送り続ける
@@ -130,7 +145,7 @@
           event.key === "D" ||
           event.key === "d"
         ) {
-          clearInterval(leftinterval); // メッセージ送信の間隔を止める
+          clearInterval(leftinterval);
           keyStates.left = false;
         } else if (
           event.key === "I" ||
@@ -138,44 +153,45 @@
           event.key === "K" ||
           event.key === "k"
         ) {
-          clearInterval(rightinterval); // メッセージ送信の間隔を止める
+          clearInterval(rightinterval);
           keyStates.right = false;
         }
       });
 
+      // らざ追記：gameendedつまりゲームが終わっていなければdrawを実行する。
       function draw() {
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        // 背景描画
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 5;
-        ctx.setLineDash([10, 10]);
+        if (!gameEnded) {
+          ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+          // 背景描画
+          ctx.fillStyle = "black";
+          ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 5;
+          ctx.setLineDash([10, 10]);
 
-        ctx.beginPath();
-        ctx.moveTo(gameCanvas.width / 2, 0);
-        ctx.lineTo(gameCanvas.width / 2, gameCanvas.height);
-        ctx.stroke();
-        //スコア描画
-        ctx.font = `6vw "Press Start 2P", cursive`;
-        ctx.fillStyle = "white";
-        ctx.textBaseline = "top";
-        ctx.textAlign = "right"; // 右端を指定した座標に配置
-        ctx.fillText(score.left, l_score_x, score_y);
-        ctx.textAlign = "left";
-        ctx.fillText(score.right, r_score_x, score_y);
+          ctx.beginPath();
+          ctx.moveTo(gameCanvas.width / 2, 0);
+          ctx.lineTo(gameCanvas.width / 2, gameCanvas.height);
+          ctx.stroke();
+          //スコア描画
+          ctx.font = `6vw "Press Start 2P", cursive`;
+          ctx.fillStyle = "white";
+          ctx.textBaseline = "top";
+          ctx.textAlign = "right";
+          ctx.fillText(score.left, l_score_x, score_y);
+          ctx.textAlign = "left";
+          ctx.fillText(score.right, r_score_x, score_y);
 
-        //パドルとボール描画
-        ctx.fillRect(paddle.left_x, paddle.left_y, paddle_w, paddle_h);
-        ctx.fillRect(
-          paddle.right_x - paddle_w,
-          paddle.right_y,
-          paddle_w,
-          paddle_h
-        );
-        ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
-
-        // 次の描画呼び出し
+          //パドルとボール描画
+          ctx.fillRect(paddle.left_x, paddle.left_y, paddle_w, paddle_h);
+          ctx.fillRect(
+            paddle.right_x - paddle_w,
+            paddle.right_y,
+            paddle_w,
+            paddle_h
+          );
+          ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
+        }
         requestAnimationFrame(draw);
       }
     });
