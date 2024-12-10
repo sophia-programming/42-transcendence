@@ -1,0 +1,19 @@
+{
+	"title": "我的应用程序",
+	"navbar": "导航栏",
+	"home": "主页",
+	"tournament": "锦标赛",
+	"setup-otp": "设置OTP",
+	"my-page": "我的页面",
+	"gameplay": "游戏玩法",
+	"login": "登录",
+	"language": "语言",
+	"english": "英语",
+	"japanese": "日语",
+	"welcome_home": "欢迎来到首页",
+	"username": "用户名",
+	"password": "密码",
+	"sign_up": "注册",
+	"login_with_42": "使用42登录",
+	"chinese": "中文"
+}
