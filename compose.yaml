@@ -49,7 +49,6 @@ services:
     environment:
       - BACKEND_HOST=localhost:8000
       - BACKEND_WS_HOST=localhost:8000/ws
-      - I18NEXT_SRC=https://cdn.jsdelivr.net/npm/i18next@21.7.0/dist/umd/i18next.js
     ports:
       - "3000:3000"
     depends_on:

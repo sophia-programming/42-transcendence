@@ -38,9 +38,9 @@ const Navbar = {
                             Language
                         </a>
                         <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="languageDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en')" data-i18n="english">English</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')" data-i18n="japanese">Japanese</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('zh')" data-i18n="chinese">Chinese</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')" data-i18n="english">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('ja')" data-i18n="japanese">Japanese</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('zh')" data-i18n="chinese">Chinese</a></li>
                         </ul>
                         </li>
                         <li class="nav-item">

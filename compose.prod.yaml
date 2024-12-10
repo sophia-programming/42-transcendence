@@ -19,7 +19,6 @@ services:
     environment: !override
       - BACKEND_HOST=localhost:80/api
       - BACKEND_WS_HOST=localhost:80/ws
-      - I18NEXT_SRC=https://cdn.jsdelivr.net/npm/i18next@21.7.0/dist/umd/i18next.min.js
     ports: !reset []
 
   web:
