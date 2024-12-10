@@ -4,7 +4,7 @@ const Navbar = {
   render: async () => {
     return `<nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#" data-i18n="home">Navbar</a>
+                    <a class="navbar-brand" href="#" data-i18n="navbar">Navbar</a>
                     <button
                     class="navbar-toggler"
                     type="button"
@@ -56,9 +56,18 @@ const Navbar = {
     const lang = localStorage.getItem("lang") || "en";
     await changeLanguage(lang);
 
-    document.getElementById('change_to_english').onclick = () => changeLanguage('en');
-    document.getElementById('change_to_japanese').onclick = () => changeLanguage('ja');
-    document.getElementById('change_to_chinese').onclick = () => changeLanguage('zh');
+    document.getElementById('change_to_english').addEventListener('click', (event) => {
+        event.preventDefault();  // ページ遷移を防ぐ
+        changeLanguage('en');
+      });
+      document.getElementById('change_to_japanese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('ja');
+      });
+      document.getElementById('change_to_chinese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('zh');
+      });
   },
 };
 
