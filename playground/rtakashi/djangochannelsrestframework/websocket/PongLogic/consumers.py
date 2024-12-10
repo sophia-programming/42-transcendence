@@ -24,6 +24,7 @@ class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
         self.game_window = game_window()
         self.ball = ball()
         self.paddle = paddle()
+
     from websocket.models import GameState
 
     queryset = GameState.objects.all()
@@ -40,8 +41,8 @@ class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
         action = content.get("action")
         if action == "move_up":
             player = content.get("player")
-            if (player == "right"):
-               self.paddle.right_y += 3
+            if player == "right":
+                self.paddle.right_y += 3
 
 
 class PongLogic(AsyncWebsocketConsumer):
@@ -50,6 +51,8 @@ class PongLogic(AsyncWebsocketConsumer):
         self.left_score = 0
         self.right_score = 0
         self.state = "stop"
+        self.is_left = False
+        self.is_top = False
         self.turn_count = 0
         self.lock = asyncio.Lock()
         self.game_window = game_window()
@@ -98,125 +101,53 @@ class PongLogic(AsyncWebsocketConsumer):
             y_velocity = self.ball.velocity * math.sin(self.ball.angle)
 
             # 上下壁との衝突
-            if (
-                (
-                    self.ball.y + self.ball.radius >= self.game_window.height
-                    and self.ball.direction["facing_down"]
-                )
-                or self.ball.y - self.ball.radius <= 0
-                and self.ball.direction["facing_up"]
-            ):
+            if Utils.has_collided_with_wall(self.ball, self.game_window) == True:
                 y_velocity *= -1
                 self.ball.angle = 2 * math.pi - self.ball.angle
                 self.ball.angle = Utils.normalize_angle(self.ball.angle)
                 Utils.set_direction(self.ball)
 
             # 左右パドルとの衝突
-            if (
-                (
-                    self.ball.x - self.ball.radius == self.paddle.width
-                    and self.paddle.left_y + self.paddle.height
-                    >= self.ball.y - self.ball.radius
-                    and self.ball.y + self.ball.radius >= self.paddle.left_y
-                    and self.ball.direction["facing_left"]
-                )
-                or (
-                    self.ball.x - self.ball.radius <= self.paddle.width
-                    and self.paddle.left_y + self.paddle.height / 2 >= self.ball.y
-                    and self.ball.y >= self.paddle.left_y - self.ball.radius
-                    and self.ball.direction["facing_left"]
-                )
-                or (
-                    self.ball.x - self.ball.radius <= self.paddle.width
-                    and self.paddle.left_y + self.paddle.height / 2 <= self.ball.y
-                    and self.ball.y
-                    <= self.paddle.left_y + self.paddle.height + self.ball.radius
-                    and self.ball.direction["facing_left"]
-                )
-            ):
-                # 左パドルとの衝突
+            # 左パドルとの衝突
+            if Utils.has_collided_with_paddle_left(self.ball, self.paddle) == True:
+                self.is_left = True
                 if self.ball.y <= self.paddle.left_y + self.paddle.height / 2:
                     # パドル上部
-                    collision_distance = (
-                        self.paddle.left_y + self.paddle.height / 2
-                    ) - self.ball.y
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("left_top")
-                    else:
-                        self.ball.angle = (
-                            self.ball.bound_angle["left_top"] - 2 * math.pi
-                        ) / (self.paddle.height / 2) * collision_distance + 2 * math.pi
+                    self.is_top = True
+                    Utils.change_ball_angle(
+                        self.ball, self.paddle, self.is_left, self.is_top
+                    )
                     x_velocity *= -1
                     y_velocity = -1 * abs(y_velocity)
                 else:
-                    # パドル下部
-                    collision_distance = self.ball.y - (
-                        self.paddle.left_y + self.paddle.height / 2
+                    self.is_top = False
+                    Utils.change_ball_angle(
+                        self.ball, self.paddle, self.is_left, self.is_top
                     )
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("left_bottom")
-                    else:
-                        self.ball.angle = (
-                            self.ball.bound_angle.get("left_bottom")
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
                     x_velocity *= -1
                     y_velocity = abs(y_velocity)
+            # 右パドルとの衝突
             elif (
-                (
-                    self.ball.x + self.ball.radius == self.game_window.width
-                    and self.paddle.right_y <= self.ball.y
-                    and self.ball.y <= self.paddle.right_y + self.paddle.height
-                    and self.ball.direction["facing_right"]
+                Utils.has_collided_with_paddle_right(
+                    self.ball, self.paddle, self.game_window
                 )
-                or (
-                    self.ball.x + self.ball.radius
-                    >= self.game_window.width - self.paddle.width
-                    and self.paddle.right_y + self.paddle.height / 2 >= self.ball.y
-                    and self.ball.y >= self.paddle.right_y - self.ball.radius
-                    and self.ball.direction["facing_right"]
-                )
-                or (
-                    self.ball.x + self.ball.radius
-                    >= self.game_window.width - self.paddle.width
-                    and self.paddle.right_y + self.paddle.height / 2 <= self.ball.y
-                    and self.ball.y
-                    <= self.paddle.right_y + self.paddle.height + self.ball.radius
-                    and self.ball.direction["facing_right"]
-                )
+                == True
             ):
-                # 右パドルとの衝突
+                self.is_left = False
                 if self.ball.y <= self.paddle.right_y + self.paddle.height / 2:
                     # パドル上部
-                    collision_distance = (
-                        self.paddle.right_y + self.paddle.height / 2
-                    ) - self.ball.y
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("right_top")
-                    else:
-                        self.ball.angle = (
-                            math.pi
-                            + (self.ball.bound_angle["right_top"] - math.pi)
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
+                    self.is_top = True
+                    Utils.change_ball_angle(
+                        self.ball, self.paddle, self.is_left, self.is_top
+                    )
                     x_velocity *= -1
                     y_velocity = -1 * abs(y_velocity)
                 else:
                     # パドル下部
-                    collision_distance = self.ball.y - (
-                        self.paddle.right_y + self.paddle.height / 2
+                    self.is_top = False
+                    Utils.change_ball_angle(
+                        self.ball, self.paddle, self.is_left, self.is_top
                     )
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("right_bottom")
-                    else:
-                        self.ball.angle = (
-                            math.pi
-                            - (math.pi - self.ball.bound_angle["right_bottom"])
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
                     x_velocity *= -1
                     y_velocity = abs(y_velocity)
 
