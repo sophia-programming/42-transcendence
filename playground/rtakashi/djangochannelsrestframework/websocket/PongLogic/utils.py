@@ -125,3 +125,29 @@ class Utils:
                     / (paddle.height / 2)
                     * collision_distance
                 )
+
+
+    def adjust_ball_position(ball, paddle, x_velocity, y_velocity, game_window):
+        if (
+                ball.x - ball.radius > paddle.width
+                and ball.x + x_velocity - ball.radius < paddle.width
+                and ball.direction["facing_left"]
+            ):
+                ball.x = paddle.width + ball.radius
+        else:
+            ball.x += x_velocity
+        if (
+            ball.x + ball.radius
+            < game_window.width - paddle.width
+            and ball.x + x_velocity + ball.radius
+            > game_window.width - paddle.width
+            and ball.direction["facing_right"]
+        ):
+            ball.x = game_window.width - paddle.width - ball.radius
+        else:
+            ball.y += y_velocity
+        if ball.y - ball.radius < 0:
+            ball.y = ball.radius
+        if ball.y + ball.radius > game_window.height:
+            ball.y = game_window.height - ball.radius
+

@@ -154,31 +154,7 @@ class PongLogic(AsyncWebsocketConsumer):
             self.ball.angle = Utils.normalize_angle(self.ball.angle)
             # print("angle: ", self.ball.angle)
             Utils.set_direction(self.ball)
-            # ballの位置補正
-            if (
-                self.ball.x - self.ball.radius > self.paddle.width
-                and self.ball.x + x_velocity - self.ball.radius < self.paddle.width
-                and self.ball.direction["facing_left"]
-            ):
-                self.ball.x = self.paddle.width + self.ball.radius
-            else:
-                self.ball.x += x_velocity
-            if (
-                self.ball.x + self.ball.radius
-                < self.game_window.width - self.paddle.width
-                and self.ball.x + x_velocity + self.ball.radius
-                > self.game_window.width - self.paddle.width
-                and self.ball.direction["facing_right"]
-            ):
-                self.ball.x = (
-                    self.game_window.width - self.paddle.width - self.ball.radius
-                )
-            else:
-                self.ball.y += y_velocity
-            if self.ball.y - self.ball.radius < 0:
-                self.ball.y = self.ball.radius
-            if self.ball.y + self.ball.radius > self.game_window.height:
-                self.ball.y = self.game_window.height - self.ball.radius
+            Utils.adjust_ball_position(self.ball, self.paddle, x_velocity, y_velocity, self.game_window)
 
     async def check_game_state(self):
         if self.ball.x - self.ball.radius > self.game_window.width:
