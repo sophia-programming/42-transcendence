@@ -1,36 +1,88 @@
-import i18next from 'i18next';
-
 i18next.init({
-  // lng: 'en',
+  lng: localStorage.getItem('lang') || 'en', // ローカルストレージの言語を取得
   debug: true,
   resources: {
     en: {
       translation: {
-        "key": "hello world"
+        title: "My Application",
+        navbar: "Navbar",
+        home: "Home",
+        tournament: "Tournament",
+        setupotp: "Setup Otp",
+        mypage: "My Page",
+        gameplay: "Gameplay",
+        login: "Login",
+        language: "Language",
+        english: "English",
+        japanese: "Japanese",
+        welcome_home: "Welcome to the Home Page",
+        username: "Username",
+        password: "Password",
+        sign_up: "Signup",
+        login_with_42: "Login with 42",
+        chinese: "Chinese"
       }
     },
     ja: {
       translation: {
-        "key": "こんにちは、世界"
+        title: "アプリケーション",
+        navbar: "ナビゲーション",
+        home: "ホーム",
+        tournament: "トーナメント",
+        setupotp: "OTPを設定",
+        mypage: "マイページ",
+        gameplay: "ゲームプレイ",
+        login: "ログイン",
+        language: "言語",
+        english: "英語",
+        japanese: "日本語",
+        welcome_home: "ホームページへようこそ",
+        username: "ユーザー名",
+        password: "パスワード",
+        sign_up: "アカウント作成",
+        login_with_42: "42アカウントでログイン",
+        chinese: "中国語"
       }
     },
     zh: {
       translation: {
-        "key": "你好，世界"
+        title: "我的应用程序",
+        navbar: "导航栏",
+        home: "主页",
+        tournament: "锦标赛",
+        setupotp: "设置OTP",
+        mypage: "我的页面",
+        gameplay: "游戏玩法",
+        login: "登录",
+        language: "语言",
+        english: "英语",
+        japanese: "日语",
+        welcome_home: "欢迎来到首页",
+        username: "用户名",
+        password: "密码",
+        sign_up: "注册",
+        login_with_42: "使用42登录",
+        chinese: "中文"
       }
     }
   }
-}, function(err, t) {
-  // init set content
-  updateContent();
+}, (err, t) => {
+  if (err) return console.error('i18next init error:', err);
+  updateContent(); // 初期翻訳適用
 });
 
 function updateContent() {
-  document.getElementById('output').innerHTML = i18next.t('key');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = i18next.t(el.getAttribute('data-i18n'));
+  });
 }
 
-function changeLanguage(lng) {
-  i18next.changeLanguage(lng);
+export function changeLanguage(lng) {
+  i18next.changeLanguage(lng, (err, t) => {
+    if (err) return console.error('Change language error:', err);
+    localStorage.setItem('lang', lng); // 言語を保存
+    updateContent(); // 翻訳を更新
+  });
 }
 
 i18next.on('languageChanged', () => {
