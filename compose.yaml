@@ -46,11 +46,20 @@ services:
     command: /bin/sh -c "npm install && npm run server"
     volumes:
       - ./frontend:/usr/src/frontend
+    environment:
+      - BACKEND_HOST=localhost:8000
+      - BACKEND_WS_HOST=localhost:8000/ws
     ports:
       - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis

@@ -1,5 +1,3 @@
-import { API_ROOT } from "../../app-config.js";
-
 const Gameplay = {
 	render: async () => {
 		return `
@@ -40,7 +38,7 @@ const Gameplay = {
 		};
 
 		// Websocket
-		const url = `ws://${API_ROOT}/ws/gameplay/`;
+		const url = `ws://${window.env.BACKEND_WS_HOST}/gameplay/`;
 		window.ws = new WebSocket(url);
 		console.log(url + " WebSocket created");
 
