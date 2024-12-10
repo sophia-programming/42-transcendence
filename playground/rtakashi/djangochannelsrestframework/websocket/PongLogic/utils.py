@@ -85,6 +85,18 @@ class Utils:
         else:
             return False
 
+    def has_collided_with_paddle_top(ball, paddle, is_left):
+        if is_left == True:
+            if ball.y <= paddle.left_y + paddle.height / 2:
+                return True
+            else:
+                return False
+        else:
+            if ball.y <= paddle.right_y + paddle.height / 2:
+                return True
+            else:
+                return False
+
     def update_ball_angle(ball, paddle, is_left, is_top):
         # 左パドルの上部に衝突した時
         if is_left == True and is_top == True:
@@ -161,16 +173,11 @@ class Utils:
         if ball.y + ball.radius > game_window.height:
             ball.y = game_window.height - ball.radius
 
-    def update_ball_velocity(is_left, is_top, x_velocity, y_velocity):
-        if is_left == True and is_top == True:
-            x_velocity *= -1
-            y_velocity = -1 * abs(y_velocity)
-        elif is_left == True and is_top == False:
-            x_velocity *= -1
-            y_velocity = abs(y_velocity)
-        elif is_left == False and is_top == True:
+    def update_ball_velocity(is_top, x_velocity, y_velocity):
+        if is_top == True:
             x_velocity *= -1
             y_velocity = -1 * abs(y_velocity)
         else:
             x_velocity *= -1
             y_velocity = abs(y_velocity)
+        return x_velocity, y_velocity
