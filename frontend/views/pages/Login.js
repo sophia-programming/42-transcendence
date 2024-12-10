@@ -34,7 +34,7 @@ const Login = {
         let password = document.getElementById("id_password").value;
 
         const response = await fetch(
-          "http://localhost:8000/accounts/api/login/",
+          `http://${window.env.BACKEND_HOST}/accounts/api/login/`,
           {
             method: "POST",
             headers: {
