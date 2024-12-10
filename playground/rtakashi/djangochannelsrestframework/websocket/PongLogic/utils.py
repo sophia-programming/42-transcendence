@@ -115,9 +115,11 @@ class Utils:
             if collision_distance > paddle.height / 2:
                 ball.angle = ball.bound_angle.get("right_top")
             else:
-                ball.angle = (math.pi + 
-                    (ball.bound_angle["right_top"]
-                    - math.pi) / (paddle.height / 2) * collision_distance
+                ball.angle = (
+                    math.pi
+                    + (ball.bound_angle["right_top"] - math.pi)
+                    / (paddle.height / 2)
+                    * collision_distance
                 )
         # 右パドルの下部に衝突した時
         else:
@@ -133,23 +135,20 @@ class Utils:
                     * collision_distance
                 )
 
-
     def adjust_ball_position(ball, paddle, x_velocity, y_velocity, game_window):
         # 左パドルに衝突しそうかどうか
         if (
-                ball.x - ball.radius > paddle.width
-                and ball.x + x_velocity - ball.radius < paddle.width
-                and ball.direction["facing_left"]
-            ):
-                ball.x = paddle.width + ball.radius
+            ball.x - ball.radius > paddle.width
+            and ball.x + x_velocity - ball.radius < paddle.width
+            and ball.direction["facing_left"]
+        ):
+            ball.x = paddle.width + ball.radius
         else:
             ball.x += x_velocity
         # 右パドルに衝突しそうかどうか
         if (
-            ball.x + ball.radius
-            < game_window.width - paddle.width
-            and ball.x + x_velocity + ball.radius
-            > game_window.width - paddle.width
+            ball.x + ball.radius < game_window.width - paddle.width
+            and ball.x + x_velocity + ball.radius > game_window.width - paddle.width
             and ball.direction["facing_right"]
         ):
             ball.x = game_window.width - paddle.width - ball.radius
@@ -162,3 +161,16 @@ class Utils:
         if ball.y + ball.radius > game_window.height:
             ball.y = game_window.height - ball.radius
 
+    def update_ball_velocity(is_left, is_top, x_velocity, y_velocity):
+        if is_left == True and is_top == True:
+            x_velocity *= -1
+            y_velocity = -1 * abs(y_velocity)
+        elif is_left == True and is_top == False:
+            x_velocity *= -1
+            y_velocity = abs(y_velocity)
+        elif is_left == False and is_top == True:
+            x_velocity *= -1
+            y_velocity = -1 * abs(y_velocity)
+        else:
+            x_velocity *= -1
+            y_velocity = abs(y_velocity)

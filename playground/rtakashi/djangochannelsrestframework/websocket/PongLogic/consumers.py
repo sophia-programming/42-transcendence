@@ -59,6 +59,8 @@ class PongLogic(AsyncWebsocketConsumer):
         self.ball = ball()
         self.paddle = paddle()
         self.tasks = {}
+        self.x_velocity = 0
+        self.y_velocity = 0
 
     # PongLogic
     async def game_start(self):
@@ -97,12 +99,12 @@ class PongLogic(AsyncWebsocketConsumer):
     async def update_pos(self):
         async with self.lock:
             # self.ball.angle = math.pi / 3 #test用
-            x_velocity = self.ball.velocity * math.cos(self.ball.angle)
-            y_velocity = self.ball.velocity * math.sin(self.ball.angle)
+            self.x_velocity = self.ball.velocity * math.cos(self.ball.angle)
+            self.y_velocity = self.ball.velocity * math.sin(self.ball.angle)
 
             # 上下壁衝突判定
             if Utils.has_collided_with_wall(self.ball, self.game_window) == True:
-                y_velocity *= -1
+                self.y_velocity *= -1
                 self.ball.angle = 2 * math.pi - self.ball.angle
                 self.ball.angle = Utils.normalize_angle(self.ball.angle)
                 Utils.set_direction(self.ball)
@@ -113,18 +115,16 @@ class PongLogic(AsyncWebsocketConsumer):
                 # 左パドル上部衝突判定
                 if self.ball.y <= self.paddle.left_y + self.paddle.height / 2:
                     self.is_top = True
-                    Utils.update_ball_angle(
-                        self.ball, self.paddle, self.is_left, self.is_top
-                    )
-                    x_velocity *= -1
-                    y_velocity = -1 * abs(y_velocity)
                 else:
                     self.is_top = False
-                    Utils.update_ball_angle(
-                        self.ball, self.paddle, self.is_left, self.is_top
-                    )
-                    x_velocity *= -1
-                    y_velocity = abs(y_velocity)
+                print("before: ",self.ball.angle)
+                Utils.update_ball_angle(
+                    self.ball, self.paddle, self.is_left, self.is_top
+                )
+                print("after: ",self.ball.angle)
+                Utils.update_ball_velocity(
+                    self.is_left, self.is_top, self.x_velocity, self.y_velocity
+                )
             # 右パドル衝突判定
             elif (
                 Utils.has_collided_with_paddle_right(
@@ -136,22 +136,26 @@ class PongLogic(AsyncWebsocketConsumer):
                 # 右パドル上部衝突判定
                 if self.ball.y <= self.paddle.right_y + self.paddle.height / 2:
                     self.is_top = True
-                    Utils.update_ball_angle(
-                        self.ball, self.paddle, self.is_left, self.is_top
-                    )
-                    x_velocity *= -1
-                    y_velocity = -1 * abs(y_velocity)
                 else:
                     self.is_top = False
-                    Utils.update_ball_angle(
-                        self.ball, self.paddle, self.is_left, self.is_top
-                    )
-                    x_velocity *= -1
-                    y_velocity = abs(y_velocity)
+                print("before: ",self.ball.angle)
+                Utils.update_ball_angle(
+                    self.ball, self.paddle, self.is_left, self.is_top
+                )
+                print("after: ",self.ball.angle)
+                Utils.update_ball_velocity(
+                    self.is_left, self.is_top, self.x_velocity, self.y_velocity
+                )
             self.ball.angle = Utils.normalize_angle(self.ball.angle)
             # print("angle: ", self.ball.angle)
             Utils.set_direction(self.ball)
-            Utils.adjust_ball_position(self.ball, self.paddle, x_velocity, y_velocity, self.game_window)
+            Utils.adjust_ball_position(
+                self.ball,
+                self.paddle,
+                self.x_velocity,
+                self.y_velocity,
+                self.game_window,
+            )
 
     async def check_game_state(self):
         if self.ball.x - self.ball.radius > self.game_window.width:
