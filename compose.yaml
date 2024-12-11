@@ -19,6 +19,12 @@ services:
       watch:
         - action: rebuild
           path: ./backend/requirements.txt
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:8000/health/"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   db:
     image: postgres
@@ -27,12 +33,12 @@ services:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb" ]
+      test: ["CMD", "pg_isready", "-U", "dbuser", "-d", "djangodb"]
       interval: 30s
       timeout: 30s
       retries: 5
       start_period: 30s
-  
+
   frontend:
     image: node:latest
     container_name: frontend
@@ -40,9 +46,20 @@ services:
     command: /bin/sh -c "npm install && npm run server"
     volumes:
       - ./frontend:/usr/src/frontend
+    environment:
+      - BACKEND_HOST=localhost:8000
+      - BACKEND_WS_HOST=localhost:8000/ws
     ports:
       - "3000:3000"
-    # depends_on:
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis
@@ -50,7 +67,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "localhost", "ping" ]
+      test: ["CMD", "redis-cli", "localhost", "ping"]
       interval: 30s
       timeout: 30s
       retries: 5

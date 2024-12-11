@@ -38,7 +38,7 @@ const Gameplay = {
 		};
 
 		// Websocket
-		const url = "ws://" + "localhost:8000" + "/ws/gameplay/";
+		const url = `ws://${window.env.BACKEND_WS_HOST}/gameplay/`;
 		window.ws = new WebSocket(url);
 		console.log(url + " WebSocket created");
 
