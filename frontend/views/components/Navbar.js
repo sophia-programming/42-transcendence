@@ -53,9 +53,6 @@ const Navbar = {
             </nav>`;
   },
   after_render: async () => {
-    const lang = localStorage.getItem("lang") || "en";
-    await changeLanguage(lang);
-
     document.getElementById('change_to_english').addEventListener('click', (event) => {
         event.preventDefault();  // ページ遷移を防ぐ
         changeLanguage('en');
