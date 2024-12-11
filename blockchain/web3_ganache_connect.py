@@ -121,8 +121,9 @@ print(f"Contract deployed at address: {contract_address}")
 
 # デプロイされたコントラクトのインスタンスを作成
 tournament = web3.eth.contract(address=contract_address, abi=abi)
+print(f"Contract instance created: {tournament}")
 
-# Djangoからコントラクトを操作する例
+# Djangoからコントラクトを操作する関数を定義
 # 例: 新しい試合結果を記録する
 def record_match(winner_id, winner_score, loser_id, loser_score):
     nonce = web3.eth.get_transaction_count(account_0)
@@ -135,7 +136,7 @@ def record_match(winner_id, winner_score, loser_id, loser_score):
         'from': account_0,
         'nonce': nonce,
         'gas': 2000000,
-        'gasPrice': web3to_wei('50', 'gwei')
+        'gasPrice': web3.to_wei('50', 'gwei')
     })
     signed_txn = web3.eth.account.sign_transaction(transaction, private_key=private_key)
     tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
@@ -145,3 +146,13 @@ def record_match(winner_id, winner_score, loser_id, loser_score):
 # 例: 特定の試合結果を取得する
 def get_match(match_number):
     return tournament.functions.getMatch(match_number).call()
+
+
+# 新しい試合結果を記録する
+receipt = record_match(1, 10, 2, 5)
+receipt2 = record_match(3, 8, 4, 3)
+
+# 特定の試合結果を取得する
+match_number = 1
+match_data = get_match(match_number)
+print(f"Match data: {match_data}")
