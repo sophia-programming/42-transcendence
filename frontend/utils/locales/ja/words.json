@@ -3,8 +3,8 @@
 	"navbar": "ナビゲーション",
 	"home": "ホーム",
 	"tournament": "トーナメント",
-	"setup-otp": "設定",
-	"my-page": "マイページ",
+	"setupotp": "OTPを設定",
+	"mypage": "マイページ",
 	"gameplay": "ゲームプレイ",
 	"login": "ログイン",
 	"language": "言語",
@@ -14,5 +14,6 @@
 	"username": "ユーザー名",
 	"password": "パスワード",
 	"sign_up": "アカウント作成",
-	"login_with_42": "42アカウントでログイン"
+	"login_with_42": "42アカウントでログイン",
+	"chinese": "中国語"
 }

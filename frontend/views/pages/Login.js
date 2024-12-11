@@ -1,3 +1,5 @@
+import { updateContent } from "../../utils/i18n.js";
+
 const Login = {
   render: async () => {
     return `<main
@@ -26,6 +28,8 @@ const Login = {
   },
 
   after_render: async () => {
+    updateContent();
+
     document
       .getElementById("login-form")
       .addEventListener("submit", async (event) => {

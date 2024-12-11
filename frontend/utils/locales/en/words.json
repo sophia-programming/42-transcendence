@@ -3,8 +3,8 @@
 	"navbar": "Navbar",
 	"home": "Home",
 	"tournament": "Tournament",
-	"setup-otp": "Setup Otp",
-	"my-page": "My Page",
+	"setupotp": "Setup Otp",
+	"mypage": "My Page",
 	"gameplay": "Gameplay",
 	"login": "Login",
 	"language": "Language",
@@ -14,5 +14,6 @@
 	"username": "Username",
 	"password": "Password",
 	"sign_up": "Signup",
-	"login_with_42": "Login with 42"
+	"login_with_42": "Login with 42",
+	"chinese": "Chinese"
 }
