@@ -10,10 +10,5 @@
 	"language": "语言",
 	"english": "英语",
 	"japanese": "日语",
-	"welcome_home": "欢迎来到首页",
-	"username": "用户名",
-	"password": "密码",
-	"sign_up": "注册",
-	"login_with_42": "使用42登录",
 	"chinese": "中文"
 }

@@ -4,8 +4,9 @@ i18next
   .init({
     fallbackLng: 'en', // ブラウザの言語が取得できない場合のデフォルト言語
     debug: false,
+    ns: ['navbar', 'home', 'login'], // 翻訳キーの名前空間
     backend: {
-      loadPath: './utils/locales/{{lng}}/words.json', // 見つからない場合fallbackLngを参照
+      loadPath: './utils/locales/{{lng}}/{{ns}}.json', // 見つからない場合fallbackLngを参照
     },
   }, (err, t) => {
     if (err) return console.error('i18next init error:', err);

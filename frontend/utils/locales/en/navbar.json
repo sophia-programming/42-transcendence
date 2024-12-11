@@ -10,10 +10,5 @@
 	"language": "Language",
 	"english": "English",
 	"japanese": "Japanese",
-	"welcome_home": "Welcome to the Home Page",
-	"username": "Username",
-	"password": "Password",
-	"sign_up": "Signup",
-	"login_with_42": "Login with 42",
 	"chinese": "Chinese"
 }
