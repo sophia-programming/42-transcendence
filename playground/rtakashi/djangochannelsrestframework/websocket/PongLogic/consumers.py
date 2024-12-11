@@ -5,7 +5,7 @@ import asyncio
 import random
 import math
 from .utils import Utils
-from .shared import game_window, ball, paddle
+from .shared import SharedState
 
 from channels.db import database_sync_to_async
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
@@ -16,33 +16,9 @@ from djangochannelsrestframework.observer.generics import (
 )
 from websocket.serializers import GameStateSerializer
 
-TASK = {}
-
-class Singleton:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-        return cls._instance
-
-class SharedGameState:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-            cls._instance.game_window = game_window()
-            cls._instance.ball = ball()
-            cls._instance.paddle = paddle()
-            # cls._instance.c = PongLogic()
-        return cls._instance
-
-# ObserverModelInstanceMixinはなくても良いかも？
-class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin, Singleton):
+class GameStateConsumer(GenericAsyncAPIConsumer, SharedState):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.shared_state = SharedGameState()
+        self.lock = asyncio.Lock()
 
     from websocket.models import GameState
 
@@ -58,26 +34,27 @@ class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin, Sin
 
     async def receive_json(self, content, **kwargs):
         action = content.get("action")
-        async with self.shared_state.c.lock:
+        async with self.lock:
             if action == "move_up":
                 player = content.get("player")
                 if player == "right":
-                    self.shared_state.c.paddle.right_y += 3
-        asyncio.create_task(self.shared_state.c.send_pos()) 
+                    SharedState.paddle.right_y += 3
+        asyncio.create_task(self.send_pos()) 
         # await self.shared_state.c.send_pos()
 
 
-class PongLogic(AsyncWebsocketConsumer,Singleton):
+class PongLogic(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.left_score = 0
-        self.right_score = 0
-        self.state = "stop"
-        self.lock = asyncio.Lock()
-        self.game_window = game_window()
-        self.ball = ball()
-        self.paddle = paddle()
-        self.tasks = {}
+        # if not hasattr(self, "initialized"):
+            super().__init__(*args, **kwargs)
+            
+            self.state = "stop"
+            self.lock = asyncio.Lock()
+            self.game_window = game_window()
+            self.ball = ball()
+            self.paddle = paddle()
+            self.tasks = {}
+            self.initialized = True
 
     # PongLogic
     # async def game_start(self):
@@ -192,7 +169,6 @@ class PongLogic(AsyncWebsocketConsumer,Singleton):
         # await TASK["game_loop"]
 
     async def connect(self):
-
         if "game_loop" not in TASK:
             TASK["game_loop"] = asyncio.create_task(self.game_loop())
         await self.channel_layer.group_add("sendmessage", self.channel_name)
@@ -233,43 +209,45 @@ class PongLogic(AsyncWebsocketConsumer,Singleton):
         if self.state == "stop":
             await self.send_pos()
 
-    async def handle_other_message(self, message):
-        # その他のメッセージに対応する処理
-        print(f"Other message received: {message}")
-        response_message = {"message": f"Received: {message}"}
-        await self.channel_layer.group_send(
-            "sendmessage",
-            {
-                "type": "send_message",
-                "content": response_message,
-            },
-        )
+    # async def handle_other_message(self, message):
+    #     # その他のメッセージに対応する処理
+    #     print(f"Other message received: {message}")
+    #     response_message = {"message": f"Received: {message}"}
+    #     await self.channel_layer.group_send(
+    #         "sendmessage",
+    #         {
+    #             "type": "send_message",
+    #             "content": response_message,
+    #         },
+    #     )
 
-    async def send_pos(self):
-        response_message = {
-            "left_paddle_y": self.paddle.left_y,
-            "right_paddle_y": self.paddle.right_y,
-            "ball_x": self.ball.x,
-            "ball_y": self.ball.y,
-            "left_score": self.left_score,
-            "right_score": self.right_score,
-        }
-        await self.channel_layer.group_send(
-            "sendmessage",
-            {
-                "type": "send_message",
-                "content": response_message,
-            },
-        )
+    # async def send_pos(self):
+    #     response_message = {
+    #         "left_paddle_y": self.paddle.left_y,
+    #         "right_paddle_y": self.paddle.right_y,
+    #         "ball_x": self.ball.x,
+    #         "ball_y": self.ball.y,
+    #         "left_score": self.left_score,
+    #         "right_score": self.right_score,
+    #     }
+    #     await self.channel_layer.group_send(
+    #         "sendmessage",
+    #         {
+    #             "type": "send_message",
+    #             "content": response_message,
+    #         },
+    #     )
 
-    async def send_message(self, event):
-        # contentの中にある辞書を取り出し
-        message = event["content"]
-        # 辞書をjson型にする
-        await self.send(text_data=json.dumps(message))
+    # async def send_message(self, event):
+    #     # contentの中にある辞書を取り出し
+    #     message = event["content"]
+    #     # 辞書をjson型にする
+    #     await self.send(text_data=json.dumps(message))
 
 def main():
-   c = GameState()
+    # c2 = PongLogic()
+    c = GameState()
+    print("start!")
 
 
 if __name__ == "__main__":
