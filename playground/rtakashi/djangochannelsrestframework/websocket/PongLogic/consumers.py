@@ -16,14 +16,33 @@ from djangochannelsrestframework.observer.generics import (
 )
 from websocket.serializers import GameStateSerializer
 
+TASK = {}
+
+class Singleton:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
+class SharedGameState:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance.game_window = game_window()
+            cls._instance.ball = ball()
+            cls._instance.paddle = paddle()
+            # cls._instance.c = PongLogic()
+        return cls._instance
 
 # ObserverModelInstanceMixinはなくても良いかも？
-class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
+class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin, Singleton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.game_window = game_window()
-        self.ball = ball()
-        self.paddle = paddle()
+        self.shared_state = SharedGameState()
 
     from websocket.models import GameState
 
@@ -33,19 +52,22 @@ class GameStateConsumer(GenericAsyncAPIConsumer, ObserverModelInstanceMixin):
     # lookup_field = "pk"
 
     # {
-    #     "action":"moveup",
+    #     "action":"move_up",
     #     "player":"right"
     # }
 
     async def receive_json(self, content, **kwargs):
         action = content.get("action")
-        if action == "move_up":
-            player = content.get("player")
-            if player == "right":
-                self.paddle.right_y += 3
+        async with self.shared_state.c.lock:
+            if action == "move_up":
+                player = content.get("player")
+                if player == "right":
+                    self.shared_state.c.paddle.right_y += 3
+        asyncio.create_task(self.shared_state.c.send_pos()) 
+        # await self.shared_state.c.send_pos()
 
 
-class PongLogic(AsyncWebsocketConsumer):
+class PongLogic(AsyncWebsocketConsumer,Singleton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.left_score = 0
@@ -58,10 +80,10 @@ class PongLogic(AsyncWebsocketConsumer):
         self.tasks = {}
 
     # PongLogic
-    async def game_start(self):
-        self.left_score = 0
-        self.right_score = 0
-        await self.game_loop()
+    # async def game_start(self):
+    #     self.left_score = 0
+    #     self.right_score = 0
+    #     await self.game_loop()
 
     async def game_loop(self):
         turn_count = 0
@@ -91,6 +113,8 @@ class PongLogic(AsyncWebsocketConsumer):
         if self.state == "stop":
             await asyncio.sleep(2)
             self.state = "running"
+        else:
+            await asyncio.sleep(0.005)
 
     async def update_pos(self):
         async with self.lock:
@@ -158,13 +182,22 @@ class PongLogic(AsyncWebsocketConsumer):
             self.right_score += 1
             self.state = "stop"
 
+    # async def connect(self):
+    #     if "game_loop" in TASK:
+    #         TASK["game_loop"].cancel()
+    #     await self.channel_layer.group_add("sendmessage", self.channel_name)
+    #     print("Websocket connected")
+    #     await self.accept()
+    #     TASK["game_loop"] = asyncio.create_task(self.game_loop())
+        # await TASK["game_loop"]
+
     async def connect(self):
-        if "game_loop" in self.tasks:
-            self.tasks["game_loop"].cancel()
+
+        if "game_loop" not in TASK:
+            TASK["game_loop"] = asyncio.create_task(self.game_loop())
         await self.channel_layer.group_add("sendmessage", self.channel_name)
         print("Websocket connected")
         await self.accept()
-        self.tasks["game_loop"] = asyncio.create_task(self.game_loop())
 
     async def disconnect(self, close_code):
         if "game_loop" in self.tasks:
@@ -234,3 +267,10 @@ class PongLogic(AsyncWebsocketConsumer):
         message = event["content"]
         # 辞書をjson型にする
         await self.send(text_data=json.dumps(message))
+
+def main():
+   c = GameState()
+
+
+if __name__ == "__main__":
+    main()

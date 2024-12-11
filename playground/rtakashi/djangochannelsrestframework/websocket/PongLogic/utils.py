@@ -1,6 +1,4 @@
 import math
-from .shared import game_window, ball, paddle
-
 
 class Utils:
     def normalize_angle(angle):
