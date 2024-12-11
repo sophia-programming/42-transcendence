@@ -36,4 +36,4 @@ window.addEventListener("hashchange", router);
 
 window.addEventListener("load", router);
 
-window.addEventListener("DOMContentLoad", Navbar.setTranslateHook());
+window.addEventListener("DOMContentLoaded", Navbar.setTranslateHook());
