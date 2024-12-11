@@ -15,6 +15,8 @@ class CustomLoginViewTests(APITestCase):
         self.user = CustomUser.objects.create_user(
             username="testuser", password="password123"
         )
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_custom_login_view_valid_login(self):
         """正しいユーザー名とパスワードでログインできることを確認する、OTPが無効な場合"""
@@ -57,6 +59,8 @@ class LogoutViewTests(TestCase):
             username="testuser", password="password123"
         )
         self.client.login(username="testuser", password="password123")  # loginが必要
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_logout_view(self):
         """ログアウトしたら、ログインページにリダイレクトされて認証が切れることを確認する"""
@@ -68,6 +72,8 @@ class LogoutViewTests(TestCase):
 class SignUpViewTests(APITestCase):
     def setUp(self):
         self.url = reverse("accounts:signup")
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_signup_view_post_valid(self):
         """有効なデータでサインアップが成功することを確認する"""
@@ -104,6 +110,8 @@ class SetupOTPViewTests(APITestCase):
             username="testuser", password="password123"
         )
         self.client.login(username="testuser", password="password123")
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_setup_otp_view_get(self):
         """OTPセットアップのGETリクエストが成功することを確認する"""
@@ -128,6 +136,8 @@ class VerifyOTPViewTests(APITestCase):
         )
         self.client.force_authenticate(user=self.user)
         self.device = TOTPDevice.objects.create(user=self.user, confirmed=True)
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_verify_otp_view_post_valid_otp(self):
         """正しいOTPトークンでOTP確認が成功することを確認する"""
