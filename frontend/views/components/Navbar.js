@@ -1,3 +1,5 @@
+import { changeLanguage } from "../../utils/i18n.js";
+
 const Navbar = {
   render: async () => {
     return `<nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -26,10 +28,10 @@ const Navbar = {
                         <a class="nav-link" href="#/tournament" data-i18n="tournament">Tournament</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#/setup-otp" data-i18n="setup-otp">Setup Otp</a>
+                        <a class="nav-link" href="#/setup-otp" data-i18n="setupotp">Setup Otp</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#/mypage" data-i18n="my-page">My Page</a>
+                        <a class="nav-link" href="#/mypage" data-i18n="mypage">My Page</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
@@ -38,8 +40,9 @@ const Navbar = {
                             Language
                         </a>
                         <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="languageDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en')" data-i18n="english">English</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')" data-i18n="japanese">Japanese</a></li>
+                            <li><a class="dropdown-item" href="#" id="change_to_english" data-i18n="english">English</a></li>
+                            <li><a class="dropdown-item" href="#" id="change_to_japanese" data-i18n="japanese">Japanese</a></li>
+                            <li><a class="dropdown-item" href="#" id="change_to_chinese" data-i18n="chinese">Chinese</a></li>
                         </ul>
                         </li>
                         <li class="nav-item">
@@ -51,7 +54,20 @@ const Navbar = {
   },
   after_render: async () => {
     const lang = localStorage.getItem("lang") || "en";
-    await setLanguage(lang);
+    await changeLanguage(lang);
+
+    document.getElementById('change_to_english').addEventListener('click', (event) => {
+        event.preventDefault();  // ページ遷移を防ぐ
+        changeLanguage('en');
+      });
+      document.getElementById('change_to_japanese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('ja');
+      });
+      document.getElementById('change_to_chinese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('zh');
+      });
   },
 };
 
