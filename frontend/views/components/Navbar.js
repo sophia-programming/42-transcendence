@@ -56,18 +56,18 @@ const Navbar = {
     const lang = localStorage.getItem("lang") || "en";
     await changeLanguage(lang);
 
-    // document.getElementById('change_to_english').addEventListener('click', (event) => {
-    //     event.preventDefault();  // ページ遷移を防ぐ
-    //     changeLanguage('en');
-    //   });
-    //   document.getElementById('change_to_japanese').addEventListener('click', (event) => {
-    //     event.preventDefault();
-    //     changeLanguage('ja');
-    //   });
-    //   document.getElementById('change_to_chinese').addEventListener('click', (event) => {
-    //     event.preventDefault();
-    //     changeLanguage('zh');
-    //   });
+    document.getElementById('change_to_english').addEventListener('click', (event) => {
+        event.preventDefault();  // ページ遷移を防ぐ
+        changeLanguage('en');
+      });
+      document.getElementById('change_to_japanese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('ja');
+      });
+      document.getElementById('change_to_chinese').addEventListener('click', (event) => {
+        event.preventDefault();
+        changeLanguage('zh');
+      });
   },
 };
 
