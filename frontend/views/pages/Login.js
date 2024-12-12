@@ -6,22 +6,22 @@ const Login = {
                 class="form-signin d-flex flex-column justify-content-center align-items-center"
                 style="min-height: 80vh;"
                 >
-                <form id="login-form" method="post" action="/accounts/api/login/">
+                <form id="login-form" method="post" action="/accounts/login/">
                     <div class="mb-3">
-                    <label for="id_username" class="form-label" data-i18n="username">Username</label>
+                    <label for="id_username" class="form-label" data-i18n="login:username">Username</label>
                     <input type="text" id="id_username" class="form-control" name="username" required />
                     </div>
                     <div class="mb-3">
-                    <label for="id_password" class="form-label" data-i18n="password">Password</label>
+                    <label for="id_password" class="form-label" data-i18n="login:password">Password</label>
                     <input type="password" id="id_password" class="form-control" name="password" required />
                     </div>
                     <input type="hidden" value="/accounts/verify_otp/" />
-                    <button type="submit" class="btn btn-primary mb-2 w-100" data-i18n="login">Login</button>
+                    <button type="submit" class="btn btn-primary mb-2 w-100" data-i18n="login:login">Login</button>
                 </form>
-                <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="sign_up"
+                <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="login:sign_up"
                     >Sign Up</a
                 >
-                <a id="oauth-login" href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login_with_42"
+                <a id="oauth-login" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login:login_with_42"
                     >Login with 42</a
                 >
                 </main>`;
