@@ -6,6 +6,8 @@ services:
   backend:
     # todo: env.prodを追加
     volumes: !reset []
+    networks:
+      - blockchain_net
     entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
       - DEBUG=False
@@ -19,12 +21,16 @@ services:
     environment: !override
       - BACKEND_HOST=localhost:80/api
       - BACKEND_WS_HOST=localhost:80/ws
+    networks:
+      - blockchain_net
     ports: !reset []
 
   web:
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
+    networks:
+      - blockchain_net
     container_name: web
     ports:
       - "80:80"
@@ -37,3 +43,8 @@ services:
 
 include:
   - ./elk/elk-services.yml
+  - ./blockchain/blockchain.yml
+
+networks:
+  blockchain_net:
+    driver: bridge

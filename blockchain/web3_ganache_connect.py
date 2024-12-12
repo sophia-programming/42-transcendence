@@ -17,8 +17,8 @@ else:
     print("Failed to connect to Ganache")
 
 # アカウントと秘密鍵の設定
-account_0 = web3.to_checksum_address('0xfa6125a3b29293D0E00d77e8eE626a8eD8126B37')
-private_key = '0x4e6852bde655eca0a5f2a5c6da65c952e54c04670a0c17e587fc7ca2708a9ac4'
+account_0 = web3.to_checksum_address('0xfD089344cd7cB5890A8b14D5761C709F40691A40')
+private_key = '0x410e2482b0e56cf888d67642a9aef8f3e355759bd116074e5f254f7558e55e36'
 
 # スマートコントラクトのソースコード
 contract_source_code = '''
