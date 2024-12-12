@@ -21,7 +21,7 @@ const Login = {
                 <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="sign_up"
                     >Sign Up</a
                 >
-                <a href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login_with_42"
+                <a href="#" id="oauth-login" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login_with_42"
                     >Login with 42</a
                 >
                 </main>`;
@@ -57,6 +57,72 @@ const Login = {
           console.log("error: ", data);
         }
       });
+
+    document
+      .getElementById("oauth-login")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        const clientId = process.env.UID;
+        const redirectUri = "http://localhost:3000/oauth/callback";
+        const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+        window.location.href = oauthUrl;
+      });
+  },
+
+  handleOAuthCallback: async (code) => {
+    const response = await fetch("https://api.intra.42.fr/oauth/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: process.env.UID,
+        client_secret: process.env.SECRET,
+        code: code,
+        redirect_uri: "http://localhost:3000/oauth/callback",
+      }),
+    });
+
+    const tokenData = await response.json();
+    const accessToken = tokenData.access_token;
+
+    if (accessToken) {
+      const userInfo = await Login.retrieveUserInfo(accessToken);
+      await Login.loginUser(userInfo);
+    } else {
+      console.error("Failed to obtain access token");
+    }
+  },
+
+  retrieveUserInfo: async (accessToken) => {
+    const response = await fetch("https://api.intra.42.fr/v2/me", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return await response.json();
+  },
+
+  loginUser: async (userInfo) => {
+    const response = await fetch(
+      `http://${window.env.BACKEND_HOST}/accounts/api/login/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: userInfo.login }),
+      }
+    );
+
+    if (response.ok) {
+      console.log("User logged in successfully");
+      window.location.hash = "#/";
+    } else {
+      console.error("Failed to log in user");
+    }
   },
 };
 
