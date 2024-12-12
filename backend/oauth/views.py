@@ -61,7 +61,7 @@ def oauth_callback_view(request):
     return Response(
         {
             "error": "No code provided",
-            "error_description": "認証コードが提供されていません。",
+            "error_description": "Authorization code was not provided or is invalid.",
         },
         status=400,
     )
