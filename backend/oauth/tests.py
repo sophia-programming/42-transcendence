@@ -53,6 +53,6 @@ class OAuthCallbackViewTests(APITestCase):
             response.data,
             {
                 "error": "No code provided",
-                "error_description": "認証コードが提供されていません。",
+                "error_description": "Authorization code was not provided or is invalid.",
             },
         )
