@@ -1,10 +1,9 @@
 from unittest.mock import patch
 
+from accounts.models import CustomUser
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from accounts.models import CustomUser
 
 
 class OAuthViewTests(APITestCase):
@@ -24,8 +23,8 @@ class OAuthCallbackViewTests(APITestCase):
         mock_get.return_value.json.return_value = {"login": "testuser"}
 
         response = self.client.get(reverse("oauth:callback"), {"code": "test_code"})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"redirect": "homepage"})
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.url, "http://localhost:3000/#/")
 
         user = CustomUser.objects.get(username="testuser")
         self.assertIsNotNone(user)
