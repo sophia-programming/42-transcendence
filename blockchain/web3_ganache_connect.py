@@ -17,8 +17,8 @@ else:
     print("Failed to connect to Ganache")
 
 # アカウントと秘密鍵の設定
-account_0 = web3.to_checksum_address('0xfa6125a3b29293D0E00d77e8eE626a8eD8126B37')
-private_key = '0x4e6852bde655eca0a5f2a5c6da65c952e54c04670a0c17e587fc7ca2708a9ac4'
+account_0 = web3.to_checksum_address('0xC44ED185DfaF07489E8c748c330457bBD48821Df')
+private_key = '0xbe783fcf43719fcc5efea9063945ae2ae7d62f7f936ee9a73bbb4dc6280937d8'
 
 # スマートコントラクトのソースコード
 contract_source_code = '''
@@ -102,7 +102,7 @@ nonce = web3.eth.get_transaction_count(account_0)
 transaction = Tournament.constructor().build_transaction({
     'from': account_0,
     'nonce': nonce,
-    'gas': 2000000,
+    'gas': 20,
     'gasPrice': web3.to_wei('50', 'gwei')
 })
 
@@ -123,6 +123,9 @@ print(f"Contract deployed at address: {contract_address}")
 tournament = web3.eth.contract(address=contract_address, abi=abi)
 print(f"Contract instance created: {tournament}")
 
+# これらの変数を他のモジュールからインポート可能にする
+__all__ = ['web3', 'tournament', 'account_0', 'private_key']
+
 # Djangoからコントラクトを操作する関数を定義
 # 例: 新しい試合結果を記録する
 def record_match(winner_id, winner_score, loser_id, loser_score):
@@ -135,7 +138,7 @@ def record_match(winner_id, winner_score, loser_id, loser_score):
     ).build_transaction({
         'from': account_0,
         'nonce': nonce,
-        'gas': 2000000,
+        'gas': int(gas_estimate * 1.5),
         'gasPrice': web3.to_wei('50', 'gwei')
     })
     signed_txn = web3.eth.account.sign_transaction(transaction, private_key=private_key)
