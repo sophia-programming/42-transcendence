@@ -34,14 +34,14 @@ class OAuthCallbackViewTests(APITestCase):
         """エラーが発生した場合、エラーメッセージが返されることを確認する"""
         response = self.client.get(
             reverse("oauth:callback"),
-            {"error": "access_denied", "error_description": "アクセスが拒否されました"},
+            {"error": "access_denied", "error_description": "Access was denied"},
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data,
             {
                 "error": "access_denied",
-                "error_description": "アクセスが拒否されました",
+                "error_description": "Access was denied",
             },
         )
 
