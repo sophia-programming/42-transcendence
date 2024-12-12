@@ -62,7 +62,7 @@ const Login = {
       .getElementById("oauth-login")
       .addEventListener("click", async (event) => {
         event.preventDefault();
-        window.location.href = `http://${window.env.BACKEND_HOST}/oauth/oauth/`;
+        window.location.href = `http://${window.env.BACKEND_HOST}/oauth/`;
       });
   },
 };

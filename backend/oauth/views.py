@@ -1,12 +1,11 @@
 import os
 
 import requests
+from accounts.models import CustomUser
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from accounts.models import CustomUser
 
 
 @api_view(["GET"])
@@ -58,7 +57,7 @@ def oauth_callback_view(request):
                 user.save()
 
             login(request, user)
-            return Response({"redirect": "homepage"}, status=200)
+            return redirect("http://localhost:3000/#/")
     return Response(
         {
             "error": "No code provided",
