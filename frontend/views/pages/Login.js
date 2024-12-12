@@ -6,7 +6,7 @@ const Login = {
                 class="form-signin d-flex flex-column justify-content-center align-items-center"
                 style="min-height: 80vh;"
                 >
-                <form id="login-form" method="post" action="/accounts/login/">
+                <form id="login-form" method="post" action="/accounts/api/login/">
                     <div class="mb-3">
                     <label for="id_username" class="form-label" data-i18n="username">Username</label>
                     <input type="text" id="id_username" class="form-control" name="username" required />
@@ -21,7 +21,7 @@ const Login = {
                 <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="sign_up"
                     >Sign Up</a
                 >
-                <a href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login_with_42"
+                <a id="oauth-login" href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login_with_42"
                     >Login with 42</a
                 >
                 </main>`;
@@ -56,6 +56,13 @@ const Login = {
         } else {
           console.log("error: ", data);
         }
+      });
+
+    document
+      .getElementById("oauth-login")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        window.location.href = `http://${window.env.BACKEND_HOST}/oauth/oauth/`;
       });
   },
 };

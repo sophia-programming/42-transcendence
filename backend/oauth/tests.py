@@ -1,20 +1,21 @@
 from unittest.mock import patch
 
-from django.test import TestCase
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from accounts.models import CustomUser
 
 
-class OAuthViewTests(TestCase):
+class OAuthViewTests(APITestCase):
     def test_oauth_view_redirect(self):
         """OAuth認証ページにリダイレクトされることを確認する"""
         response = self.client.get(reverse("oauth:oauth"))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         self.assertIn("https://api.intra.42.fr/oauth/authorize", response.url)
 
 
-class OAuthCallbackViewTests(TestCase):
+class OAuthCallbackViewTests(APITestCase):
     @patch("requests.post")
     @patch("requests.get")
     def test_oauth_callback_view_success(self, mock_get, mock_post):
@@ -23,7 +24,8 @@ class OAuthCallbackViewTests(TestCase):
         mock_get.return_value.json.return_value = {"login": "testuser"}
 
         response = self.client.get(reverse("oauth:callback"), {"code": "test_code"})
-        self.assertRedirects(response, reverse("homepage"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"redirect": "homepage"})
 
         user = CustomUser.objects.get(username="testuser")
         self.assertIsNotNone(user)
@@ -35,13 +37,23 @@ class OAuthCallbackViewTests(TestCase):
             reverse("oauth:callback"),
             {"error": "access_denied", "error_description": "アクセスが拒否されました"},
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "エラーが発生しました。")
-        self.assertContains(response, "アクセスが拒否されました")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {
+                "error": "access_denied",
+                "error_description": "アクセスが拒否されました",
+            },
+        )
 
     def test_oauth_callback_view_no_code(self):
         """コードが提供されていない場合、エラーメッセージが返されることを確認する"""
         response = self.client.get(reverse("oauth:callback"))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "エラーが発生しました。")
-        self.assertContains(response, "認証コードが提供されていません。")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {
+                "error": "No code provided",
+                "error_description": "認証コードが提供されていません。",
+            },
+        )
