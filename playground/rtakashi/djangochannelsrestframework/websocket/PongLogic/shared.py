@@ -2,13 +2,15 @@ import math
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class SharedState(AsyncWebsocketConsumer):
-    lock = asyncio.Lock()
-    class game_window():
-            width = 1000
-            height = 600
 
-    class ball():
+class SharedState:
+    lock = asyncio.Lock()
+
+    class GameWindow:
+        width = 1000
+        height = 600
+
+    class Ball:
         radius = 10
         x = 500
         y = 300
@@ -27,47 +29,29 @@ class SharedState(AsyncWebsocketConsumer):
             "right_bottom": math.pi * 3 / 4,
         }
 
-    class paddle():
+    class Paddle:
         width = 15
         height = 120
         left_y = 240
         right_y = 240
 
-    class score():
+    class Score:
         right = 0
         left = 0
 
-    async def send_pos(self):
-        response_message = {
-            "left_paddle_y": self.paddle.left_y,
-            "right_paddle_y": self.paddle.right_y,
-            "ball_x": self.ball.x,
-            "ball_y": self.ball.y,
-            "left_score": self.score.left,
-            "right_score": self.score.right,
+    @classmethod
+    def init(cls):
+        cls.Ball.x = 500
+        cls.Ball.y = 300
+        cls.Ball.angle = 0
+        cls.Ball.velocity = 5
+        cls.Ball.direction = {
+            "facing_up": False,
+            "facing_down": False,
+            "facing_right": False,
+            "facing_left": False,
         }
-        await self.channel_layer.group_send(
-            "sendmessage",
-            {
-                "type": "send_message",
-                "content": response_message,
-            },
-        )
-
-    async def send_message(self, event):
-        # contentの中にある辞書を取り出し
-        message = event["content"]
-        # 辞書をjson型にする
-        await self.send(text_data=json.dumps(message))
-
-    async def handle_other_message(self, message):
-        # その他のメッセージに対応する処理
-        print(f"Other message received: {message}")
-        response_message = {"message": f"Received: {message}"}
-        await self.channel_layer.group_send(
-            "sendmessage",
-            {
-                "type": "send_message",
-                "content": response_message,
-            },
-        )
+        cls.Paddle.left_y = 240
+        cls.Paddle.right_y = 240
+        cls.Score.right = 0
+        cls.Score.left = 0

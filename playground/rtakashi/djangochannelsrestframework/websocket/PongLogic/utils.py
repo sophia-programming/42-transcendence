@@ -1,9 +1,12 @@
 import math
 
+
 class Utils:
+    @staticmethod
     def normalize_angle(angle):
         return angle % (2 * math.pi)
 
+    @staticmethod
     def set_direction(ball):
         if math.pi <= ball.angle and ball.angle <= math.pi * 2:
             ball.direction["facing_up"] = True
@@ -20,6 +23,7 @@ class Utils:
 
         # print("ball.direction_left: ", ball.direction["facing_left"])
 
+    @staticmethod
     def has_collided_with_wall(ball, game_window):
         if (
             (
@@ -33,6 +37,7 @@ class Utils:
         else:
             return False
 
+    @staticmethod
     def has_collided_with_paddle_left(ball, paddle):
         if (
             (
@@ -58,6 +63,7 @@ class Utils:
         else:
             return False
 
+    @staticmethod
     def has_collided_with_paddle_right(ball, paddle, game_window):
         if (
             (
@@ -83,6 +89,7 @@ class Utils:
         else:
             return False
 
+    @staticmethod
     def has_collided_with_paddle_top(ball, paddle, is_left):
         if is_left == True:
             if ball.y <= paddle.left_y + paddle.height / 2:
@@ -95,6 +102,7 @@ class Utils:
             else:
                 return False
 
+    @staticmethod
     def update_ball_angle(ball, paddle, is_left, is_top):
         # 左パドルの上部に衝突した時
         if is_left == True and is_top == True:
@@ -145,25 +153,26 @@ class Utils:
                     * collision_distance
                 )
 
-    def adjust_ball_position(ball, paddle, x_velocity, y_velocity, game_window):
+    @staticmethod
+    def adjust_ball_position(ball, paddle, velocity, game_window):
         # 左パドルに衝突しそうかどうか
         if (
             ball.x - ball.radius > paddle.width
-            and ball.x + x_velocity - ball.radius < paddle.width
+            and ball.x + velocity["x"] - ball.radius < paddle.width
             and ball.direction["facing_left"]
         ):
             ball.x = paddle.width + ball.radius
         else:
-            ball.x += x_velocity
+            ball.x += velocity["x"]
         # 右パドルに衝突しそうかどうか
         if (
             ball.x + ball.radius < game_window.width - paddle.width
-            and ball.x + x_velocity + ball.radius > game_window.width - paddle.width
+            and ball.x + velocity["x"] + ball.radius > game_window.width - paddle.width
             and ball.direction["facing_right"]
         ):
             ball.x = game_window.width - paddle.width - ball.radius
         else:
-            ball.y += y_velocity
+            ball.y += velocity["y"]
         # 上の壁に衝突しそうかどうか
         if ball.y - ball.radius < 0:
             ball.y = ball.radius
@@ -171,11 +180,11 @@ class Utils:
         if ball.y + ball.radius > game_window.height:
             ball.y = game_window.height - ball.radius
 
-    def update_ball_velocity(is_top, x_velocity, y_velocity):
+    def update_ball_velocity(is_top, velocity):
         if is_top == True:
-            x_velocity *= -1
-            y_velocity = -1 * abs(y_velocity)
+            velocity["x"] *= -1
+            velocity["y"] = -1 * abs(velocity["y"])
         else:
-            x_velocity *= -1
-            y_velocity = abs(y_velocity)
-        return x_velocity, y_velocity
+            velocity["x"] *= -1
+            velocity["y"] = abs(velocity["y"])
+        return velocity["x"], velocity["y"]
