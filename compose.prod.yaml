@@ -6,8 +6,6 @@ services:
   backend:
     # todo: env.prodを追加
     volumes: !reset []
-    networks:
-      - blockchain_net
     entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
       - DEBUG=False
@@ -21,8 +19,6 @@ services:
     environment: !override
       - BACKEND_HOST=localhost:80/api
       - BACKEND_WS_HOST=localhost:80/ws
-    networks:
-      - blockchain_net
     ports: !reset []
 
   web:
