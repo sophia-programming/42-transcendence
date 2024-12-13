@@ -17,28 +17,38 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
     queryset = GameState.objects.all()
     serializer_class = GameStateSerializer
 
-#     # lookup_field = "pk"
-
-#     # {
-#     #     "action":"move_up",
-#     #     "player":"right"
-#     # }
-
+    # POST
     async def receive_json(self, content, **kwargs):
         action = content.get("action")
         async with SharedState.lock:
             if action == "move_up":
                 player = content.get("player")
                 if player == "right":
+                    SharedState.Paddle.right_y -= 3
+                elif player == "left":
+                    SharedState.Paddle.left_y -= 3
+            elif action == "move_down":
+                player = content.get("player")
+                if player == "right":
                     SharedState.Paddle.right_y += 3
-                    response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
-                await self.channel_layer.group_send(
-                    "sendmessage",
-                    {
-                        "type": "send_message",
-                        "content": response_message
-                    }
-                )
+                elif player == "left":
+                    SharedState.Paddle.left_y += 3
+            elif action == "game_init":
+                SharedState.init()
+            elif action == "game_stop":
+                # DBに保管,gameloop止める
+            elif action == "game_resume":
+                # gameloop再開
+            response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
+            await self.channel_layer.group_send(
+                "sendmessage",
+                {
+                    "type": "send_message",
+                    "content": response_message
+                }
+            )
+            if action == "game_init":
+                await asyncio.sleep(2)
 
 
 class PongLogic(SharedState, AsyncWebsocketConsumer):
