@@ -24,13 +24,28 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
 #     #     "player":"right"
 #     # }
 
-#     async def receive_json(self, content, **kwargs):
-#         action = content.get("action")
-#         async with SharedState.lock:
-#             if action == "move_up":
-#                 player = content.get("player")
-#                 if player == "right":
-#                     SharedState.paddle.right_y += 3
+    async def receive_json(self, content, **kwargs):
+        action = content.get("action")
+        async with SharedState.lock:
+            if action == "move_up":
+                player = content.get("player")
+                if player == "right":
+                    SharedState.Paddle.right_y += 3
+                    response_message = {
+                    "left_paddle_y": SharedState.Paddle.left_y,
+                    "right_paddle_y": SharedState.Paddle.right_y,
+                    "ball_x": SharedState.Ball.x,
+                    "ball_y": SharedState.Ball.y,
+                    "left_score": SharedState.Score.left,
+                    "right_score": SharedState.Score.right
+                }
+                await self.channel_layer.group_send(
+                    "sendmessage",
+                    {
+                        "type": "send_message",
+                        "content": response_message
+                    }
+                )
 
 
 class PongLogic(SharedState, AsyncWebsocketConsumer):
@@ -65,8 +80,8 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         if self.state == "stop":
             await asyncio.sleep(2)
             self.state = "running"
-        else:
-            await asyncio.sleep(0.005)
+        # else:
+        #     await asyncio.sleep(0.005)
 
     async def update_pos(self):
         async with SharedState.lock:
