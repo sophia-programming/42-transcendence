@@ -9,7 +9,7 @@ services:
       - .:/usr/src/app
     env_file: .env
     environment:
-      - DEBUG=True
+      - ENVIRONMENT=development
     ports:
       - "8000:8000"
     depends_on:
@@ -53,8 +53,8 @@ services:
     volumes:
       - ./frontend:/usr/src/frontend
     environment:
-      - BACKEND_HOST=localhost:8000
-      - BACKEND_WS_HOST=localhost:8000/ws
+      - BACKEND_HOST=http://localhost:8000
+      - BACKEND_WS_HOST=ws://localhost:8000/ws
     ports:
       - "3000:3000"
     depends_on:

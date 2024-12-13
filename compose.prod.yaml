@@ -10,7 +10,7 @@ services:
       - blockchain_net
     entrypoint: !override "/usr/src/app/entrypoint.sh"
     environment: !override
-      - DEBUG=False
+      - ENVIRONMENT=production
     development: !reset []
     ports: !reset []
 
@@ -19,8 +19,8 @@ services:
 
   frontend:
     environment: !override
-      - BACKEND_HOST=localhost:80/api
-      - BACKEND_WS_HOST=localhost:80/ws
+      - BACKEND_HOST=localhost:443/api
+      - BACKEND_WS_HOST=localhost:443/ws
     networks:
       - blockchain_net
     ports: !reset []
@@ -33,7 +33,7 @@ services:
       - blockchain_net
     container_name: web
     ports:
-      - "80:80"
+      - "443:443"
     depends_on:
       backend:
         condition: service_healthy
