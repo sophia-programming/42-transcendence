@@ -2,73 +2,34 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
-import random
+# import random
 import math
 from .utils import Utils
+from .shared import SharedState
 
+# from channels.db import database_sync_to_async
+# from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
+# from websocket.serializers import GameStateSerializer
 
-class PongLogic(AsyncWebsocketConsumer):
-    class game_window:
-        width = 1000
-        height = 600
-
-    class ball:
-        radius = 10
-        x = 500
-        y = 300
-        angle = 0
-        velocity = 5
-        direction = {
-            "facing_up": False,
-            "facing_down": False,
-            "facing_right": False,
-            "facing_left": False,
-        }
-        bound_angle = {
-            "left_top": math.pi * 7 / 4,
-            "left_bottom": math.pi / 4,
-            "right_top": math.pi * 5 / 4,
-            "right_bottom": math.pi * 3 / 4,
-        }
-
-    class paddle:
-        width = 15
-        height = 120
-        left_y = 240
-        right_y = 240
-
+class PongLogic(SharedState, AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.left_score = 0
-        self.right_score = 0
         self.state = "stop"
-        self.turn_count = 0
-        self.lock = asyncio.Lock()
-        self.game_window = self.game_window()
-        self.ball = self.ball()
-        self.paddle = self.paddle()
         self.tasks = {}
 
     # PongLogic
-    async def game_start(self):
-        self.left_score = 0
-        self.right_score = 0
-        await self.game_loop()
-
     async def game_loop(self):
-        while self.left_score < 15 and self.right_score < 15:
-            if self.state == "stop":
-                self.ball.x = self.game_window.width / 2
-                self.ball.y = self.game_window.height / 2
-                self.ball.angle = random.uniform(
-                    self.ball.bound_angle["right_bottom"],
-                    self.ball.bound_angle["right_top"],
-                )
-                if self.turn_count % 2 == 0:
-                    self.ball.angle += math.pi
-                self.ball.angle = Utils.normalize_angle(self.ball.angle)
-                self.turn_count += 1
-                Utils.set_direction(self.ball)
+        turn_count = 0
+        while SharedState.Score.left < 15 and SharedState.Score.right < 15:
+            async with SharedState.lock:
+                if self.state == "stop":
+                    SharedState.reset_ball_position()
+                    SharedState.reset_ball_angle()
+                    if turn_count % 2 == 0:
+                        SharedState.Ball.angle += math.pi
+                    SharedState.Ball.angle = Utils.normalize_angle(SharedState.Ball.angle)
+                    turn_count += 1
+                    Utils.set_direction(SharedState.Ball)
                 # print("angle: ", self.ball.angle)
                 # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
             await self.rendering()
@@ -84,170 +45,87 @@ class PongLogic(AsyncWebsocketConsumer):
             self.state = "running"
 
     async def update_pos(self):
-        async with self.lock:
+        async with SharedState.lock:
             # self.ball.angle = math.pi / 3 #test用
-            x_velocity = self.ball.velocity * math.cos(self.ball.angle)
-            y_velocity = self.ball.velocity * math.sin(self.ball.angle)
-
-            # 上下壁との衝突
+            velocity = {
+                "x": SharedState.Ball.velocity * math.cos(SharedState.Ball.angle),
+                "y": SharedState.Ball.velocity * math.sin(SharedState.Ball.angle),
+            }
+            # 上下の壁衝突判定
             if (
-                (
-                    self.ball.y + self.ball.radius >= self.game_window.height
-                    and self.ball.direction["facing_down"]
-                )
-                or self.ball.y - self.ball.radius <= 0
-                and self.ball.direction["facing_up"]
+                Utils.has_collided_with_wall(SharedState.Ball, SharedState.GameWindow)
+                == True
             ):
-                y_velocity *= -1
-                self.ball.angle = 2 * math.pi - self.ball.angle
-                self.ball.angle = Utils.normalize_angle(self.ball.angle)
-                Utils.set_direction(self.ball)
+                velocity["y"] *= -1
+                SharedState.Ball.angle = 2 * math.pi - SharedState.Ball.angle
+                SharedState.Ball.angle = Utils.normalize_angle(SharedState.Ball.angle)
+                Utils.set_direction(SharedState.Ball)
 
-            # 左右パドルとの衝突
+            # 左パドル衝突判定
             if (
-                (
-                    self.ball.x - self.ball.radius == self.paddle.width
-                    and self.paddle.left_y + self.paddle.height
-                    >= self.ball.y - self.ball.radius
-                    and self.ball.y + self.ball.radius >= self.paddle.left_y
-                    and self.ball.direction["facing_left"]
+                Utils.has_collided_with_paddle_left(
+                    SharedState.Ball, SharedState.Paddle
                 )
-                or (
-                    self.ball.x - self.ball.radius <= self.paddle.width
-                    and self.paddle.left_y + self.paddle.height / 2 >= self.ball.y
-                    and self.ball.y >= self.paddle.left_y - self.ball.radius
-                    and self.ball.direction["facing_left"]
-                )
-                or (
-                    self.ball.x - self.ball.radius <= self.paddle.width
-                    and self.paddle.left_y + self.paddle.height / 2 <= self.ball.y
-                    and self.ball.y
-                    <= self.paddle.left_y + self.paddle.height + self.ball.radius
-                    and self.ball.direction["facing_left"]
-                )
+                == True
             ):
-                # 左パドルとの衝突
-                if self.ball.y <= self.paddle.left_y + self.paddle.height / 2:
-                    # パドル上部
-                    collision_distance = (
-                        self.paddle.left_y + self.paddle.height / 2
-                    ) - self.ball.y
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("left_top")
-                    else:
-                        self.ball.angle = (
-                            self.ball.bound_angle["left_top"] - 2 * math.pi
-                        ) / (self.paddle.height / 2) * collision_distance + 2 * math.pi
-                    x_velocity *= -1
-                    y_velocity = -1 * abs(y_velocity)
-                else:
-                    # パドル下部
-                    collision_distance = self.ball.y - (
-                        self.paddle.left_y + self.paddle.height / 2
+                is_left = True
+                # 左パドル上部の衝突判定
+                if (
+                    Utils.has_collided_with_paddle_top(
+                        SharedState.Ball, SharedState.Paddle, is_left
                     )
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("left_bottom")
-                    else:
-                        self.ball.angle = (
-                            self.ball.bound_angle.get("left_bottom")
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
-                    x_velocity *= -1
-                    y_velocity = abs(y_velocity)
+                    == True
+                ):
+                    is_top = True
+                else:
+                    is_top = False
+                Utils.update_ball_angle(
+                    SharedState.Ball, SharedState.Paddle, is_left, is_top
+                )
+                velocity["x"], velocity["y"] = Utils.update_ball_velocity(
+                    is_top, velocity
+                )
+            # 右パドル衝突判定
             elif (
-                (
-                    self.ball.x + self.ball.radius == self.game_window.width
-                    and self.paddle.right_y <= self.ball.y
-                    and self.ball.y <= self.paddle.right_y + self.paddle.height
-                    and self.ball.direction["facing_right"]
+                Utils.has_collided_with_paddle_right(
+                    SharedState.Ball, SharedState.Paddle, SharedState.GameWindow
                 )
-                or (
-                    self.ball.x + self.ball.radius
-                    >= self.game_window.width - self.paddle.width
-                    and self.paddle.right_y + self.paddle.height / 2 >= self.ball.y
-                    and self.ball.y >= self.paddle.right_y - self.ball.radius
-                    and self.ball.direction["facing_right"]
-                )
-                or (
-                    self.ball.x + self.ball.radius
-                    >= self.game_window.width - self.paddle.width
-                    and self.paddle.right_y + self.paddle.height / 2 <= self.ball.y
-                    and self.ball.y
-                    <= self.paddle.right_y + self.paddle.height + self.ball.radius
-                    and self.ball.direction["facing_right"]
-                )
+                == True
             ):
-                # 右パドルとの衝突
-                if self.ball.y <= self.paddle.right_y + self.paddle.height / 2:
-                    # パドル上部
-                    collision_distance = (
-                        self.paddle.right_y + self.paddle.height / 2
-                    ) - self.ball.y
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("right_top")
-                    else:
-                        self.ball.angle = (
-                            math.pi
-                            + (self.ball.bound_angle["right_top"] - math.pi)
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
-                    x_velocity *= -1
-                    y_velocity = -1 * abs(y_velocity)
-                else:
-                    # パドル下部
-                    collision_distance = self.ball.y - (
-                        self.paddle.right_y + self.paddle.height / 2
+                is_left = False
+                # 右パドル上部衝突判定
+                if (
+                    Utils.has_collided_with_paddle_top(
+                        SharedState.Ball, SharedState.Paddle, is_left
                     )
-                    if collision_distance > self.paddle.height / 2:
-                        self.ball.angle = self.ball.bound_angle.get("right_bottom")
-                    else:
-                        self.ball.angle = (
-                            math.pi
-                            - (math.pi - self.ball.bound_angle["right_bottom"])
-                            / (self.paddle.height / 2)
-                            * collision_distance
-                        )
-                    x_velocity *= -1
-                    y_velocity = abs(y_velocity)
-
-            self.ball.angle = Utils.normalize_angle(self.ball.angle)
-            # print("angle: ", self.ball.angle)
-            Utils.set_direction(self.ball)
-            # ballの位置補正
-            if (
-                self.ball.x - self.ball.radius > self.paddle.width
-                and self.ball.x + x_velocity - self.ball.radius < self.paddle.width
-                and self.ball.direction["facing_left"]
-            ):
-                self.ball.x = self.paddle.width + self.ball.radius
-            else:
-                self.ball.x += x_velocity
-            if (
-                self.ball.x + self.ball.radius
-                < self.game_window.width - self.paddle.width
-                and self.ball.x + x_velocity + self.ball.radius
-                > self.game_window.width - self.paddle.width
-                and self.ball.direction["facing_right"]
-            ):
-                self.ball.x = (
-                    self.game_window.width - self.paddle.width - self.ball.radius
+                    == True
+                ):
+                    is_top = True
+                else:
+                    is_top = False
+                Utils.update_ball_angle(
+                    SharedState.Ball, SharedState.Paddle, is_left, is_top
                 )
-            else:
-                self.ball.y += y_velocity
-            if self.ball.y - self.ball.radius < 0:
-                self.ball.y = self.ball.radius
-            if self.ball.y + self.ball.radius > self.game_window.height:
-                self.ball.y = self.game_window.height - self.ball.radius
+                velocity["x"], velocity["y"] = Utils.update_ball_velocity(
+                    is_top, velocity
+                )
+            SharedState.Ball.angle = Utils.normalize_angle(SharedState.Ball.angle)
+            Utils.set_direction(SharedState.Ball)
+            Utils.adjust_ball_position(
+                SharedState.Ball, SharedState.Paddle, velocity, SharedState.GameWindow
+            )
 
     async def check_game_state(self):
-        if self.ball.x - self.ball.radius > self.game_window.width:
-            self.left_score += 1
-            self.state = "stop"
-        elif self.ball.x + self.ball.radius < 0:
-            self.right_score += 1
-            self.state = "stop"
+        async with SharedState.lock:
+            if (
+                SharedState.Ball.x - SharedState.Ball.radius
+                > SharedState.GameWindow.width
+            ):
+                SharedState.Score.left += 1
+                self.state = "stop"
+            elif SharedState.Ball.x + SharedState.Ball.radius < 0:
+                SharedState.Score.right += 1
+                self.state = "stop"
 
     async def connect(self):
         if "game_loop" in self.tasks:
@@ -259,6 +137,7 @@ class PongLogic(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if "game_loop" in self.tasks:
+            SharedState.init()
             self.tasks["game_loop"].cancel()
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
         print("Websocket disconnected")
@@ -268,25 +147,25 @@ class PongLogic(AsyncWebsocketConsumer):
         key = data.get("key")
         action = data.get("action")
 
-        async with self.lock:
+        async with SharedState.lock:
             if key == "D" and action == "pressed":
                 if (
-                    self.paddle.left_y + 3
-                    <= self.game_window.height - self.paddle.height
+                    SharedState.Paddle.left_y + 3
+                    <= SharedState.GameWindow.height - SharedState.Paddle.height
                 ):
-                    self.paddle.left_y += 3
+                    SharedState.Paddle.left_y += 3
             elif key == "E" and action == "pressed":
-                if self.paddle.left_y - 3 >= 0:
-                    self.paddle.left_y -= 3
+                if SharedState.Paddle.left_y - 3 >= 0:
+                    SharedState.Paddle.left_y -= 3
             elif key == "K" and action == "pressed":
                 if (
-                    self.paddle.right_y + 3
-                    <= self.game_window.height - self.paddle.height
+                    SharedState.Paddle.right_y + 3
+                    <= SharedState.GameWindow.height - SharedState.Paddle.height
                 ):
-                    self.paddle.right_y += 3
+                    SharedState.Paddle.right_y += 3
             elif key == "I" and action == "pressed":
-                if self.paddle.right_y - 3 >= 0:
-                    self.paddle.right_y -= 3
+                if SharedState.Paddle.right_y - 3 >= 0:
+                    SharedState.Paddle.right_y -= 3
 
         if self.state == "stop":
             await self.send_pos()
@@ -305,12 +184,12 @@ class PongLogic(AsyncWebsocketConsumer):
 
     async def send_pos(self):
         response_message = {
-            "left_paddle_y": self.paddle.left_y,
-            "right_paddle_y": self.paddle.right_y,
-            "ball_x": self.ball.x,
-            "ball_y": self.ball.y,
-            "left_score": self.left_score,
-            "right_score": self.right_score,
+            "left_paddle_y": SharedState.Paddle.left_y,
+            "right_paddle_y": SharedState.Paddle.right_y,
+            "ball_x": SharedState.Ball.x,
+            "ball_y": SharedState.Ball.y,
+            "left_score": SharedState.Score.left,
+            "right_score": SharedState.Score.right,
         }
         await self.channel_layer.group_send(
             "sendmessage",
