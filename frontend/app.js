@@ -16,8 +16,6 @@ const router = async () => {
   const body = null || document.getElementById("body_container");
   const footer = null || document.getElementById("footer_container");
 
-  header.innerHTML = await Navbar.render();
-  await Navbar.after_render();
   // footer
 
   const location = window.location.hash.slice(1).toLowerCase() || "/";
@@ -37,3 +35,5 @@ const router = async () => {
 window.addEventListener("hashchange", router);
 
 window.addEventListener("load", router);
+
+window.addEventListener("DOMContentLoaded", Navbar.setTranslateHook());

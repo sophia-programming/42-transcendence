@@ -1,7 +1,6 @@
+from accounts.models import CustomUser
 from django.test import TestCase
 from django.urls import reverse
-
-from accounts.models import CustomUser
 
 
 class GamePlayViewTests(TestCase):
@@ -10,6 +9,8 @@ class GamePlayViewTests(TestCase):
             username="testuser", password="password123"
         )
         self.client.login(username="testuser", password="password123")  # loginが必要
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_play_game_view(self):
         response = self.client.get(reverse("gameplay:gameplay"))  # ここを修正
