@@ -39,8 +39,3 @@ services:
 
 include:
   - ./elk/elk-services.yml
-  - ./blockchain/blockchain.yml
-
-networks:
-  blockchain_net:
-    driver: bridge
