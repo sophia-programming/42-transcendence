@@ -31,14 +31,7 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
                 player = content.get("player")
                 if player == "right":
                     SharedState.Paddle.right_y += 3
-                    response_message = {
-                    "left_paddle_y": SharedState.Paddle.left_y,
-                    "right_paddle_y": SharedState.Paddle.right_y,
-                    "ball_x": SharedState.Ball.x,
-                    "ball_y": SharedState.Ball.y,
-                    "left_score": SharedState.Score.left,
-                    "right_score": SharedState.Score.right
-                }
+                    response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
                 await self.channel_layer.group_send(
                     "sendmessage",
                     {
@@ -222,14 +215,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         )
 
     async def send_pos(self):
-        response_message = {
-            "left_paddle_y": SharedState.Paddle.left_y,
-            "right_paddle_y": SharedState.Paddle.right_y,
-            "ball_x": SharedState.Ball.x,
-            "ball_y": SharedState.Ball.y,
-            "left_score": SharedState.Score.left,
-            "right_score": SharedState.Score.right,
-        }
+        response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
         await self.channel_layer.group_send(
             "sendmessage",
             {
