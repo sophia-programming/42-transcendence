@@ -2,7 +2,6 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
-import random
 import math
 from .utils import Utils
 from .shared import SharedState
@@ -12,28 +11,26 @@ from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from websocket.serializers import GameStateSerializer
 
 
-class GameStateConsumer(GenericAsyncAPIConsumer, SharedState):
-    # def __init__(self, *args, **kwargs):
-
+class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
     from websocket.models import GameState
 
     queryset = GameState.objects.all()
     serializer_class = GameStateSerializer
 
-    # lookup_field = "pk"
+#     # lookup_field = "pk"
 
-    # {
-    #     "action":"move_up",
-    #     "player":"right"
-    # }
+#     # {
+#     #     "action":"move_up",
+#     #     "player":"right"
+#     # }
 
-    async def receive_json(self, content, **kwargs):
-        action = content.get("action")
-        async with SharedState.lock:
-            if action == "move_up":
-                player = content.get("player")
-                if player == "right":
-                    SharedState.paddle.right_y += 3
+#     async def receive_json(self, content, **kwargs):
+#         action = content.get("action")
+#         async with SharedState.lock:
+#             if action == "move_up":
+#                 player = content.get("player")
+#                 if player == "right":
+#                     SharedState.paddle.right_y += 3
 
 
 class PongLogic(SharedState, AsyncWebsocketConsumer):
@@ -46,20 +43,17 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
     async def game_loop(self):
         turn_count = 0
         while SharedState.Score.left < 15 and SharedState.Score.right < 15:
-            if self.state == "stop":
-                SharedState.Ball.x = SharedState.GameWindow.width / 2
-                SharedState.Ball.y = SharedState.GameWindow.height / 2
-                SharedState.Ball.angle = random.uniform(
-                    SharedState.Ball.bound_angle["right_bottom"],
-                    SharedState.Ball.bound_angle["right_top"],
-                )
-                if turn_count % 2 == 0:
-                    SharedState.Ball.angle += math.pi
-                SharedState.Ball.angle = Utils.normalize_angle(SharedState.Ball.angle)
-                turn_count += 1
-                Utils.set_direction(SharedState.Ball)
-                # print("angle: ", self.ball.angle)
-                # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
+            async with SharedState.lock:
+                if self.state == "stop":
+                    SharedState.reset_ball_position()
+                    SharedState.reset_ball_angle()
+                    if turn_count % 2 == 0:
+                        SharedState.Ball.angle += math.pi
+                    SharedState.Ball.angle = Utils.normalize_angle(SharedState.Ball.angle)
+                    turn_count += 1
+                    Utils.set_direction(SharedState.Ball)
+                    # print("angle: ", self.ball.angle)
+                    # print("direction: ", self.ball.direction["facing_up"], self.ball.direction["facing_down"], self.ball.direction["facing_right"], self.ball.direction["facing_left"])
             await self.rendering()
             await self.update_pos()
             await self.check_game_state()
@@ -146,16 +140,19 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
             )
 
     async def check_game_state(self):
-        if SharedState.Ball.x - SharedState.Ball.radius > SharedState.GameWindow.width:
-            SharedState.Score.left += 1
-            self.state = "stop"
-        elif SharedState.Ball.x + SharedState.Ball.radius < 0:
-            SharedState.Score.right += 1
-            self.state = "stop"
+        async with SharedState.lock:
+            if (
+                SharedState.Ball.x - SharedState.Ball.radius
+                > SharedState.GameWindow.width
+            ):
+                SharedState.Score.left += 1
+                self.state = "stop"
+            elif SharedState.Ball.x + SharedState.Ball.radius < 0:
+                SharedState.Score.right += 1
+                self.state = "stop"
 
     async def connect(self):
         if "game_loop" in self.tasks:
-            SharedState.init()
             self.tasks["game_loop"].cancel()
         await self.channel_layer.group_add("sendmessage", self.channel_name)
         print("Websocket connected")
@@ -231,13 +228,3 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         message = event["content"]
         # 辞書をjson型にする
         await self.send(text_data=json.dumps(message))
-
-
-# def main():
-#     c = GameState()
-#     c2 = PongLogic()
-#     print("start!")
-
-
-# if __name__ == "__main__":
-#     main()

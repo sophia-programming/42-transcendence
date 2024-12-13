@@ -1,4 +1,5 @@
 import math
+import random
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -55,3 +56,14 @@ class SharedState:
         cls.Paddle.right_y = 240
         cls.Score.right = 0
         cls.Score.left = 0
+
+    @classmethod
+    def reset_ball_position(cls):
+        cls.Ball.x = 500
+        cls.Ball.y = 300
+
+    @classmethod
+    def reset_ball_angle(cls):
+        cls.Ball.angle = random.uniform(
+            cls.Ball.bound_angle["right_bottom"], cls.Ball.bound_angle["right_top"]
+        )
