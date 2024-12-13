@@ -1,8 +1,7 @@
+from accounts.models import CustomUser
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.html import escape
-
-from accounts.models import CustomUser
 
 
 class HomepageViewTests(TestCase):
@@ -11,6 +10,8 @@ class HomepageViewTests(TestCase):
             username="testuser", password="password123"
         )
         self.client.login(username="testuser", password="password123")  # loginが必要
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_homepage_view(self):
         response = self.client.get(reverse("homepage"))
