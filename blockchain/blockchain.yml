@@ -22,10 +22,9 @@ services:
       - ./truffle:/app
     networks:
       - blockchain_net
-    tty: true
-    stdin_open: true
-    #    command: ["truffle", "migrate", "--network", "development"]
-    command: /bin/sh
+    depends_on:
+      - ganache
+    command: ["truffle", "migrate", "--network", "development"]  
 
 networks:
   blockchain_net:

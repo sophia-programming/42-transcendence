@@ -16,7 +16,7 @@ if web3.is_connected():
 else:
     print("Failed to connect to Ganache")
 
-# アカウントと秘密鍵の設定
+# アカウントと秘密鍵の設定(将来的に自動でとってこれるようにしたい)
 account_0 = web3.to_checksum_address('0xfD089344cd7cB5890A8b14D5761C709F40691A40')
 private_key = '0x410e2482b0e56cf888d67642a9aef8f3e355759bd116074e5f254f7558e55e36'
 
