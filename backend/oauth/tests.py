@@ -7,6 +7,10 @@ from rest_framework.test import APITestCase
 
 
 class OAuthViewTests(APITestCase):
+    def setUp(self):
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
+
     def test_oauth_view_redirect(self):
         """OAuth認証ページにリダイレクトされることを確認する"""
         response = self.client.get(reverse("oauth:oauth"))
@@ -15,6 +19,10 @@ class OAuthViewTests(APITestCase):
 
 
 class OAuthCallbackViewTests(APITestCase):
+    def setUp(self):
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
+
     @patch("requests.post")
     @patch("requests.get")
     def test_oauth_callback_view_success(self, mock_get, mock_post):
