@@ -24,7 +24,8 @@ services:
       - blockchain_net
     depends_on:
       - ganache
-    command: ["truffle", "migrate", "--network", "development"]  
+    command: ["sh", "-c", "truffle migrate --network development && tail -f /dev/null"]  
+    
 
 networks:
   blockchain_net:
