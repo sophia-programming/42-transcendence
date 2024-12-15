@@ -8,44 +8,51 @@ const SignUp = {
   after_render: async () => {
     updateContent();
 
-    document
-      .getElementById("signup-form")
-      .addEventListener("submit", async (e) => {
-        e.preventDefault();
+    const signupForm = document.getElementById("signup-form");
 
-        let username = document.getElementById("username").value;
-        let password = document.getElementById("password").value;
-        let email = document.getElementById("email").value;
+    signupForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!signupForm.checkValidity()) {
+        event.stopPropagation();
+        signupForm.classList.add("was-validated");
+        return;
+      }
 
-        try {
-          const response = await fetch(
-            `${window.env.BACKEND_HOST}/accounts/api/signup/`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ username, password, email }),
-            }
-          );
+      signupForm.classList.add("was-validated");
 
-          const data = await response.json();
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let email = document.getElementById("email").value;
 
-          if (response.ok) {
-            console.log("Signup successful: ", data);
-            window.location.hash = "#/";
-          } else {
-            const errors = Object.entries(data)
-              .map(([k, v]) => `${k}: ${v}`)
-              .join(", ");
-            console.error("Signup failed: ", errors);
-            alert(i18next.t("signup:errors.signup"));
+      try {
+        const response = await fetch(
+          `${window.env.BACKEND_HOST}/accounts/api/signup/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password, email }),
           }
-        } catch (error) {
-          console.error("Error during signup: ", error);
-          alert(i18next.t("signup:errors.unknown"));
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Signup successful: ", data);
+          window.location.hash = "#/";
+        } else {
+          const errors = Object.entries(data)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(", ");
+          console.error("Signup failed: ", errors);
+          alert(i18next.t("signup:errors.signup"));
         }
-      });
+      } catch (error) {
+        console.error("Error during signup: ", error);
+        alert(i18next.t("signup:errors.unknown"));
+      }
+    });
   },
 };
 
