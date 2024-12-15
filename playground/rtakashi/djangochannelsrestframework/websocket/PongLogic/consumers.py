@@ -35,10 +35,10 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
                     SharedState.Paddle.left_y += 3
             elif action == "game_init":
                 SharedState.init()
-            elif action == "game_stop":
-                # DBに保管,gameloop止める
-            elif action == "game_resume":
-                # gameloop再開
+            # elif action == "game_stop":
+            #     # DBに保管,gameloop止める
+            # elif action == "game_resume":
+            #     # gameloop再開
             response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
             await self.channel_layer.group_send(
                 "sendmessage",
@@ -50,7 +50,7 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
             if action == "game_init":
                 await asyncio.sleep(2)
 
-
+    # GET
 class PongLogic(SharedState, AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
