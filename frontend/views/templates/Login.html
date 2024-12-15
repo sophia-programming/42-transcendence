@@ -1,12 +1,14 @@
 <main class="form-signin d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh;">
-  <form id="login-form" method="post" action="/accounts/login/">
+  <form id="login-form" class="needs-validation" novalidate>
     <div class="mb-3">
       <label for="id_username" class="form-label" data-i18n="login:username">Username</label>
       <input type="text" id="id_username" class="form-control" name="username" required />
+      <div class="invalid-feedback" data-i18n="login:validations.required"></div>
     </div>
     <div class="mb-3">
       <label for="id_password" class="form-label" data-i18n="login:password">Password</label>
       <input type="password" id="id_password" class="form-control" name="password" required />
+      <div class="invalid-feedback" data-i18n="login:validations.required"></div>
     </div>
     <input type="hidden" value="/accounts/verify_otp/" />
     <button type="submit" class="btn btn-primary mb-2 w-100" data-i18n="login:login">Login</button>

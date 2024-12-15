@@ -8,42 +8,51 @@ const Login = {
   after_render: async () => {
     updateContent();
 
-    document
-      .getElementById("login-form")
-      .addEventListener("submit", async (event) => {
-        event.preventDefault();
-        let username = document.getElementById("id_username").value;
-        let password = document.getElementById("id_password").value;
+    const loginForm = document.getElementById("login-form");
 
-        try {
-          const response = await fetch(
-            `${window.env.BACKEND_HOST}/accounts/api/login/`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ username, password }),
-            }
-          );
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-          const data = await response.json();
+      if (!loginForm.checkValidity()) {
+        event.stopPropagation();
+        loginForm.classList.add("was-validated");
+        return;
+      }
 
-          if (response.ok) {
-            console.log("Login success: ", data);
-            window.location.hash = "#/";
-          } else {
-            const errors = Object.entries(data)
-              .map(([k, v]) => `${k}: ${v}`)
-              .join(", ");
-            console.error("Login failed: ", errors);
-            alert(`Login failed: ${errors || "Unknown error"}`);
+      loginForm.classList.add("was-validated");
+
+      let username = document.getElementById("id_username").value;
+      let password = document.getElementById("id_password").value;
+
+      try {
+        const response = await fetch(
+          `${window.env.BACKEND_HOST}/accounts/api/login/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
           }
-        } catch (error) {
-          console.error("An error occurred: ", error);
-          alert(`An error occurred: ${error.message || "Unknown error"}`);
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Login success: ", data);
+          window.location.hash = "#/";
+        } else {
+          const errors = Object.entries(data)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(", ");
+          console.error("Login failed: ", errors);
+          alert(`Login failed: ${errors || "Unknown error"}`);
         }
-      });
+      } catch (error) {
+        console.error("An error occurred: ", error);
+        alert(`An error occurred: ${error.message || "Unknown error"}`);
+      }
+    });
 
     document
       .getElementById("oauth-login")

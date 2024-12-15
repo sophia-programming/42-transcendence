@@ -3,5 +3,8 @@
 	"password": "パスワード",
 	"login": "ログイン",
 	"sign_up": "アカウント作成",
-	"login_with_42": "42アカウントでログイン"
+	"login_with_42": "42アカウントでログイン",
+    "validations": {
+        "required": "必須項目です"
+    }
 }

@@ -3,5 +3,8 @@
 	"password": "密码",
 	"login": "登录",
 	"sign_up": "注册",
-	"login_with_42": "使用42登录"
+	"login_with_42": "使用42登录",
+    "validations": {
+        "required": "必填项"
+    }
 }
