@@ -46,11 +46,11 @@ const Login = {
             .map(([k, v]) => `${k}: ${v}`)
             .join(", ");
           console.error("Login failed: ", errors);
-          alert(`Login failed: ${errors || "Unknown error"}`);
+          alert(i18next.t("login:errors.login"));
         }
       } catch (error) {
         console.error("An error occurred: ", error);
-        alert(`An error occurred: ${error.message || "Unknown error"}`);
+        alert(i18next.t("login:errors.unknown"));
       }
     });
 
