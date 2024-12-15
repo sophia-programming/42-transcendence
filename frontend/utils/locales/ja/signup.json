@@ -1,0 +1,15 @@
+{
+    "title": "新規登録",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "email": "メールアドレス",
+    "signupButton": "登録",
+    "errors": {
+        "unknown": "不明なエラーが発生しました",
+        "signup": "登録中にエラーが発生しました。再度お試しください。"
+    },
+    "validations": {
+        "required": "必須項目です",
+        "invalidEmail": "有効なメールアドレスを入力してください"
+    }
+}

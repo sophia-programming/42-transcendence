@@ -3,5 +3,12 @@
 	"password": "Password",
 	"login": "Login",
 	"sign_up": "Signup",
-	"login_with_42": "Login with 42"
+	"login_with_42": "Login with 42",
+    "errors": {
+        "unknown": "Unknown error",
+        "login": "An error occurred during login. Please try again."
+    },
+    "validations": {
+        "required": "This field is required"
+    }
 }
