@@ -18,7 +18,7 @@ const Login = {
                     <input type="hidden" value="/accounts/verify_otp/" />
                     <button type="submit" class="btn btn-primary mb-2 w-100" data-i18n="login:login">Login</button>
                 </form>
-                <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="login:sign_up"
+                <a id="sign-up" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="login:sign_up"
                     >Sign Up</a
                 >
                 <a id="oauth-login" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login:login_with_42"
@@ -63,6 +63,13 @@ const Login = {
       .addEventListener("click", async (event) => {
         event.preventDefault();
         window.location.href = `${window.env.BACKEND_HOST}/oauth/`;
+      });
+
+    document
+      .getElementById("sign-up")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        window.location.hash = "#/signup";
       });
   },
 };

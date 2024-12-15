@@ -2,12 +2,14 @@
 
 import Navbar from "./views/components/Navbar.js";
 import Login from "./views/pages/Login.js";
+import SignUp from "./views/pages/SignUp.js";
 import Home from "./views/pages/Home.js";
 import Gameplay from "./views/pages/Gameplay.js";
 
 const routes = {
   "/": Home,
   "/login": Login,
+  "/signup": SignUp,
   "/gameplay": Gameplay,
 };
 
