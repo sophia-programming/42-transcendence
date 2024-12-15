@@ -37,24 +37,33 @@ const Login = {
         let username = document.getElementById("id_username").value;
         let password = document.getElementById("id_password").value;
 
-        const response = await fetch(
-          `${window.env.BACKEND_HOST}/accounts/api/login/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
+        try {
+          const response = await fetch(
+            `${window.env.BACKEND_HOST}/accounts/api/login/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.ok) {
+            console.log("Login success: ", data);
+            window.location.hash = "#/";
+          } else {
+            const errors = Object.entries(data)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join(", ");
+            console.error("Login failed: ", errors);
+            alert(`Login failed: ${errors || "Unknown error"}`);
           }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log("success: ", data);
-          window.location.hash = "#/";
-        } else {
-          console.log("error: ", data);
+        } catch (error) {
+          console.error("An error occurred: ", error);
+          alert(`An error occurred: ${error.message || "Unknown error"}`);
         }
       });
 
