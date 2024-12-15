@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
+from .utils.auth import generate_jwt
 
 
 @method_decorator([sensitive_post_parameters(), never_cache], name="dispatch")
@@ -22,8 +23,11 @@ class CustomLoginView(APIView):
                 return Response(
                     {"redirect": "accounts:verify_otp"}, status=status.HTTP_200_OK
                 )
+            token = generate_jwt(user)
             login(request, user)
-            return Response({"redirect": "homepage"}, status=status.HTTP_200_OK)
+            return Response(
+                {"token": token, "redirect": "homepage"}, status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
