@@ -38,7 +38,7 @@ const Tournament = {
           } else {
             const errors = Object.entries(data)
               .map(([k, v]) => {
-                `${k}: ${v}`;
+                return `${k}: ${v}`;
               })
               .join(", ");
             console.error("Tournament register failed: ", errors);
