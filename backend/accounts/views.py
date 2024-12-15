@@ -6,11 +6,12 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import LoginSerializer, OTPSerializer, SignUpSerializer
-from .utils.auth import generate_jwt
+from .utils.auth import JWTAuthentication, generate_jwt
 
 
 @method_decorator([sensitive_post_parameters(), never_cache], name="dispatch")
@@ -49,8 +50,15 @@ class SignUpView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@method_decorator([never_cache, login_required], name="dispatch")
+@method_decorator([never_cache], name="dispatch")
 class SetupOTPView(APIView):
+    authentication_classes = [
+        JWTAuthentication,
+    ]
+    permission_classes = [
+        IsAuthenticated,
+    ]
+
     def get(self, request):
         user = request.user
         if not TOTPDevice.objects.filter(user=user, confirmed=True).exists():
