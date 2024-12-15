@@ -49,8 +49,11 @@ const SignUp = {
             console.log("Signup successful: ", data);
             window.location.hash = "#/";
           } else {
-            console.error("Signup failed: ", data);
-            alert(`Signup failed: ${data.message || "Unknown error"}`);
+            const errors = Object.entries(data)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join(", ");
+            console.error("Signup failed: ", errors);
+            alert(`Signup failed: ${errors || "Unknown error"}`);
           }
         } catch (error) {
           console.error("Error during signup: ", error);
