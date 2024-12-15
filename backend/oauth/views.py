@@ -1,26 +1,31 @@
 import os
 
 import requests
+from accounts.models import CustomUser
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-from accounts.models import CustomUser
 
-
+@api_view(["GET"])
 def oauth_view(request):
     return redirect(
         f"https://api.intra.42.fr/oauth/authorize?client_id={os.environ.get('UID')}&redirect_uri=http://localhost:8000/oauth/callback/&response_type=code"
     )
 
 
+@api_view(["GET"])
 def oauth_callback_view(request):
     code = request.GET.get("code")
     error = request.GET.get("error")
     if error:
-        return render(
-            request,
-            "oauth/error.html",
-            {"error": error, "error_description": request.GET.get("error_description")},
+        return Response(
+            {
+                "error": error,
+                "error_description": request.GET.get("error_description"),
+            },
+            status=400,
         )
 
     if code:
@@ -52,12 +57,11 @@ def oauth_callback_view(request):
                 user.save()
 
             login(request, user)
-            return redirect("homepage")
-    return render(
-        request,
-        "oauth/error.html",
+            return redirect("http://localhost:3000/#/")
+    return Response(
         {
             "error": "No code provided",
-            "error_description": "認証コードが提供されていません。",
+            "error_description": "Authorization code was not provided or is invalid.",
         },
+        status=400,
     )
