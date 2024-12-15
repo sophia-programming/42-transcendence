@@ -1,9 +1,13 @@
+import { updateContent } from "../../utils/i18n.js";
+
 const Tournament = {
   render: async () => {
     return (await fetch("/views/templates/Tournament.html")).text();
   },
 
   after_render: async () => {
+    updateContent();
+
     document
       .getElementById("tournament-form")
       .addEventListener("submit", async (event) => {
