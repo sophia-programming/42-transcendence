@@ -21,7 +21,7 @@ const Login = {
                 <a href="/accounts/signup/" class="btn btn-secondary w-100 mb-2" style="max-width: 282px;" data-i18n="login:sign_up"
                     >Sign Up</a
                 >
-                <a href="/oauth/oauth/" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login:login_with_42"
+                <a id="oauth-login" class="btn btn-primary w-100" style="max-width: 282px;" data-i18n="login:login_with_42"
                     >Login with 42</a
                 >
                 </main>`;
@@ -56,6 +56,13 @@ const Login = {
         } else {
           console.log("error: ", data);
         }
+      });
+
+    document
+      .getElementById("oauth-login")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        window.location.href = `${window.env.BACKEND_HOST}/oauth/`;
       });
   },
 };
