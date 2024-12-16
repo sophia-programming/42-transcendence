@@ -34,7 +34,7 @@ const Tournament = {
 
           if (response.ok) {
             console.log(data);
-            window.location.hash = "#/game";
+            window.location.hash = "#/matches";
           } else {
             const errors = Object.entries(data)
               .map(([k, v]) => {
