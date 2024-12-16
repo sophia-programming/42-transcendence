@@ -35,7 +35,7 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
                     SharedState.Paddle.left_y += 3
             elif action == "game_init":
                 SharedState.init()
-            elif action == "game_stop":
+            elif action == "game_pause":
                 pong = PongLogic()
                 TASKS["game_loop"].cancel()
                 return
