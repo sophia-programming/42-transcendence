@@ -1,26 +1,35 @@
 const http = require("http");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
 const PORT = 3000;
 
-const server = http.createServer((req, res) => {
-  if (req.url === "/health") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ status: "ok" }));
-    return;
+let headerContent = "";
+
+async function loadHeader() {
+  try {
+    headerContent = await fs.readFile(
+      path.join(__dirname, "/views/templates/Navbar.html"),
+      "utf-8"
+    );
+  } catch (err) {
+    console.error("Error while loading header:", err);
+    headerContent = "<div>Error loading header</div>";
   }
+}
 
-  const filePath = getFilePath(req.url);
-  const contentType = getContentType(filePath);
-
-  fs.readFile(filePath, "utf-8", (err, content) => {
-    if (err) {
-      res.writeHead(500, { "Content-Type": "text/plain" });
-      res.end("Internal Server Error");
+const server = http.createServer(async (req, res) => {
+  try {
+    if (req.url === "/health") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ status: "ok" }));
       return;
     }
 
+    const filePath = getFilePath(req.url);
+    const contentType = getContentType(filePath);
+
+    const content = await fs.readFile(filePath, "utf-8");
     const renderedContent = content
       .replace(
         '<div id="header_container"></div>',
@@ -28,25 +37,28 @@ const server = http.createServer((req, res) => {
       )
       .replace(
         '<div id="body_container"></div>',
-        `<div id="body_container">${renderPage(req.url)}</div>`
+        `<div id="body_container">${await renderPage(req.url)}</div>`
       )
       .replace(
         '<script id="load_env"></script>',
         `<script>
           window.env = {
-            BACKEND_HOST: '${process.env.BACKEND_HOST}',
-            BACKEND_WS_HOST: '${process.env.BACKEND_WS_HOST}'
+            BACKEND_HOST: '${process.env.BACKEND_HOST ?? ""}',
+            BACKEND_WS_HOST: '${process.env.BACKEND_WS_HOST ?? ""}'
           };
         </script>`
       );
-    //   .replace(
-    //     '<div id="footer_container"></div>',
-    //     `<div id="footer_container"></div>`
-    //   );
 
-    res.writeHead(200, { "Content-Type": contentType });
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Cache-Control": "no-cache",
+    });
     res.end(renderedContent);
-  });
+  } catch (err) {
+    console.error("Server error:", err);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Internal Server Error");
+  }
 });
 
 const getFilePath = (url) => {
@@ -55,34 +67,30 @@ const getFilePath = (url) => {
 
 const getContentType = (filePath) => {
   const extname = path.extname(filePath);
-
-  switch (extname) {
-    case ".js":
-      return "application/javascript";
-    case ".css":
-      return "text/css";
-    case ".json":
-      return "application/json";
-    case ".png":
-      return "image/png";
-    case ".jpg":
-      return "image/jpg";
-    case ".ico":
-      return "image/x-icon";
-    default:
-      return "text/html";
-  }
+  const mimeTypes = {
+    ".html": "text/html",
+    ".js": "application/javascript",
+    ".css": "text/css",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+  };
+  return mimeTypes[extname] || "application/octet-stream";
 };
 
-const renderPage = (url) => {
-  switch (url) {
-    case "/":
-      return `<h1>Welcome to the Home Page</h1>`;
-  }
+const renderPage = async (url) => {
+  const pages = {
+    "/": "<h1>Welcome to the Home Page</h1>",
+    // 他のページを追加可能
+  };
+  return pages[url] || "<h1>404 - Page Not Found</h1>";
 };
 
-const headerContent = (await fetch("/views/templates/Navbar.html")).text();
-
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+loadHeader().then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 });
