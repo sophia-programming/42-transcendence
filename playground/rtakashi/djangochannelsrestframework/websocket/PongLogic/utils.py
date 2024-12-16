@@ -1,7 +1,7 @@
 import math
 
 
-class Utils:
+class Utils():
     @staticmethod
     def normalize_angle(angle):
         return angle % (2 * math.pi)
@@ -199,3 +199,8 @@ class Utils:
             "left_score": score.left,
             "right_score": score.right
         }
+
+    @staticmethod
+    def game_start(game_loop):
+        print("start!")
+        return game_loop

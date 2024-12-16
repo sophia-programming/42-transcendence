@@ -10,7 +10,7 @@ from channels.db import database_sync_to_async
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from websocket.serializers import GameStateSerializer
 
-
+TASKS = {}
 class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
     from websocket.models import GameState
 
@@ -35,10 +35,15 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
                     SharedState.Paddle.left_y += 3
             elif action == "game_init":
                 SharedState.init()
-            # elif action == "game_stop":
-            #     # DBに保管,gameloop止める
-            # elif action == "game_resume":
-            #     # gameloop再開
+            elif action == "game_stop":
+                pong = PongLogic()
+                TASKS["game_loop"].cancel()
+                return
+            # DBに保管,gameloop止める
+            elif action == "game_resume":
+                pong = PongLogic()
+                TASKS["game_loop"] = asyncio.create_task(Utils.game_start(pong.game_loop()))
+                return
             response_message = Utils.create_game_update_message(SharedState.Ball, SharedState.Paddle, SharedState.Score)
             await self.channel_layer.group_send(
                 "sendmessage",
@@ -52,11 +57,13 @@ class GameStateConsumer(SharedState, GenericAsyncAPIConsumer):
 
     # GET
 class PongLogic(SharedState, AsyncWebsocketConsumer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.state = "stop"
-        self.tasks = {}
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance.state = "stop" 
+        return cls._instance
 
+    # TASKS = {}
     # PongLogic
     async def game_loop(self):
         turn_count = 0
@@ -170,17 +177,18 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
                 self.state = "stop"
 
     async def connect(self):
-        if "game_loop" in self.tasks:
-            self.tasks["game_loop"].cancel()
+        if "game_loop" in TASKS:
+            TASKS["game_loop"].cancel()
         await self.channel_layer.group_add("sendmessage", self.channel_name)
         print("Websocket connected")
         await self.accept()
-        self.tasks["game_loop"] = asyncio.create_task(self.game_loop())
+        self.state = "stop"
+        TASKS["game_loop"] = asyncio.create_task(Utils.game_start(self.game_loop()))
 
     async def disconnect(self, close_code):
-        if "game_loop" in self.tasks:
+        if "game_loop" in TASKS:
             SharedState.init()
-            self.tasks["game_loop"].cancel()
+            TASKS["game_loop"].cancel()
         await self.channel_layer.group_discard("sendmessage", self.channel_name)
         print("Websocket disconnected")
 
@@ -208,7 +216,6 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
             elif key == "I" and action == "pressed":
                 if SharedState.Paddle.right_y - 3 >= 0:
                     SharedState.Paddle.right_y -= 3
-
         if self.state == "stop":
             await self.send_pos()
 
