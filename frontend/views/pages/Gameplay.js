@@ -23,6 +23,19 @@ const Gameplay = {
 		const ball = {
 			x: center_x,
 			y: center_y,
+			radius: 10,
+		};
+		const obstacle = {
+			x: center_x,
+			y: center_y,
+			width: 0,
+			height: 0,
+		};
+		const blind = {
+			x: 350,
+			y: 0,
+			width: 0,
+			height: 0,
 		};
 		const score = {
 			left: 0,
@@ -56,6 +69,13 @@ const Gameplay = {
 			paddle.right_y = coordinates.right_paddle_y;
 			ball.x = coordinates.ball_x;
 			ball.y = coordinates.ball_y;
+			ball.radius = coordinates.ball_radius;
+			obstacle.x = coordinates.obstacle_x;
+			obstacle.y = coordinates.obstacle_y;
+			obstacle.width = coordinates.obstacle_width;
+			obstacle.height = coordinates.obstacle_height;
+			blind.width = coordinates.blind_width;
+			blind.height = coordinates.blind_height;
 		};
 
 		function sendMessage(message) {
@@ -122,8 +142,13 @@ const Gameplay = {
 			ctx.fillStyle = "white";
 			ctx.fillRect(paddle.left_x, paddle.left_y, paddle_w, paddle_h);
 			ctx.fillRect(paddle.right_x - paddle_w, 0 + paddle.right_y, paddle_w, paddle_h);
-			ctx.fillRect(ball.x - 10, ball.y - 10, 20, 20);
+			ctx.fillRect(ball.x - ball.radius, ball.y - ball.radius, 2 * ball.radius, 2 * ball.radius);
+			ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 
+			ctx.fillStyle = "red";
+			ctx.fillRect(blind.x, blind.y, blind.width, blind.height);
+
+			ctx.fillStyle = "white";
 			ctx.font = "20px Arial";
 			ctx.fillText(score.left, center_x - 50, 50);
 			ctx.fillText(score.right, center_x + 50, 50);
