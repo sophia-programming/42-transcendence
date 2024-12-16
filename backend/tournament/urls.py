@@ -1,13 +1,18 @@
 from django.urls import path
 
-from matches import views as matches_views  # matches/views.pyからインポート
+from . import views
 
-from . import views  # tournament/views.pyからインポート
+# from matches import views as matches_views  # matches/views.pyからインポート
+
 
 app_name = "tournament"
 urlpatterns = [
-    path("", views.TournamentView.as_view(), name="tournament"),
     path(
-        "matches/", matches_views.matches_view, name="matches"
-    ),  # matchesのビューを参照
+        "api/register/",
+        views.TournamentRegisterView.as_view(),
+        name="tournament_register",
+    ),
+    # path(
+    #     "matches/", matches_views.matches_view, name="matches"
+    # ),  # matchesのビューを参照
 ]

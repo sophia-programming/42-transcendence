@@ -20,7 +20,7 @@ const Tournament = {
 
         try {
           const response = await fetch(
-            `${window.env.BACKEND_HOST}/tournaments/api/register`,
+            `${window.env.BACKEND_HOST}/tournaments/api/register/`,
             {
               method: "POST",
               headers: {
