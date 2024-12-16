@@ -27,7 +27,7 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    
+
   db:
     image: postgres
     container_name: db
@@ -84,6 +84,3 @@ services:
 include:
   - ./blockchain/blockchain.yml
 
-networks:
-  blockchain_net:
-    driver: bridge
