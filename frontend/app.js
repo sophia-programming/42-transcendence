@@ -6,6 +6,7 @@ import SignUp from "./views/pages/SignUp.js";
 import Home from "./views/pages/Home.js";
 import Gameplay from "./views/pages/Gameplay.js";
 import Tournament from "./views/pages/Tournament.js";
+import Matches from "./views/pages/Matches.js";
 
 const routes = {
   "/": Home,
@@ -13,6 +14,7 @@ const routes = {
   "/signup": SignUp,
   "/gameplay": Gameplay,
   "/tournament": Tournament,
+  "/matches": Matches,
 };
 
 const router = async () => {
