@@ -17,3 +17,4 @@ djangorestframework
 django-cors-headers
 web3
 py-solc-x
+pyjwt

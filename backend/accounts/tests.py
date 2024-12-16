@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import CustomUser
+from .utils.auth import generate_jwt
 
 
 class CustomLoginViewTests(APITestCase):
@@ -25,7 +26,8 @@ class CustomLoginViewTests(APITestCase):
             {"username": "testuser", "password": "password123"},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"redirect": "homepage"})
+        self.assertIn("token", response.data)
+        self.assertEqual(response.data["redirect"], "homepage")
         self.assertTrue(response.wsgi_request.user.is_authenticated)
 
     def test_custom_login_view_valid_login_with_otp(self):
@@ -112,6 +114,8 @@ class SetupOTPViewTests(APITestCase):
         self.client.login(username="testuser", password="password123")
         self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
         self.client.defaults["wsgi.url_scheme"] = "https"
+        self.token = generate_jwt(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.token}")
 
     def test_setup_otp_view_get(self):
         """OTPセットアップのGETリクエストが成功することを確認する"""
@@ -127,6 +131,18 @@ class SetupOTPViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertTrue(self.user.otp_enabled)
+
+    def test_setup_otp_view_get_without_jwt(self):
+        """JWTトークンがない場合にOTPセットアップのGETリクエストが失敗することを確認する"""
+        self.client.credentials()  # JWTトークンをクリア
+        response = self.client.get(reverse("accounts:setup_otp"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_setup_otp_view_post_without_jwt(self):
+        """JWTトークンがない場合にOTPセットアップのPOSTリクエストが失敗することを確認する"""
+        self.client.credentials()  # JWTトークンをクリア
+        response = self.client.post(reverse("accounts:setup_otp"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class VerifyOTPViewTests(APITestCase):

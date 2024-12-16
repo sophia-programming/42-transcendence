@@ -205,9 +205,10 @@ LOGGING = {
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 if ENVIRONMENT == "production":
     DEBUG = False
-    SECRET_KEY = os.getenv("SECRET_KEY")
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True

@@ -4,7 +4,7 @@ i18next
   .init({
     fallbackLng: 'en', // ブラウザの言語が取得できない場合のデフォルト言語
     debug: false,
-    ns: ['navbar', 'home', 'login'], // 翻訳キーの名前空間
+    ns: ['navbar', 'home', 'login', 'signup', 'tournament'], // 翻訳キーの名前空間
     backend: {
       loadPath: './utils/locales/{{lng}}/{{ns}}.json', // 見つからない場合fallbackLngを参照
     },
@@ -16,7 +16,20 @@ i18next
 export function updateContent() {
   // data-i18n属性を持つ全ての要素を翻訳キーを元に翻訳
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = i18next.t(el.getAttribute('data-i18n'));
+    const key = el.getAttribute('data-i18n');
+    
+    // 属性の翻訳（[attr]key形式）
+    if (key.includes('[')) {
+      const matches = key.match(/\[(.*?)\](.*)/);
+      if (matches) {
+        const attr = matches[1];
+        const translationKey = matches[2];
+        el.setAttribute(attr, i18next.t(translationKey));
+      }
+    } else {
+      // 通常のテキスト翻訳
+      el.textContent = i18next.t(key);
+    }
   });
 }
 
