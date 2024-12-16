@@ -5,12 +5,14 @@ import Login from "./views/pages/Login.js";
 import SignUp from "./views/pages/SignUp.js";
 import Home from "./views/pages/Home.js";
 import Gameplay from "./views/pages/Gameplay.js";
+import GameSetting from "./views/pages/GameSetting.js";
 
 const routes = {
   "/": Home,
   "/login": Login,
   "/signup": SignUp,
   "/gameplay": Gameplay,
+  "/gamesetting": GameSetting,
 };
 
 const router = async () => {

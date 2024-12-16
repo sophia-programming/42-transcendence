@@ -1,8 +1,6 @@
 const Gameplay = {
 	render: async () => {
-		return `
-			<canvas id="gameCanvas" class="mx-auto p-5" style="width: 1000px;"></canvas>
-		`;
+		return (await fetch("/views/templates/Gameplay.html")).text();
 	},
 
 	after_render: async () => {
