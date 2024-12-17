@@ -1,6 +1,7 @@
 from web3 import Web3
 import json
 import os
+from eth_account import Account
 
 # Ganacheへの接続設定
 def connect_to_ganache(url="http://ganache:8545"):
@@ -68,26 +69,33 @@ def main():
     abi_path = "blockchain/truffle/build/contracts/Tournament.json"
     address_path = "blockchain/truffle/contract_address.json"
 
-    # アカウント設定
-    # account_0 = '0xC725AD62e2BA83aeb8Cf51BE336f350B44758c0E'
-    private_key = '0xb8f238169256411b8df180d4a67a5b26ee7c0ee4064e486cf4a6dc145bcc4008'
+    # ニーモニックフレーズを環境変数から取得
+    mnemonic = os.getenv('GANACHE_MNEMONIC', 'myth like bonus scare over problem client lizard pioneer submit female collect')
 
-    # 接続とインスタンス生成
+    # HDウォレット機能を有効化
+    Account.enable_unaudited_hdwallet_features()
+
+    # アカウントのインデックス（0から始まる）
+    index = 0
+
+    # パスフレーズの生成
+    account_path = f"m/44'/60'/0'/0/{index}"
+
+    # 秘密鍵の導出
+    account = Account.from_mnemonic(mnemonic, account_path=account_path)
+    private_key = account.key
+    address = account.address
+
+    print(f"Address: {address}")
+    print(f"Private Key: {private_key.hex()}")
+
+    # Ganacheへの接続
     web3 = connect_to_ganache(ganache_url)
     contract = get_contract_instance(web3, abi_path, address_path)
 
-     # アカウントアドレスの取得
-    accounts = web3.eth.accounts
-    print("Accounts:", accounts)
-
-    # ここでアカウント情報を使用する
-    if accounts:
-        account_0 = accounts[0]
-        # 秘密鍵の取得は別途行う必要がある
-
     # 新しい試合結果を記録
-    record_match(web3, contract, account_0, private_key, 1, 10, 2, 5)
-    record_match(web3, contract, account_0, private_key, 3, 8, 4, 3)
+    record_match(web3, contract, address, private_key, 1, 10, 2, 5)
+    record_match(web3, contract, address, private_key, 3, 8, 4, 3)
 
     # 特定の試合結果を取得
     match_data = get_match(contract, 1)
