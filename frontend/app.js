@@ -32,6 +32,7 @@ const router = async () => {
   }
 
   const page = routes[location];
+  console.log(page);
   window.currentPage = page;
 
   body.innerHTML = await page.render();
