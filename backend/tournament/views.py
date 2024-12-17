@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Match, Player, PlayerMatch, Tournament
+from .models import Match, Player, Tournament
 from .serializers import TournamentDetailSerializer
 
 
@@ -27,14 +27,15 @@ class TournamentRegisterView(APIView):
             random.shuffle(players)
 
             for i in range(4):
-                match = Match.objects.create(
-                    tournament=tournament, match_number=i + 1, timestamp=timezone.now()
+                Match.objects.create(
+                    tournament=tournament,
+                    match_number=i + 1,
+                    timestamp=timezone.now(),
+                    player1=players[i * 2],
+                    player2=players[i * 2 + 1],
+                    player1_score=0,
+                    player2_score=0,
                 )
-
-                for j in range(2):
-                    PlayerMatch.objects.create(
-                        player=players[i * 2 + j], match=match, score=0, is_winner=False
-                    )
 
             serializer = TournamentDetailSerializer(tournament)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

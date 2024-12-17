@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Match, Player, PlayerMatch, Tournament
+from .models import Match, Player, Tournament
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -9,22 +9,23 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class PlayerMatchDetailSerializer(serializers.ModelSerializer):
-    player = PlayerSerializer()
-
-    class Meta:
-        model = PlayerMatch
-        fields = ["id", "player", "score", "is_winner"]
-
-
 class MatchDetailSerializer(serializers.ModelSerializer):
-    player_matches = PlayerMatchDetailSerializer(
-        source="playermatch_set", many=True, read_only=True
-    )
+    player1 = PlayerSerializer()
+    player2 = PlayerSerializer()
+    winner = PlayerSerializer()
 
     class Meta:
         model = Match
-        fields = ["id", "match_number", "timestamp", "player_matches"]
+        fields = [
+            "id",
+            "match_number",
+            "timestamp",
+            "player1",
+            "player2",
+            "player1_score",
+            "player2_score",
+            "winner",
+        ]
 
 
 class TournamentDetailSerializer(serializers.ModelSerializer):
