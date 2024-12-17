@@ -22,7 +22,8 @@ const GameSetting = {
 
       try {
         // PUTリクエストを送信
-        const response = await fetch("http://localhost:8000/api/gamesetting/1/", {
+        const response = await fetch(
+          `${window.env.BACKEND_HOST}/api/gamesetting/1/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
