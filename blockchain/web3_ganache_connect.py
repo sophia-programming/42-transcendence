@@ -11,6 +11,7 @@ def connect_to_ganache(url="http://ganache:8545"):
     else:
         raise ConnectionError("Failed to connect to Ganache")
 
+
 # ファイル読み込み関数
 def load_json_file(file_path):
     if not os.path.exists(file_path):
@@ -68,12 +69,21 @@ def main():
     address_path = "blockchain/truffle/contract_address.json"
 
     # アカウント設定
-    account_0 = '0x3fad1900b2a966852ca89B0E39FaBF9696e56d7D'
-    private_key = '0xc41271557f5d9cf50a830faea43cbe1fc1dc4a5083637eabe81d7f8d34894cb4'
+    # account_0 = '0xC725AD62e2BA83aeb8Cf51BE336f350B44758c0E'
+    private_key = '0xb8f238169256411b8df180d4a67a5b26ee7c0ee4064e486cf4a6dc145bcc4008'
 
     # 接続とインスタンス生成
     web3 = connect_to_ganache(ganache_url)
     contract = get_contract_instance(web3, abi_path, address_path)
+
+     # アカウントアドレスの取得
+    accounts = web3.eth.accounts
+    print("Accounts:", accounts)
+
+    # ここでアカウント情報を使用する
+    if accounts:
+        account_0 = accounts[0]
+        # 秘密鍵の取得は別途行う必要がある
 
     # 新しい試合結果を記録
     record_match(web3, contract, account_0, private_key, 1, 10, 2, 5)
