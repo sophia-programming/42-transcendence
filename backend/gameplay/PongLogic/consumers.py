@@ -6,7 +6,6 @@ import asyncio
 import math
 from .utils import Utils
 from .shared import SharedState
-from gameplay.models import GameSetting
 
 # from channels.db import database_sync_to_async
 # from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
@@ -22,6 +21,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
     async def game_loop(self):
         turn_count = 0
         try:
+            from gameplay.models import GameSetting
             setting = await sync_to_async(GameSetting.objects.get)(id=1)
             ball_size_choise = setting.ball_size
             ball_v_choise = setting.ball_velocity
