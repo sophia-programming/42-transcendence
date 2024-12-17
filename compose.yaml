@@ -3,8 +3,6 @@ services:
     build: ./backend
     container_name: backend
     entrypoint: "backend/entrypoint.sh"
-    networks:
-      - blockchain_net
     volumes:
       - .:/usr/src/app
     env_file: .env
@@ -31,8 +29,6 @@ services:
   db:
     image: postgres
     container_name: db
-    networks:
-      - blockchain_net
     volumes:
       - ./data/db:/var/lib/postgresql/data
     env_file: .env
@@ -48,8 +44,6 @@ services:
     container_name: frontend
     working_dir: /usr/src/frontend
     command: /bin/sh -c "npm install && npm run server"
-    networks:
-      - blockchain_net
     volumes:
       - ./frontend:/usr/src/frontend
     environment:
@@ -70,8 +64,6 @@ services:
   redis:
     image: redis
     container_name: redis
-    networks:
-      - blockchain_net
     ports:
       - "6379:6379"
     healthcheck:
