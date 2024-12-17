@@ -13,11 +13,8 @@ else:
     print("Failed to connect to Ganache")
 
 # アカウントと秘密鍵の設定(将来的に自動でとってこれるようにしたい)
-account_0 = web3.to_checksum_address('0xdE0C1d0ac10c94c344AB5ebA66f5B685c4C9a18c')
-private_key = '0xc90093bb19a01812b75ccf5fe1288f7689ab5c304179f76f232c1baa7f4148b4'
-
-# デプロイされたコントラクトのアドレスを取得
-contract_address = "0x73Be9c27bda8E9dD9fFd9913d79302bc15c4D5CF"
+account_0 = web3.to_checksum_address('0x88bDfc9Fa0644BCb044bB5F9B5F6059738350675')
+private_key = '0xd7781941464343ac85c173f1b68bf69fc73f731b65fa5eb30cda8620e157fa55'
 
 abi_path = "blockchain/truffle/build/contracts/Tournament.json"
 
@@ -37,15 +34,26 @@ if 'abi' not in contract_json:
 
 abi = contract_json['abi']  # コントラクトのABIを取得
 
-# デプロイされたコントラクトのインスタンスを作成
-tournament = web3.eth.contract(address=contract_address, abi=abi)
-print(f"Contract instance created: {tournament}")
+# コントラクトアドレスが保存されたファイルのパス
+address_path = "blockchain/truffle/contract_address.json"
+
+# ファイルの存在確認
+if not os.path.exists(address_path):
+    raise FileNotFoundError(f"指定されたファイルが見つかりません: {address_path}")
+
+# コントラクトアドレスの読み込み
+with open(address_path, 'r') as address_file:
+    address_data = json.load(address_file)
+    contract_address = address_data['address']
+    
+# コントラクトのインスタンスを作成
+contract = web3.eth.contract(address=contract_address, abi=abi)
 
 # Djangoからコントラクトを操作する関数を定義
 # 例: 新しい試合結果を記録する
 def record_match(winner_id, winner_score, loser_id, loser_score):
     nonce = web3.eth.get_transaction_count(account_0)
-    transaction = tournament.functions.recordMatch(
+    transaction = contract.functions.recordMatch(
         winner_id,
         winner_score,
         loser_id,
@@ -63,7 +71,7 @@ def record_match(winner_id, winner_score, loser_id, loser_score):
 
 # 例: 特定の試合結果を取得する
 def get_match(match_number):
-    return tournament.functions.getMatch(match_number).call()
+    return contract.functions.getMatch(match_number).call()
 
 # 新しい試合結果を記録する
 receipt = record_match(1, 10, 2, 5)
