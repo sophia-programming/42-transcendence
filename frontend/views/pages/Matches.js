@@ -11,15 +11,8 @@ const Matches = {
         updateMatchDisplay(tournamentData);
         sessionStorage.removeItem("tournamentData");
       } else {
-        // const response = await fetch(
-        //   `${window.env.BACKEND_HOST}/tournaments/api/latest/`
-        // );
-        // const tournamentData = await response.json();
-        // if (response.ok) {
-        //   updateMatchDisplay(tournamentData);
-        // } else {
-        //   console.error("Failed to fetch tournament data");
-        // }
+        alert("No tournament data found in session storage.");
+        window.location.hash = "#/tournament";
       }
     } catch (error) {
       console.error("Error handling tournament data:", error);
