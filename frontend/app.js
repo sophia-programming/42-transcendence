@@ -42,6 +42,12 @@ const router = async () => {
       loginButton.id = "navbar:logout";
       loginButton.textContent = "Logout";
     }
+
+    const setupOtpButton = document.getElementById("navbar:setup-otp");
+    if (setupOtpButton) {
+      setupOtpButton.setAttribute("href", "#/setup-otp");
+      setupOtpButton.classList.remove("disabled");
+    }
   }
 
   // footer
