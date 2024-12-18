@@ -40,6 +40,11 @@ const Login = {
 
         if (response.ok) {
           console.log("Login success: ", data);
+          if (data.redirect === "accounts:verify_otp") {
+            sessionStorage.setItem("user", username);
+            window.location.hash = "#/verify-otp";
+            return;
+          }
           document.cookie = `token=${data.token}; path=/; Secure; SameSite=Strict; max-age=86400`;
           window.location.hash = "#/";
         } else {
