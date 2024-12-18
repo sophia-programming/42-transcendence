@@ -1,10 +1,11 @@
 const Logout = {
   render: async () => {
     try {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("is_logged_in");
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie =
+        "is_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     } catch (error) {
-      console.error("Failed to clear session storage:", error);
+      console.error("Failed to clear cookies:", error);
       alert("An error occurred during logout process");
       return;
     }

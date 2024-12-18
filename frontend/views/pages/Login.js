@@ -40,8 +40,8 @@ const Login = {
 
         if (response.ok) {
           console.log("Login success: ", data);
-          sessionStorage.setItem("token", data.token);
-          sessionStorage.setItem("is_logged_in", "true");
+          document.cookie = `token=${data.token}; path=/; Secure; SameSite=Strict; max-age=86400`;
+          document.cookie = `is_logged_in=true; path=/; Secure; SameSite=Strict; max-age=86400`;
           window.location.hash = "#/";
         } else {
           const errors = Object.entries(data)
@@ -61,7 +61,7 @@ const Login = {
       .addEventListener("click", async (event) => {
         event.preventDefault();
         window.location.href = `${window.env.BACKEND_HOST}/oauth/`;
-        sessionStorage.setItem("is_logged_in", "true");
+        document.cookie = `is_logged_in=true; path=/; Secure; SameSite=Strict; max-age=86400`;
       });
 
     document

@@ -34,7 +34,7 @@ const router = async () => {
   const page = routes[location];
   window.currentPage = page;
 
-  if (sessionStorage.getItem("is_logged_in") === "true") {
+  if (document.cookie.includes("is_logged_in=true")) {
     const loginButton = document.getElementById("navbar:login");
     if (loginButton) {
       loginButton.setAttribute("href", "#/logout");
