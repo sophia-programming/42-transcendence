@@ -22,10 +22,10 @@ const GameSetting = {
 
       try {
         // PUTリクエストを送信
-        console.log(`${window.env.BACKEND_HOST}/api/gamesetting/1/`);
+        console.log(`${window.env.BACKEND_HOST}/api/gamesetting/`);
         const response = await fetch(
-          `${window.env.BACKEND_HOST}/gameplay/api/gamesetting/1/`, {
-          method: "PUT",
+          `${window.env.BACKEND_HOST}/gameplay/api/gamesetting/`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -37,8 +37,12 @@ const GameSetting = {
         }
 
         // 成功時の処理
+        const responseData = await response.json();
+        const settingId = responseData.id;
         console.log("Settings updated successfully:", settings);
-        window.location.hash = "#/gameplay"; // Gameplay画面へ遷移
+        localStorage.setItem("settingId", settingId);
+        console.log("Settings ID saved to localStorage:", window.localStorage.getItem("settingId"));
+        window.location.hash = `#/gameplay`; // Gameplay画面へ遷移
       } catch (error) {
         console.error("Failed to update settings:", error);
       }

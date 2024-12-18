@@ -22,7 +22,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         turn_count = 0
         try:
             from gameplay.models import GameSetting
-            setting = await sync_to_async(GameSetting.objects.get)(id=1)
+            setting = await sync_to_async(GameSetting.objects.get)(id=self.setting_id)
             ball_size_choise = setting.ball_size
             ball_v_choise = setting.ball_velocity
             map_choise = setting.map
@@ -168,6 +168,9 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
                 self.state = "stop"
 
     async def connect(self):
+        self.setting_id = self.scope["url_route"]["kwargs"]["settingid"]
+        print(f"setting_id: {self.setting_id}")
+
         if "game_loop" in self.tasks:
             self.tasks["game_loop"].cancel()
         await self.channel_layer.group_add("sendmessage", self.channel_name)

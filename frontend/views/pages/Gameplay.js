@@ -4,6 +4,8 @@ const Gameplay = {
 	},
 
 	after_render: async () => {
+		console.log("SettingId in Gameplay:", window.localStorage.getItem('settingId'));
+
 		const gameCanvas = document.getElementById('gameCanvas');
 		const ctx = gameCanvas.getContext('2d');
 
@@ -49,7 +51,7 @@ const Gameplay = {
 		};
 
 		// Websocket
-		const url = `${window.env.BACKEND_WS_HOST}/gameplay/`;
+		const url = `${window.env.BACKEND_WS_HOST}/gameplay/${window.localStorage.getItem('settingId')}/`;
 		window.ws = new WebSocket(url);
 		console.log(url + " WebSocket created");
 
@@ -162,13 +164,29 @@ const Gameplay = {
 		update();
 	},
 
-	cleanup: () => {
+	cleanup: async () => {
 		if (window.ws) {
-			window.ws.close();
-			window.ws = null;
-			console.log("WebSocket closed");
+		  window.ws.close();
+		  window.ws = null;
+		  console.log("WebSocket closed");
 		}
-	},
+	
+		if (window.localStorage.getItem('settingId')) {
+		  try {
+			const response = await fetch(`${window.env.BACKEND_HOST}/gameplay/api/gamesetting/${window.localStorage.getItem('settingId')}/`, {
+			  method: "DELETE",
+			});
+	
+			if (!response.ok) {
+			  throw new Error(`HTTP error! status: ${response.status}`);
+			}
+	
+			console.log("Settings deleted successfully:", window.localStorage.getItem('settingId'));
+		  } catch (error) {
+			console.error("Failed to delete settings:", error);
+		  }
+		}
+	  },
 };
 
 export default Gameplay;
