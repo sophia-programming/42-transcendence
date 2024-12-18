@@ -17,6 +17,10 @@ const SetupOtp = {
 
     console.log(data);
 
+    if (data.message === "OTP already set up") {
+      return (await fetch("/views/templates/AlreadySetupOtp.html")).text();
+    }
+
     return template
       .replace("{{ otpauth_url }}", encodeURIComponent(data.otpauth_url))
       .replace("{{ secret_key }}", data.secret_key);
