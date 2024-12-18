@@ -19,6 +19,16 @@ const routes = {
   "/tournament": Tournament,
 };
 
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    const val = parts.pop().split(";").shift();
+    return val && val.length > 0 ? val : null;
+  }
+  return null;
+};
+
 const router = async () => {
   const header = null || document.getElementById("header_container");
   const body = null || document.getElementById("body_container");
@@ -34,7 +44,7 @@ const router = async () => {
   const page = routes[location];
   window.currentPage = page;
 
-  if (document.cookie.includes("is_logged_in=true")) {
+  if (getCookie("token")) {
     const loginButton = document.getElementById("navbar:login");
     if (loginButton) {
       loginButton.setAttribute("href", "#/logout");
@@ -42,11 +52,12 @@ const router = async () => {
       loginButton.id = "navbar:logout";
       loginButton.textContent = "Logout";
     }
-
-    const setupOtpButton = document.getElementById("navbar:setup-otp");
-    if (setupOtpButton) {
-      setupOtpButton.setAttribute("href", "#/setup-otp");
-      setupOtpButton.classList.remove("disabled");
+    if (getCookie("token") != "dummy") {
+      const setupOtpButton = document.getElementById("navbar:setup-otp");
+      if (setupOtpButton) {
+        setupOtpButton.setAttribute("href", "#/setup-otp");
+        setupOtpButton.classList.remove("disabled");
+      }
     }
   }
 
