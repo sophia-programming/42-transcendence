@@ -26,7 +26,7 @@ urlpatterns = [
     path("oauth/", include("oauth.urls")),
     path("tournament/", include("tournament.urls")),
     path("accounts/", include("accounts.urls")),
-    path("api/", include("gameplay.urls")),
+    path("gameplay/", include("gameplay.urls")),
     path("admin/", admin.site.urls),
     path("homepage/", homepage_view, name="homepage"),
     path("result/", include("resultpage.urls")),

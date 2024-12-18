@@ -24,7 +24,7 @@ const GameSetting = {
         // PUTリクエストを送信
         console.log(`${window.env.BACKEND_HOST}/api/gamesetting/1/`);
         const response = await fetch(
-          `${window.env.BACKEND_HOST}/api/gamesetting/1/`, {
+          `${window.env.BACKEND_HOST}/gameplay/api/gamesetting/1/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

@@ -1,13 +1,12 @@
-from django.contrib import admin
-from django.urls import path
-from rest_framework import routers
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import GameSettingViewSet
-
-from . import views
 
 app_name = "gameplay"
 
-router = routers.DefaultRouter()
-router.register(r"gamesetting", GameSettingViewSet)
+router = DefaultRouter()
+router.register(r'gamesetting', GameSettingViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('api/', include(router.urls)),
+]
