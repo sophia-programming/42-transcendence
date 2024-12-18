@@ -5,6 +5,7 @@ import Login from "./views/pages/Login.js";
 import Logout from "./views/pages/Logout.js";
 import SignUp from "./views/pages/SignUp.js";
 import SetupOtp from "./views/pages/SetUpOtp.js";
+import VerifyOtp from "./views/pages/VerifyOtp.js";
 import Home from "./views/pages/Home.js";
 import Gameplay from "./views/pages/Gameplay.js";
 import Tournament from "./views/pages/Tournament.js";
@@ -15,6 +16,7 @@ const routes = {
   "/logout": Logout,
   "/signup": SignUp,
   "/setup-otp": SetupOtp,
+  "/verify-otp": VerifyOtp,
   "/gameplay": Gameplay,
   "/tournament": Tournament,
 };
