@@ -1,7 +1,7 @@
 import math
 
 
-class Utils:
+class Utils():
     @staticmethod
     def normalize_angle(angle):
         return angle % (2 * math.pi)
@@ -188,3 +188,19 @@ class Utils:
             velocity["x"] *= -1
             velocity["y"] = abs(velocity["y"])
         return velocity["x"], velocity["y"]
+
+    @staticmethod
+    def create_game_update_message(ball, paddle, score):
+        return {
+            "left_paddle_y": paddle.left_y,
+            "right_paddle_y": paddle.right_y,
+            "ball_x": ball.x,
+            "ball_y": ball.y,
+            "left_score": score.left,
+            "right_score": score.right
+        }
+
+    @staticmethod
+    def game_start(game_loop):
+        print("start!")
+        return game_loop
