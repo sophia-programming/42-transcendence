@@ -16,6 +16,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.state = "stop"
         self.tasks = {}
+        self.group_name = None
 
     # PongLogic
     async def game_loop(self):
@@ -171,10 +172,12 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         self.setting_id = self.scope["url_route"]["kwargs"]["settingid"]
         print(f"setting_id: {self.setting_id}")
 
+        self.group_name = f"game_{self.setting_id}"
+
         if "game_loop" in self.tasks:
             self.tasks["game_loop"].cancel()
-        await self.channel_layer.group_add("sendmessage", self.channel_name)
-        print("Websocket connected")
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        print(f"Websocket connected to group: {self.group_name}")
         await self.accept()
         self.tasks["game_loop"] = asyncio.create_task(self.game_loop())
 
@@ -182,8 +185,9 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         if "game_loop" in self.tasks:
             SharedState.init()
             self.tasks["game_loop"].cancel()
-        await self.channel_layer.group_discard("sendmessage", self.channel_name)
-        print("Websocket disconnected")
+
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        print(f"Websocket disconnected from group: {self.group_name}")
 
     async def receive(self, text_data=None):
         data = json.loads(text_data)
@@ -218,7 +222,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
         print(f"Other message received: {message}")
         response_message = {"message": f"Received: {message}"}
         await self.channel_layer.group_send(
-            "sendmessage",
+            self.group_name,
             {
                 "type": "send_message",
                 "content": response_message,
@@ -242,7 +246,7 @@ class PongLogic(SharedState, AsyncWebsocketConsumer):
             "right_score": SharedState.Score.right,
         }
         await self.channel_layer.group_send(
-            "sendmessage",
+            self.group_name,
             {
                 "type": "send_message",
                 "content": response_message,
