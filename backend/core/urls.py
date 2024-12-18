@@ -29,5 +29,4 @@ urlpatterns = [
     path("gameplay/", include("gameplay.urls")),
     path("admin/", admin.site.urls),
     path("homepage/", homepage_view, name="homepage"),
-    path("result/", include("resultpage.urls")),
 ]

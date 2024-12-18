@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "matches",
     "homepage",
     "oauth",
-    "resultpage",
     "channels",
     "corsheaders",
 ]
