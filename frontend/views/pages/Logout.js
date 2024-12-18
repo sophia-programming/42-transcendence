@@ -14,12 +14,17 @@ const Logout = {
 
   after_render: async () => {
     const logoutButton = document.getElementById("navbar:logout");
-    console.log(logoutButton)
     if (logoutButton) {
       logoutButton.setAttribute("href", "#/login");
       logoutButton.setAttribute("data-i18n", "navbar:login");
       logoutButton.id = "navbar:login";
       logoutButton.textContent = "Login";
+    }
+
+    const setupOtpButton = document.getElementById("navbar:setup-otp");
+    if (setupOtpButton) {
+      setupOtpButton.removeAttribute("href");
+      setupOtpButton.classList.add("disabled");
     }
   },
 };
