@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from .models import Match, Player, Tournament
 from .serializers import TournamentDetailSerializer
+from .serializers import MatchSaveSerializer
 
 
 class TournamentRegisterView(APIView):
@@ -44,3 +45,21 @@ class TournamentRegisterView(APIView):
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class SaveScoreView(APIView):
+    def post(self, request):
+        try:
+            # クライアントから送信されたデータから試合 ID を取得
+            match_id = request.data.get('id')
+            match = Match.objects.get(id=match_id)
+        except Match.DoesNotExist:
+            return Response({'error': 'Match not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # 保存専用シリアライザーを使用
+        serializer = MatchSaveSerializer(match, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            # 後にここでブロックチェーンへの保存処理を呼び出す
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
