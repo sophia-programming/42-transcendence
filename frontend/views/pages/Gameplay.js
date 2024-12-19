@@ -81,7 +81,6 @@ const Gameplay = {
 		};
 
 		function sendMessage(message) {
-			console.log(window.ws);
 			window.ws.send(JSON.stringify(message));
 		}
 

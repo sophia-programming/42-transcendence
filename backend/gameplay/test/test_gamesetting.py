@@ -1,48 +1,53 @@
-# from django.test import RequestFactory, TestCase
-# from ..models import GameSetting
-# from ..views import GameSettingViewSet
+from django.test import TestCase
+from rest_framework.test import APIClient
+from ..models import GameSetting
 
-# class SimpleTest(TestCase):
-#     def setUp(self):
-#         # リクエストファクトリの初期化
-#         self.factory = RequestFactory()
-#         # GameSettingインスタンスの作成
-#         self.gamesetting = GameSetting.objects.create(
-#             ball_velocity="normal",
-#             ball_size="normal",
-#             map="a",
-#         )
+class GameSettingViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.game_setting = GameSetting.objects.create(
+            ball_velocity="normal",
+            ball_size="normal",
+            map="a"
+        )
 
-#     def test_get(self):
-#         # GETリクエストのインスタンスを作成
-#         request = self.factory.get("/gameplay/api/gamesetting/")
-#         # as_view() を使用してビューを呼び出す
-#         response = GameSettingViewSet.as_view({'get': 'list'})(request)
-#         self.assertEqual(response.status_code, 200)
+    def test_get(self):
+        response = self.client.get("/gameplay/api/gamesetting/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(GameSetting.objects.last().ball_velocity, "normal")
 
-#     def test_put(self):
-#         # 更新するデータ
-#         updated_data = {
-#             'ball_velocity': 'fast',
-#             'ball_size': 'big',
-#             'map': 'b',
-#         }
-        
-#         # PUTリクエストのインスタンスを作成
-#         request = self.factory.put(
-#             f"/gameplay/api/gamesetting/{self.gamesetting.id}/",  # 正しいURLを指定
-#             data=updated_data,
-#             content_type='application/json'  # 必要に応じてコンテンツタイプを指定
-#         )
-        
-#         # as_view() を使用してビューを呼び出す
-#         response = GameSettingViewSet.as_view({'put': 'update'})(request, pk=self.gamesetting.id)
-        
-#         # レスポンスステータスコードが200（成功）であることを確認
-#         self.assertEqual(response.status_code, 200)
-        
-#         # データが更新されたことを確認
-#         self.gamesetting.refresh_from_db()  # データベースから最新のデータを読み込み
-#         self.assertEqual(self.gamesetting.ball_velocity, updated_data['ball_velocity'])
-#         self.assertEqual(self.gamesetting.ball_size, updated_data['ball_size'])
-#         self.assertEqual(self.gamesetting.map, updated_data['map'])
+    def test_post(self):
+        data = {
+            "ball_velocity": "fast",
+            "ball_size": "big",
+            "map": "b"
+        }
+        response = self.client.post("/gameplay/api/gamesetting/", data, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(GameSetting.objects.count(), 2)
+        self.assertEqual(GameSetting.objects.last().ball_velocity, "fast")
+
+    def test_put(self):
+        data = {
+            "ball_velocity": "slow",
+            "ball_size": "small",
+            "map": "c"
+        }
+        response = self.client.put(f"/gameplay/api/gamesetting/{self.game_setting.id}/", data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.game_setting.refresh_from_db()
+        self.assertEqual(self.game_setting.ball_velocity, "slow")
+
+    def test_delete(self):
+        data = {
+            "ball_velocity": "fast",
+            "ball_size": "big",
+            "map": "b"
+        }
+        response = self.client.post("/gameplay/api/gamesetting/", data, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(GameSetting.objects.count(), 2)
+        response = self.client.delete(f"/gameplay/api/gamesetting/{self.game_setting.id}/")
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(GameSetting.objects.count(), 1)
+        self.assertEqual(GameSetting.objects.last().ball_velocity, "fast")
