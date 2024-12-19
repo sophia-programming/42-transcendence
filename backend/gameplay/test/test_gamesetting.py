@@ -10,9 +10,11 @@ class GameSettingViewTest(TestCase):
             ball_size="normal",
             map="a"
         )
+        self.client.defaults["HTTP_X_FORWARDED_PROTO"] = "https"
+        self.client.defaults["wsgi.url_scheme"] = "https"
 
     def test_get(self):
-        response = self.client.get("/gameplay/api/gamesetting/")
+        response = self.client.get("/gameplay/api/gamesetting/", follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(GameSetting.objects.last().ball_velocity, "normal")
 
