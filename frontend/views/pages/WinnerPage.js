@@ -1,5 +1,4 @@
 import { updateContent } from "../../utils/i18n.js";
-import trophyImage from '../static/images/trophy.jpeg';
 
 const WinnerPage = {
   render: async () => {
@@ -7,11 +6,11 @@ const WinnerPage = {
     return `
     <div class="container">
         <div class="winner-box">
-            <img src="${trophyImage}" alt="トロフィー" class="trophy-image">
+            <img src="../../image/trophy.jpeg" alt="トロフィー" class="trophy-image">
             <div class="winner-text">
                 Winner: ${username}
             </div>
-            <a href="/" class="btn btn-primary btn-lg mt-3" data-link>
+            <a href="/#/tournament" class="btn btn-primary btn-lg mt-3" data-link>
                 トーナメント情報へ
             </a>
         </div>
